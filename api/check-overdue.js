@@ -105,10 +105,19 @@ module.exports = async function handler(req, res) {
       if (!insertErr) {
         notifiedCount = notificationsToInsert.length;
 
+        // Helper to sanitize keys from surrounding quotes, spaces, angle brackets, or padding '='
+        const sanitizeKey = (key) => (key || '').trim().replace(/^["']|["']$/g, '').replace(/=+$/, '').trim();
+        const cleanPublicKey = sanitizeKey(VAPID_PUBLIC_KEY);
+        const cleanPrivateKey = sanitizeKey(VAPID_PRIVATE_KEY);
+        let cleanSubject = (VAPID_SUBJECT || 'mailto:ctgroupteam@gmail.com').trim().replace(/^["']|["']$/g, '').replace(/[<>]/g, '').trim();
+        if (!cleanSubject.startsWith('mailto:')) {
+          cleanSubject = 'mailto:' + cleanSubject;
+        }
+
         // Trigger push notifications if VAPID keys are configured
-        if (VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY) {
+        if (cleanPublicKey && cleanPrivateKey) {
           try {
-            webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+            webpush.setVapidDetails(cleanSubject, cleanPublicKey, cleanPrivateKey);
             const { data: subs } = await supabase.from('push_subscriptions').select('*');
 
             if (subs && subs.length > 0) {

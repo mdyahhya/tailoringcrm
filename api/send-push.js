@@ -87,13 +87,22 @@ module.exports = async function handler(req, res) {
     }
   }
 
+  // Helper to sanitize keys from surrounding quotes, spaces, angle brackets, or padding '='
+  const sanitizeKey = (key) => (key || '').trim().replace(/^["']|["']$/g, '').replace(/=+$/, '').trim();
+  const cleanPublicKey = sanitizeKey(VAPID_PUBLIC_KEY);
+  const cleanPrivateKey = sanitizeKey(VAPID_PRIVATE_KEY);
+  let cleanSubject = (VAPID_SUBJECT || 'mailto:ctgroupteam@gmail.com').trim().replace(/^["']|["']$/g, '').replace(/[<>]/g, '').trim();
+  if (!cleanSubject.startsWith('mailto:')) {
+    cleanSubject = 'mailto:' + cleanSubject;
+  }
+
   // Configure Web Push VAPID keys
-  if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) {
+  if (!cleanPublicKey || !cleanPrivateKey) {
     return res.status(200).json({ success: true, sentCount: 0, message: 'VAPID keys not configured in environment' });
   }
 
   try {
-    webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+    webpush.setVapidDetails(cleanSubject, cleanPublicKey, cleanPrivateKey);
   } catch (err) {
     return res.status(500).json({ error: `VAPID configuration error: ${err.message}` });
   }
