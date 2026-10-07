@@ -1224,7 +1224,7 @@
       const userRole = (profile && profile.role) || 'manager';
 
       document.getElementById('userNameLabel').textContent = userName;
-      document.getElementById('userRoleBadge').textContent = userRole.toUpperCase();
+      document.getElementById('userRoleBadge').textContent = 'ADMIN';
       document.getElementById('greetingHeader').textContent = `Welcome back, ${userName}`;
 
       document.getElementById('logoutBtn').addEventListener('click', async () => {

@@ -9,7 +9,7 @@
   "crons": [
     {
       "path": "/api/check-overdue",
-      "schedule": "*/30 * * * *"
+      "schedule": "30 3 * * *"
     }
   ],
   "headers": [

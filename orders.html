@@ -1117,9 +1117,8 @@
       }
 
       const userName = (profile && profile.full_name) || session.user.email.split('@')[0];
-      const userRole = (profile && profile.role) || 'manager';
       document.getElementById('userNameLabel').textContent = userName;
-      document.getElementById('userRoleBadge').textContent = userRole.toUpperCase();
+      document.getElementById('userRoleBadge').textContent = 'ADMIN';
 
       document.getElementById('logoutBtn').addEventListener('click', async () => {
         await supabase.auth.signOut();

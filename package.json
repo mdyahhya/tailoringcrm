@@ -5,8 +5,11 @@
   "main": "api/send-push.js",
   "private": true,
   "scripts": {
-    "start": "npx serve -s .",
-    "test": "echo \"Ready for deployment\""
+    "start": "node scripts/serve-static.js",
+    "test": "node node_modules/@playwright/test/cli.js test",
+    "test:headed": "node node_modules/@playwright/test/cli.js test --headed",
+    "test:report": "node node_modules/@playwright/test/cli.js show-report",
+    "test:smoke": "node node_modules/@playwright/test/cli.js test -g \"@smoke\""
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
@@ -14,5 +17,10 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.63.0",
+    "dotenv": "^18.0.6"
   }
 }

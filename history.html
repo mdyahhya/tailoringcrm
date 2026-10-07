@@ -117,6 +117,49 @@
     .menu-toggle { display: none; background: none; border: none; color: var(--text-black); padding: 8px; cursor: pointer; min-height: 44px; min-width: 44px; align-items: center; justify-content: center; }
     .page-heading h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; color: var(--text-black); }
     .page-heading p { font-size: 12px; color: var(--text-muted); }
+    .topbar-actions { display: flex; align-items: center; gap: 12px; }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748B;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--success);
+      display: inline-block;
+    }
+    .status-dot.reconnecting {
+      background-color: var(--danger);
+      animation: pulse 1.5s infinite;
+    }
+    .btn-topbar {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      color: var(--text-black);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      min-height: 38px;
+    }
+    .btn-topbar:hover { background-color: #F1F5F9; }
+    .spinning svg {
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
 
     .content-body {
       padding: 24px;
@@ -338,6 +381,16 @@
           <p id="historySummaryLabel">Complete tailoring pipeline audit trail</p>
         </div>
       </div>
+      <div class="topbar-actions">
+        <div class="status-indicator">
+          <span class="status-dot" id="connectionDot"></span>
+          <span id="connectionText">Online</span>
+        </div>
+        <button class="btn-topbar" id="refreshBtn" onclick="fetchHistory(true)" aria-label="Refresh activity log">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          <span>Refresh</span>
+        </button>
+      </div>
     </header>
 
     <main class="content-body">
@@ -515,7 +568,7 @@
       }
 
       document.getElementById('userNameLabel').textContent = (profile && profile.full_name) || session.user.email.split('@')[0];
-      document.getElementById('userRoleBadge').textContent = ((profile && profile.role) || 'manager').toUpperCase();
+      document.getElementById('userRoleBadge').textContent = 'ADMIN';
 
       document.getElementById('logoutBtn').addEventListener('click', async () => {
         await supabase.auth.signOut();
@@ -523,9 +576,12 @@
       });
 
       await fetchHistory();
+      updateOnlineStatus();
     }
 
-    async function fetchHistory() {
+    async function fetchHistory(manual = false) {
+      const refreshBtn = document.getElementById('refreshBtn');
+      if (manual && refreshBtn) refreshBtn.classList.add('spinning');
       try {
         const { data, error } = await supabase
           .from('order_history')
@@ -539,10 +595,28 @@
         if (error) throw error;
         rawHistory = data || [];
         applyFilters();
+        if (manual) showToast('Activity log refreshed', 'success');
       } catch (err) {
         showToast('Error loading history: ' + err.message, 'error');
+      } finally {
+        if (refreshBtn) refreshBtn.classList.remove('spinning');
       }
     }
+
+    function updateOnlineStatus() {
+      const dot = document.getElementById('connectionDot');
+      const text = document.getElementById('connectionText');
+      if (!dot || !text) return;
+      if (navigator.onLine) {
+        dot.className = 'status-dot';
+        text.textContent = 'Online';
+      } else {
+        dot.className = 'status-dot reconnecting';
+        text.textContent = 'Offline';
+      }
+    }
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
 
     function applyFilters() {
       const q = document.getElementById('filterSearch').value.trim().toLowerCase();

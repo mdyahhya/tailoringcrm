@@ -262,24 +262,68 @@
       background-color: var(--navy-light);
     }
 
-    /* User Management Table for Admin */
-    .admin-users-table {
+    /* Topbar Actions & Refresh */
+    .topbar-actions { display: flex; align-items: center; gap: 12px; }
+    .status-indicator { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--text-muted); padding: 6px 10px; background-color: #F8FAFC; border-radius: 20px; border: 1px solid var(--border-light); }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background-color: var(--success); }
+    .status-dot.reconnecting { background-color: #F59E0B; animation: pulse 1s infinite alternate; }
+    @keyframes pulse { from { opacity: 0.4; } to { opacity: 1; } }
+    .btn-topbar { background-color: var(--bg-white); border: 1px solid var(--border-light); color: var(--text-black); padding: 8px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: background-color 0.15s ease; min-height: 38px; }
+    .btn-topbar:hover { background-color: #F1F5F9; }
+    .btn-topbar.spinning svg { animation: spin 0.8s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    /* Garment Types & Catalog Table */
+    .garment-types-table {
       width: 100%;
       border-collapse: collapse;
       font-size: 13px;
       text-align: left;
       margin-top: 10px;
     }
-    .admin-users-table th {
+    .garment-types-table th {
       background: #F8FAFC;
       padding: 10px 14px;
       border-bottom: 1px solid var(--border-light);
       color: #475569;
     }
-    .admin-users-table td {
+    .garment-types-table td {
       padding: 12px 14px;
       border-bottom: 1px solid var(--border-light);
     }
+    .btn-table-action {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+    }
+    .btn-table-edit { color: var(--navy-primary); }
+    .btn-table-edit:hover { background-color: #EEF2F6; }
+    .btn-table-del { color: var(--danger); }
+    .btn-table-del:hover { background-color: var(--danger-bg); }
+
+    /* Notification Prefs Grid */
+    .pref-checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .pref-check-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: #F8FAFC;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .pref-check-label input { accent-color: var(--navy-primary); width: 16px; height: 16px; }
 
     /* Modal System */
     .modal-backdrop {
@@ -437,6 +481,17 @@
           <p>PWA install, push notifications, and shop preferences</p>
         </div>
       </div>
+
+      <div class="topbar-actions">
+        <div class="status-indicator">
+          <span class="status-dot" id="connectionDot"></span>
+          <span id="connectionText">Online</span>
+        </div>
+        <button class="btn-topbar" id="refreshBtn" onclick="refreshSettingsData(true)" aria-label="Refresh settings data">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          <span>Refresh</span>
+        </button>
+      </div>
     </header>
 
     <main class="content-body">
@@ -520,29 +575,49 @@
         </form>
       </section>
 
-      <!-- 4. ADMIN USER MANAGEMENT (ADMIN ONLY) -->
-      <section class="settings-section-card" id="adminUserSection" style="display:none;">
+      <!-- 4. NOTIFICATION PREFERENCES -->
+      <section class="settings-section-card">
         <div class="section-title-wrap">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-          <span class="section-title">Staff Login Accounts (Admin Only)</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          <span class="section-title">Notification Triggers & Preferences</span>
+        </div>
+        <p style="font-size:13px; color:var(--text-muted);">Choose which pipeline and order milestones trigger alerts.</p>
+        <form id="notifPrefsForm" onsubmit="saveNotificationPreferences(event)">
+          <div class="pref-checkbox-grid">
+            <label class="pref-check-label"><input type="checkbox" id="pref_order_created" checked> New Order Created</label>
+            <label class="pref-check-label"><input type="checkbox" id="pref_stage_assigned" checked> Staff Stage Assigned</label>
+            <label class="pref-check-label"><input type="checkbox" id="pref_stage_completed" checked> Pipeline Stage Completed</label>
+            <label class="pref-check-label"><input type="checkbox" id="pref_order_ready" checked> Garment Ready for Pickup</label>
+            <label class="pref-check-label"><input type="checkbox" id="pref_order_delivered" checked> Order Delivered</label>
+            <label class="pref-check-label"><input type="checkbox" id="pref_overdue_alerts" checked> Overdue / Delay Warnings</label>
+          </div>
+          <div style="margin-top:16px;">
+            <button type="submit" class="btn-save-sm" id="btnSavePrefs">Save Preferences</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- 5. GARMENT TYPES CATALOG (ADMIN ONLY) -->
+      <section class="settings-section-card" id="garmentTypesSection">
+        <div class="section-title-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"></path></svg>
+          <span class="section-title">Garment Types Catalog</span>
         </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <p style="font-size:13px; color:var(--text-muted);">Manage CRM staff logins and administrative roles.</p>
-          <button class="btn-save-sm" onclick="openCreateUserModal()">+ Add Staff Login</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <p style="font-size:13px; color:var(--text-muted);">Manage tailoring garment categories offered to clients.</p>
+          <button class="btn-save-sm" onclick="openAddGarmentModal()" id="btnAddGarmentType">+ Add Garment Type</button>
         </div>
 
-        <table class="admin-users-table">
+        <table class="garment-types-table">
           <thead>
             <tr>
-              <th>Staff Name</th>
-              <th>Role</th>
-              <th>Status</th>
-              <th>Action</th>
+              <th>Garment Type</th>
+              <th style="width:140px; text-align:right;">Actions</th>
             </tr>
           </thead>
-          <tbody id="adminUsersTbody">
-            <tr><td colspan="4" style="text-align:center; padding:16px; color:var(--text-muted);">Loading users...</td></tr>
+          <tbody id="garmentTypesTbody">
+            <tr><td colspan="2" style="text-align:center; padding:16px; color:var(--text-muted);">Loading garment types...</td></tr>
           </tbody>
         </table>
       </section>
@@ -623,32 +698,31 @@
     </div>
   </div>
 
-  <!-- Create Staff Login Modal (Admin Only) -->
-  <div class="modal-backdrop" id="createUserModal">
+  <!-- Add / Edit Garment Type Modal -->
+  <div class="modal-backdrop" id="garmentModal">
     <div class="modal-box">
-      <h3 class="modal-title">Create New Staff Login</h3>
-      <div class="modal-form-group">
-        <label for="newStaffName">Full Name *</label>
-        <input type="text" id="newStaffName" placeholder="e.g. Farhan Master" required>
-      </div>
-      <div class="modal-form-group">
-        <label for="newStaffEmail">Email Address *</label>
-        <input type="email" id="newStaffEmail" placeholder="staff@iqbalfashion.com" required>
-      </div>
-      <div class="modal-form-group">
-        <label for="newStaffPassword">Initial Password *</label>
-        <input type="password" id="newStaffPassword" placeholder="Minimum 6 characters" required>
-      </div>
-      <div class="modal-form-group">
-        <label for="newStaffRole">System Role *</label>
-        <select id="newStaffRole">
-          <option value="manager">Manager (Can track and advance orders)</option>
-          <option value="admin">Administrator (Full settings & user management)</option>
-        </select>
+      <h3 class="modal-title" id="garmentModalTitle">Add Garment Type</h3>
+      <div class="form-group" style="margin-top:12px;">
+        <label for="garmentNameInput">Garment Type Name *</label>
+        <input type="text" id="garmentNameInput" placeholder="e.g. Waistcoat / Sadri" required>
       </div>
       <div class="modal-actions">
-        <button class="btn-push-action" onclick="closeCreateUserModal()">Cancel</button>
-        <button class="btn-save-sm" onclick="submitCreateUser()">Create User</button>
+        <button class="btn-push-action" onclick="closeGarmentModal()">Cancel</button>
+        <button class="btn-save-sm" onclick="saveGarmentType()">Save Garment Type</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Garment Confirmation Modal -->
+  <div class="modal-backdrop" id="deleteGarmentModal">
+    <div class="modal-box">
+      <h3 class="modal-title" style="color:var(--danger);">Delete Garment Type</h3>
+      <p style="font-size:13px; color:var(--text-muted); margin-top:8px;" id="deleteGarmentMsg">
+        Are you sure you want to delete this garment type from the catalog?
+      </p>
+      <div class="modal-actions">
+        <button class="btn-push-action" onclick="closeDeleteGarmentModal()">Cancel</button>
+        <button class="btn-save-sm" style="background-color:var(--danger);" onclick="executeDeleteGarment()">Delete</button>
       </div>
     </div>
   </div>
@@ -764,7 +838,7 @@
 
       currentProfile = profile;
       document.getElementById('userNameLabel').textContent = (profile && profile.full_name) || currentUser.email.split('@')[0];
-      document.getElementById('userRoleBadge').textContent = ((profile && profile.role) || 'manager').toUpperCase();
+      document.getElementById('userRoleBadge').textContent = 'ADMIN';
 
       document.getElementById('profileFullName').value = (profile && profile.full_name) || '';
       document.getElementById('profileEmail').value = currentUser.email;
@@ -774,11 +848,10 @@
         window.location.replace('/login.html');
       });
 
-      // Show Admin Section if admin
-      if (profile && profile.role === 'admin') {
-        document.getElementById('adminUserSection').style.display = 'block';
-        fetchAdminUsers();
-      }
+      await Promise.all([
+        fetchGarmentTypes(),
+        fetchNotificationPreferences()
+      ]);
 
       checkPwaInstallState();
       checkPushPermissionState();
@@ -965,86 +1038,250 @@
       }
     }
 
-    // Admin Users Management
-    async function fetchAdminUsers() {
+    // ===== GARMENT TYPES CATALOG (ADMIN ONLY CRUD) =====
+    let cachedGarmentTypes = [];
+    let editingGarmentIndex = -1;
+    let deletingGarmentName = '';
+
+    const DEFAULT_GARMENTS = [
+      'Shirt', 'Pant', 'Suit (2-Piece)', 'Suit (3-Piece)', 
+      'Kurta', 'Pyjama', 'Sherwani', 'Safari Suit', 
+      'Waistcoat / Sadri', 'Blouse', 'Pathani Suit', 'Other'
+    ];
+
+    async function fetchGarmentTypes() {
       try {
-        const { data: users, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .order('full_name');
+        const { data, error } = await supabase
+          .from('app_settings')
+          .select('value')
+          .eq('key', 'garment_types')
+          .maybeSingle();
 
         if (error) throw error;
-        const tbody = document.getElementById('adminUsersTbody');
-        tbody.innerHTML = (users || []).map(u => `
-          <tr>
-            <td><strong>${escapeHtml(u.full_name)}</strong></td>
-            <td style="text-transform:capitalize;">${escapeHtml(u.role)}</td>
-            <td><span style="color:${u.is_active ? 'var(--success)' : 'var(--danger)'}; font-weight:700;">${u.is_active ? 'Active' : 'Inactive'}</span></td>
-            <td>
-              ${u.id !== currentUser.id ? `
-                <button onclick="toggleUserActive('${u.id}', ${!u.is_active})" style="background:none; border:none; color:var(--navy-primary); font-size:12px; cursor:pointer;">
-                  ${u.is_active ? 'Deactivate' : 'Activate'}
-                </button>
-              ` : '<span style="color:var(--text-muted); font-size:12px;">You</span>'}
-            </td>
-          </tr>
-        `).join('');
+        if (data && Array.isArray(data.value)) {
+          cachedGarmentTypes = data.value;
+        } else {
+          cachedGarmentTypes = [...DEFAULT_GARMENTS];
+        }
       } catch (err) {
-        console.error('Fetch users error:', err);
+        console.warn('Using default garments fallback:', err);
+        cachedGarmentTypes = [...DEFAULT_GARMENTS];
       }
+      renderGarmentTypes();
     }
 
-    async function toggleUserActive(id, newStatus) {
-      try {
-        const { error } = await supabase
-          .from('profiles')
-          .update({ is_active: newStatus })
-          .eq('id', id);
-        if (error) throw error;
-        showToast('User status updated', 'success');
-        fetchAdminUsers();
-      } catch (err) {
-        showToast('Error: ' + err.message, 'error');
+    function renderGarmentTypes() {
+      const tbody = document.getElementById('garmentTypesTbody');
+      if (!tbody) return;
+      if (cachedGarmentTypes.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="2" style="text-align:center; padding:16px; color:var(--text-muted);">No garment types configured.</td></tr>`;
+        return;
       }
+      tbody.innerHTML = cachedGarmentTypes.map((g, idx) => `
+        <tr>
+          <td><strong>${escapeHtml(g)}</strong></td>
+          <td style="text-align:right;">
+            <button class="btn-table-action btn-table-edit" onclick="openEditGarmentModal(${idx})">Edit</button>
+            <button class="btn-table-action btn-table-del" onclick="openDeleteGarmentModal('${escapeHtml(g)}')">Delete</button>
+          </td>
+        </tr>
+      `).join('');
     }
 
-    function openCreateUserModal() { document.getElementById('createUserModal').classList.add('open'); }
-    function closeCreateUserModal() { document.getElementById('createUserModal').classList.remove('open'); }
+    function openAddGarmentModal() {
+      editingGarmentIndex = -1;
+      document.getElementById('garmentModalTitle').textContent = 'Add Garment Type';
+      document.getElementById('garmentNameInput').value = '';
+      openModalWithHistory('garmentModal');
+      setTimeout(() => document.getElementById('garmentNameInput').focus(), 50);
+    }
 
-    async function submitCreateUser() {
-      const name = document.getElementById('newStaffName').value.trim();
-      const email = document.getElementById('newStaffEmail').value.trim();
-      const password = document.getElementById('newStaffPassword').value;
-      const role = document.getElementById('newStaffRole').value;
+    function openEditGarmentModal(idx) {
+      editingGarmentIndex = idx;
+      const currentName = cachedGarmentTypes[idx];
+      document.getElementById('garmentModalTitle').textContent = 'Edit Garment Type';
+      document.getElementById('garmentNameInput').value = currentName;
+      openModalWithHistory('garmentModal');
+      setTimeout(() => document.getElementById('garmentNameInput').focus(), 50);
+    }
 
-      if (!name || !email || !password) {
-        showToast('All fields are required', 'error');
+    function closeGarmentModal() {
+      closeModalWithHistory('garmentModal');
+    }
+
+    async function saveGarmentType() {
+      const input = document.getElementById('garmentNameInput');
+      const name = input.value.trim();
+      if (!name) {
+        showToast('Garment type name is required', 'error');
         return;
       }
 
+      if (editingGarmentIndex >= 0) {
+        cachedGarmentTypes[editingGarmentIndex] = name;
+      } else {
+        if (cachedGarmentTypes.some(g => g.toLowerCase() === name.toLowerCase())) {
+          showToast('Garment type already exists', 'warning');
+          return;
+        }
+        cachedGarmentTypes.push(name);
+      }
+
+      closeGarmentModal();
+      renderGarmentTypes();
+
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        const token = session ? session.access_token : '';
-
-        const res = await fetch('/api/create-user', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ email, password, full_name: name, role })
-        });
-
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.error || 'Failed to create user');
-
-        closeCreateUserModal();
-        showToast(`Staff login created for ${name}!`, 'success');
-        fetchAdminUsers();
+        const { error } = await supabase
+          .from('app_settings')
+          .upsert({ key: 'garment_types', value: cachedGarmentTypes, updated_at: new Date().toISOString() });
+        if (error) throw error;
+        showToast('Garment catalog updated successfully', 'success');
       } catch (err) {
-        showToast('Error: ' + err.message, 'error');
+        showToast('Saved locally. Database sync warning: ' + err.message, 'warning');
       }
     }
+
+    function openDeleteGarmentModal(name) {
+      deletingGarmentName = name;
+      document.getElementById('deleteGarmentMsg').textContent = `Are you sure you want to remove "${name}" from the garment catalog?`;
+      openModalWithHistory('deleteGarmentModal');
+    }
+
+    function closeDeleteGarmentModal() {
+      closeModalWithHistory('deleteGarmentModal');
+    }
+
+    async function executeDeleteGarment() {
+      if (!deletingGarmentName) return;
+      cachedGarmentTypes = cachedGarmentTypes.filter(g => g !== deletingGarmentName);
+      closeDeleteGarmentModal();
+      renderGarmentTypes();
+
+      try {
+        const { error } = await supabase
+          .from('app_settings')
+          .upsert({ key: 'garment_types', value: cachedGarmentTypes, updated_at: new Date().toISOString() });
+        if (error) throw error;
+        showToast(`"${deletingGarmentName}" removed from catalog`, 'success');
+      } catch (err) {
+        showToast('Error deleting: ' + err.message, 'error');
+      }
+    }
+
+    // ===== NOTIFICATION PREFERENCES =====
+    async function fetchNotificationPreferences() {
+      try {
+        const { data } = await supabase
+          .from('app_settings')
+          .select('value')
+          .eq('key', 'notification_preferences')
+          .maybeSingle();
+
+        if (data && data.value) {
+          const p = data.value;
+          ['order_created', 'stage_assigned', 'stage_completed', 'order_ready', 'order_delivered', 'overdue_alerts'].forEach(key => {
+            const el = document.getElementById(`pref_${key}`);
+            if (el && p[key] !== undefined) el.checked = !!p[key];
+          });
+        }
+      } catch (err) {
+        console.warn('Failed to load notification preferences:', err);
+      }
+    }
+
+    async function saveNotificationPreferences(e) {
+      if (e) e.preventDefault();
+      const prefs = {
+        order_created: document.getElementById('pref_order_created')?.checked ?? true,
+        stage_assigned: document.getElementById('pref_stage_assigned')?.checked ?? true,
+        stage_completed: document.getElementById('pref_stage_completed')?.checked ?? true,
+        order_ready: document.getElementById('pref_order_ready')?.checked ?? true,
+        order_delivered: document.getElementById('pref_order_delivered')?.checked ?? true,
+        overdue_alerts: document.getElementById('pref_overdue_alerts')?.checked ?? true,
+      };
+
+      try {
+        const { error } = await supabase
+          .from('app_settings')
+          .upsert({ key: 'notification_preferences', value: prefs, updated_at: new Date().toISOString() });
+        if (error) throw error;
+        showToast('Notification preferences saved', 'success');
+      } catch (err) {
+        showToast('Error saving preferences: ' + err.message, 'error');
+      }
+    }
+
+    // ===== REFRESH SETTINGS DATA =====
+    async function refreshSettingsData(manual = false) {
+      const btn = document.getElementById('refreshBtn');
+      if (btn) btn.classList.add('spinning');
+      try {
+        await Promise.all([
+          fetchGarmentTypes(),
+          fetchNotificationPreferences()
+        ]);
+        if (manual) showToast('Settings refreshed with latest data', 'success');
+      } catch (err) {
+        if (manual) showToast('Error refreshing: ' + err.message, 'error');
+      } finally {
+        if (btn) btn.classList.remove('spinning');
+      }
+    }
+
+    // ===== MODAL BACK BUTTON & ACCESSIBILITY HANDLING =====
+    function openModalWithHistory(id) {
+      const modal = document.getElementById(id);
+      if (!modal) return;
+      modal.classList.add('open');
+      history.pushState({ modalOpen: id }, '');
+    }
+
+    function closeModalWithHistory(id) {
+      const modal = document.getElementById(id);
+      if (!modal) return;
+      modal.classList.remove('open');
+      if (history.state && history.state.modalOpen === id) {
+        history.back();
+      }
+    }
+
+    window.addEventListener('popstate', (e) => {
+      document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const openModal = document.querySelector('.modal-backdrop.open');
+        if (openModal) {
+          closeModalWithHistory(openModal.id);
+        }
+      }
+    });
+
+    document.querySelectorAll('.modal-backdrop').forEach(bd => {
+      bd.addEventListener('click', (e) => {
+        if (e.target === bd) {
+          closeModalWithHistory(bd.id);
+        }
+      });
+    });
+
+    // Connection state indicator
+    function updateOnlineStatus() {
+      const dot = document.getElementById('connectionDot');
+      const text = document.getElementById('connectionText');
+      if (!dot || !text) return;
+      if (navigator.onLine) {
+        dot.className = 'status-dot';
+        text.textContent = 'Online';
+      } else {
+        dot.className = 'status-dot reconnecting';
+        text.textContent = 'Offline';
+      }
+    }
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
 
     async function clearPwaCaches() {
       if ('caches' in window) {

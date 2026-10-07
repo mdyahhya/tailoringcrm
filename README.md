@@ -14,7 +14,7 @@ The application models the exact tailoring workflow in chronological order:
 4. **Stitching** (Required): Tracks stitching master and progress timestamps.
 5. **Finishing** (Required): Tracks pressing, quality checking, and finishing staff.
 6. **Ready for Delivery**: Notifies staff and customer that the garment is finished.
-7. **Delivered**: Secure action restricted strictly to **Admin** and **Manager** roles.
+7. **Delivered**: Secure action restricted strictly to the authenticated **Admin**.
 
 ### Key Features
 - **Zero Frontend Framework Overhead**: Built with pure vanilla HTML5, CSS3, and JavaScript (ES6+). Ultra-fast page loads, zero build steps, and zero Electron bloat.
@@ -205,19 +205,21 @@ To update credentials later:
 
 ---
 
-## 9. Roles & Permissions
+## 9. Single-Admin Model & Security
 
-- **Admin**:
-  - Full access to all business data.
-  - Can create and deactivate staff user accounts via `settings.html` (`/api/create-user`).
-  - Can modify shop settings.
-  - Can mark garments as **Delivered**.
-  - Can delete customer and order records.
-- **Manager**:
-  - Can view and manage all orders and customer records.
-  - Can book new orders and advance stages.
-  - Can mark garments as **Delivered**.
-  - Cannot delete business records or create staff logins.
+The Iqbal Fashion Tailoring CRM operates on a **Single-Admin Architecture**:
+- **Single Login**: Exactly one administrative login account with a preset password.
+- **Supabase Sign-Ups Disabled**: In the Supabase Dashboard, navigate to **Authentication > Providers > Email** and turn OFF **Enable Sign Up**. Public account creation and self-service password resets are permanently disabled.
+- **Admin Account Creation**: The admin account is created once via the Supabase Auth Dashboard or via the initial seed setup instructions. The password is never stored or served in client-side code.
+- **Row Level Security (RLS)**: Anonymous access is strictly denied across all business tables (`customers`, `employees`, `orders`, `order_stages`, `order_history`, `notifications`, `app_settings`). Only the authenticated admin session can read and write data.
+- **Full Admin CRUD & Correction**:
+  - **Customers**: Create, view, edit name/phone/notes, and delete (guarded against clients with active order history).
+  - **Tailor Staff**: Create, edit name/phone/roles, deactivate/reactivate, and delete (historical stage snapshots are preserved).
+  - **Orders**: Create, edit all garment and delivery fields, cancel, and permanently delete.
+  - **Stage Entries**: Assign, change employee, change target completion dates, edit notes, undo/reopen completed steps, skip/un-skip washing, and move delivered orders back to ready.
+  - **Catalog & Settings**: Full CRUD for garment types, notification preferences, and password updates.
+  - **Notifications**: Mark individual read/unread, delete single, and clear all.
+  - **Audit History**: `order_history` log entries are append-only and non-deletable by design to guarantee an unalterable business audit trail.
 
 ---
 

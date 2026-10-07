@@ -122,6 +122,48 @@
     .page-heading p { font-size: 12px; color: var(--text-muted); }
     .topbar-actions { display: flex; align-items: center; gap: 12px; }
 
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748B;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--success);
+      display: inline-block;
+    }
+    .status-dot.reconnecting {
+      background-color: var(--danger);
+      animation: pulse 1.5s infinite;
+    }
+    .btn-topbar {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      color: var(--text-black);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      min-height: 38px;
+    }
+    .btn-topbar:hover { background-color: #F1F5F9; }
+    .spinning svg {
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
     .content-body {
       padding: 24px;
       max-width: 900px;
@@ -432,6 +474,16 @@
           <p>Register customer garment & step 1 measurement</p>
         </div>
       </div>
+      <div class="topbar-actions">
+        <div class="status-indicator">
+          <span class="status-dot" id="connectionDot"></span>
+          <span id="connectionText">Online</span>
+        </div>
+        <button class="btn-topbar" id="refreshBtn" onclick="loadLookupData(true)" aria-label="Refresh lookup data">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          <span>Refresh</span>
+        </button>
+      </div>
     </header>
 
     <main class="content-body">
@@ -656,9 +708,8 @@
       }
 
       const userName = (profile && profile.full_name) || session.user.email.split('@')[0];
-      const userRole = (profile && profile.role) || 'manager';
       document.getElementById('userNameLabel').textContent = userName;
-      document.getElementById('userRoleBadge').textContent = userRole.toUpperCase();
+      document.getElementById('userRoleBadge').textContent = 'ADMIN';
 
       document.getElementById('logoutBtn').addEventListener('click', async () => {
         await supabase.auth.signOut();
@@ -670,17 +721,42 @@
 
       await loadLookupData();
       initComboboxes();
+      updateOnlineStatus();
     }
 
-    async function loadLookupData() {
-      const [{ data: customers }, { data: employees }] = await Promise.all([
-        supabase.from('customers').select('id, name, phone').order('name'),
-        supabase.from('employees').select('id, name, phone, roles').eq('is_active', true).order('name')
-      ]);
+    async function loadLookupData(manual = false) {
+      const refreshBtn = document.getElementById('refreshBtn');
+      if (manual && refreshBtn) refreshBtn.classList.add('spinning');
+      try {
+        const [{ data: customers }, { data: employees }] = await Promise.all([
+          supabase.from('customers').select('id, name, phone').order('name'),
+          supabase.from('employees').select('id, name, phone, roles').eq('is_active', true).order('name')
+        ]);
 
-      existingCustomers = customers || [];
-      existingEmployees = employees || [];
+        existingCustomers = customers || [];
+        existingEmployees = employees || [];
+        if (manual) showToast('Customer and tailor records updated', 'success');
+      } catch (err) {
+        showToast('Error refreshing data: ' + err.message, 'error');
+      } finally {
+        if (refreshBtn) refreshBtn.classList.remove('spinning');
+      }
     }
+
+    function updateOnlineStatus() {
+      const dot = document.getElementById('connectionDot');
+      const text = document.getElementById('connectionText');
+      if (!dot || !text) return;
+      if (navigator.onLine) {
+        dot.className = 'status-dot';
+        text.textContent = 'Online';
+      } else {
+        dot.className = 'status-dot reconnecting';
+        text.textContent = 'Offline';
+      }
+    }
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
 
     // Combobox Implementation
     function initComboboxes() {

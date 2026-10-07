@@ -124,6 +124,33 @@
     .page-heading p { font-size: 12px; color: var(--text-muted); }
     .topbar-actions { display: flex; align-items: center; gap: 12px; }
 
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748B;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--success);
+      display: inline-block;
+    }
+    .status-dot.reconnecting {
+      background-color: var(--danger);
+      animation: pulse 1.5s infinite;
+    }
+    .spinning svg {
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
     .btn-topbar {
       background-color: var(--bg-white);
       border: 1px solid var(--border-light);
@@ -645,6 +672,14 @@
       </div>
 
       <div class="topbar-actions">
+        <div class="status-indicator">
+          <span class="status-dot" id="connectionDot"></span>
+          <span id="connectionText">Online</span>
+        </div>
+        <button class="btn-topbar" id="refreshBtn" onclick="fetchOrderDetail(true)" aria-label="Refresh order details">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          <span>Refresh</span>
+        </button>
         <button class="btn-print-slip" onclick="window.print()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
           <span>Print Slip</span>
@@ -695,6 +730,12 @@
             <span class="detail-label">Fitting / Order Notes</span>
             <span class="detail-value" id="valNotes" style="font-weight: normal; color: #334155;">None</span>
           </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px; width:100%; border-top:1px solid var(--border-light); padding-top:12px; flex-wrap:wrap;">
+          <button class="btn-action-secondary" onclick="openEditOrderModal()" id="btnEditOrder">Edit Order Details</button>
+          <button class="btn-action-secondary" style="color:#D97706;" onclick="openCancelOrderModal()" id="btnCancelOrder">Cancel Order</button>
+          <button class="btn-action-secondary" style="color:var(--danger);" onclick="openDeleteOrderModal()" id="btnDeleteOrder">Delete Order</button>
         </div>
       </section>
 
@@ -785,7 +826,7 @@
     <div class="modal-box">
       <h3 class="modal-title">Confirm Garment Delivery</h3>
       <p style="font-size:13px; color:var(--text-muted);">
-        Only Admins and Managers can mark an order delivered. This records that the customer received their completed garment.
+        Only Admin can mark an order delivered. This records that the customer received their completed garment.
       </p>
       <div class="form-group-act">
         <label for="deliveredNotes">Delivery Notes (Optional)</label>
@@ -794,6 +835,95 @@
       <div class="modal-actions">
         <button class="btn-action-secondary" onclick="closeDeliveredModal()">Cancel</button>
         <button class="btn-action-success" onclick="confirmDelivered()">Confirm Delivered</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Order Details Modal -->
+  <div class="modal-backdrop" id="editOrderModal">
+    <div class="modal-box">
+      <h3 class="modal-title">Edit Order Details</h3>
+      <div class="form-group-act">
+        <label for="editGarmentType">Garment Type *</label>
+        <input type="text" id="editGarmentType" required>
+      </div>
+      <div class="form-group-act">
+        <label for="editClothMaterial">Fabric / Material Description</label>
+        <input type="text" id="editClothMaterial">
+      </div>
+      <div class="form-group-act">
+        <label for="editQuantity">Quantity *</label>
+        <input type="number" id="editQuantity" min="1" required>
+      </div>
+      <div class="form-group-act">
+        <label for="editExpectedDate">Expected Delivery Date</label>
+        <input type="date" id="editExpectedDate">
+      </div>
+      <div class="form-group-act">
+        <label for="editNotes">Fitting & Order Notes</label>
+        <textarea id="editNotes" rows="3" style="width:100%; border:1px solid var(--border-light); border-radius:var(--radius-sm); padding:8px; font-size:13px;"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-action-secondary" onclick="closeEditOrderModal()">Cancel</button>
+        <button class="btn-action-primary" onclick="saveOrderDetails()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cancel Order Modal -->
+  <div class="modal-backdrop" id="cancelOrderModal">
+    <div class="modal-box">
+      <h3 class="modal-title" style="color:#D97706;">Cancel Order</h3>
+      <p style="font-size:13px; color:var(--text-muted);">
+        Cancelling this order stops all in-progress pipeline stages and marks the order status as cancelled.
+      </p>
+      <div class="form-group-act">
+        <label for="cancelReasonInput">Cancellation Reason (Optional)</label>
+        <input type="text" id="cancelReasonInput" placeholder="e.g. Customer cancelled fabric, duplicate booking">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-action-secondary" onclick="closeCancelOrderModal()">Keep Active</button>
+        <button class="btn-action-secondary" style="background:#FEF3C7; color:#92400E; border-color:#FCD34D;" onclick="confirmCancelOrder()">Confirm Cancellation</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Order Confirmation Modal -->
+  <div class="modal-backdrop" id="deleteOrderModal">
+    <div class="modal-box">
+      <h3 class="modal-title" style="color:var(--danger);">Delete Order Permanently</h3>
+      <p style="font-size:13px; color:var(--text-muted);">
+        Are you sure you want to permanently delete this order? All stage tracking history and activity records will be deleted. This action cannot be undone.
+      </p>
+      <div class="modal-actions">
+        <button class="btn-action-secondary" onclick="closeDeleteOrderModal()">Cancel</button>
+        <button class="btn-action-secondary" style="background:var(--danger); color:#FFFFFF;" onclick="confirmDeleteOrder()">Delete Permanently</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Stage Details Modal -->
+  <div class="modal-backdrop" id="editStageModal">
+    <div class="modal-box">
+      <h3 class="modal-title" id="editStageModalTitle">Edit Stage Details</h3>
+      <div class="form-group-act">
+        <label for="editStageStaffInput">Assigned Staff Member</label>
+        <div class="combobox-container">
+          <input type="text" id="editStageStaffInput" placeholder="Select or type staff name...">
+          <div class="combobox-dropdown" id="editStageStaffDropdown"></div>
+        </div>
+      </div>
+      <div class="form-group-act">
+        <label for="editStageEstDate">Target Completion Date</label>
+        <input type="date" id="editStageEstDate">
+      </div>
+      <div class="form-group-act">
+        <label for="editStageNotes">Stage Notes</label>
+        <input type="text" id="editStageNotes" placeholder="Fitting details, stage observations">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-action-secondary" onclick="closeEditStageModal()">Cancel</button>
+        <button class="btn-action-primary" onclick="saveStageDetails()">Save Stage</button>
       </div>
     </div>
   </div>
@@ -880,7 +1010,6 @@
 
     async function initAuth() {
       if (!orderId) {
-        alert('No Order ID specified in URL.');
         window.location.replace('/orders.html');
         return;
       }
@@ -905,7 +1034,7 @@
 
       currentProfile = profile;
       document.getElementById('userNameLabel').textContent = (profile && profile.full_name) || session.user.email.split('@')[0];
-      document.getElementById('userRoleBadge').textContent = ((profile && profile.role) || 'manager').toUpperCase();
+      document.getElementById('userRoleBadge').textContent = 'ADMIN';
 
       document.getElementById('logoutBtn').addEventListener('click', async () => {
         await supabase.auth.signOut();
@@ -926,7 +1055,9 @@
       allEmployees = emps || [];
     }
 
-    async function fetchOrderDetail() {
+    async function fetchOrderDetail(manual = false) {
+      const refreshBtn = document.getElementById('refreshBtn');
+      if (manual && refreshBtn) refreshBtn.classList.add('spinning');
       try {
         const { data: order, error: orderErr } = await supabase
           .from('orders')
@@ -962,9 +1093,12 @@
         renderActionArea();
         renderHistory();
 
+        if (manual) showToast('Order details refreshed', 'success');
       } catch (err) {
         console.error('Fetch order detail error:', err);
         showToast('Error loading order: ' + err.message, 'error');
+      } finally {
+        if (refreshBtn) refreshBtn.classList.remove('spinning');
       }
     }
 
@@ -1033,9 +1167,18 @@
               </div>
               <div class="step-assigned-staff">
                 ${employee ? `<span>Handled by: <strong>${escapeHtml(employee)}</strong></span>` : '<span style="color:#94A3B8;">Staff unassigned</span>'}
-                ${(isInProgress || isDone) && stageKey !== 'ready' && stageKey !== 'delivered' ? `
-                  <button onclick="openReassignModal('${stageKey}')" style="background:none; border:none; color:var(--navy-primary); font-size:11px; font-weight:600; cursor:pointer; text-decoration:underline;">Reassign</button>
-                ` : ''}
+                <div style="display:inline-flex; gap:8px; margin-left:8px;">
+                  ${(isInProgress || isDone) && stageKey !== 'ready' && stageKey !== 'delivered' ? `
+                    <button onclick="openReassignModal('${stageKey}')" style="background:none; border:none; color:var(--navy-primary); font-size:11px; font-weight:600; cursor:pointer; text-decoration:underline;">Reassign</button>
+                  ` : ''}
+                  <button onclick="openEditStageModal('${stageKey}')" style="background:none; border:none; color:var(--navy-primary); font-size:11px; font-weight:600; cursor:pointer; text-decoration:underline;">Edit Stage</button>
+                  ${isDone && stageKey !== 'delivered' ? `
+                    <button onclick="revertCurrentStage('${stageKey}')" style="background:none; border:none; color:#D97706; font-size:11px; font-weight:600; cursor:pointer; text-decoration:underline;">Undo / Reopen</button>
+                  ` : ''}
+                  ${isSkipped && stageKey === 'washing' ? `
+                    <button onclick="handleUnskipWashing()" style="background:none; border:none; color:var(--navy-primary); font-size:11px; font-weight:600; cursor:pointer; text-decoration:underline;">Un-skip Washing</button>
+                  ` : ''}
+                </div>
               </div>
               <div class="step-timestamps">
                 ${estDate ? `Target completion: <strong>${estDate}</strong> &bull; ` : ''}
@@ -1064,6 +1207,27 @@
           <div style="font-size:14px; color:var(--success); font-weight:600; display:flex; align-items:center; gap:8px;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
             <span>This garment has been delivered to the customer. All pipeline steps completed.</span>
+          </div>
+          <div style="margin-top:12px;">
+            <button class="btn-action-secondary" onclick="moveDeliveredBack()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+              <span>Move Back to Ready for Delivery</span>
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      if (o.status === 'cancelled') {
+        heading.textContent = 'Order Cancelled';
+        panel.innerHTML = `
+          <div style="font-size:14px; color:#D97706; font-weight:600;">
+            This order has been cancelled and is no longer moving through the pipeline.
+          </div>
+          <div style="margin-top:12px;">
+            <button class="btn-action-primary" onclick="revertCurrentStage('${currentStage}')">
+              <span>Reactivate Order</span>
+            </button>
           </div>
         `;
         return;
@@ -1274,11 +1438,10 @@
 
     // Washing Modal Handlers
     function openWashingModal() {
-      const modal = document.getElementById('washingModal');
       const input = document.getElementById('washerInput');
       const dropdown = document.getElementById('washerDropdown');
       input.value = '';
-      modal.classList.add('open');
+      openModalWithHistory('washingModal');
 
       function render(filter) {
         const query = (filter || '').trim().toLowerCase();
@@ -1304,7 +1467,7 @@
       input.oninput = () => render(input.value);
       input.onblur = () => { setTimeout(() => { dropdown.style.display = 'none'; }, 200); };
     }
-    function closeWashingModal() { document.getElementById('washingModal').classList.remove('open'); }
+    function closeWashingModal() { closeModalWithHistory('washingModal'); }
 
     async function handleAssignWashing() {
       const washer = document.getElementById('washerInput').value.trim();
@@ -1350,7 +1513,7 @@
       document.getElementById('reassignModalTitle').textContent = `Reassign Staff for ${stage.toUpperCase()}`;
       document.getElementById('reassignStaffInput').value = '';
       document.getElementById('reassignNotesInput').value = '';
-      document.getElementById('reassignModal').classList.add('open');
+      openModalWithHistory('reassignModal');
 
       const input = document.getElementById('reassignStaffInput');
       const dropdown = document.getElementById('reassignDropdown');
@@ -1378,7 +1541,7 @@
       input.oninput = () => render(input.value);
       input.onblur = () => { setTimeout(() => { dropdown.style.display = 'none'; }, 200); };
     }
-    function closeReassignModal() { document.getElementById('reassignModal').classList.remove('open'); }
+    function closeReassignModal() { closeModalWithHistory('reassignModal'); }
 
     async function confirmReassign() {
       const staffName = document.getElementById('reassignStaffInput').value.trim();
@@ -1406,13 +1569,10 @@
 
     // Delivered Modal
     function openDeliveredModal() {
-      if (currentProfile && !['admin', 'manager'].includes(currentProfile.role)) {
-        showToast('Permission denied: Only Admin or Manager can mark Delivered.', 'error');
-        return;
-      }
       document.getElementById('deliveredModal').classList.add('open');
+      openModalWithHistory('deliveredModal');
     }
-    function closeDeliveredModal() { document.getElementById('deliveredModal').classList.remove('open'); }
+    function closeDeliveredModal() { closeModalWithHistory('deliveredModal'); }
 
     async function confirmDelivered() {
       const notes = document.getElementById('deliveredNotes').value.trim();
@@ -1432,6 +1592,391 @@
       }
     }
 
+    // Edit Order Modal
+    function openEditOrderModal() {
+      if (!currentOrder) return;
+      document.getElementById('editGarmentType').value = currentOrder.garment_type || '';
+      document.getElementById('editClothMaterial').value = currentOrder.cloth_material || '';
+      document.getElementById('editQuantity').value = currentOrder.quantity || 1;
+      document.getElementById('editExpectedDate').value = currentOrder.expected_delivery_date || '';
+      document.getElementById('editNotes').value = currentOrder.notes || '';
+      openModalWithHistory('editOrderModal');
+    }
+    function closeEditOrderModal() { closeModalWithHistory('editOrderModal'); }
+
+    async function saveOrderDetails() {
+      const gType = document.getElementById('editGarmentType').value.trim();
+      const cloth = document.getElementById('editClothMaterial').value.trim();
+      const qty = parseInt(document.getElementById('editQuantity').value, 10) || 1;
+      const expDate = document.getElementById('editExpectedDate').value || null;
+      const notes = document.getElementById('editNotes').value.trim();
+
+      if (!gType) {
+        showToast('Garment type is required.', 'error');
+        return;
+      }
+
+      closeEditOrderModal();
+      try {
+        const { error } = await supabase
+          .from('orders')
+          .update({
+            garment_type: gType,
+            cloth_material: cloth,
+            quantity: qty,
+            expected_delivery_date: expDate,
+            notes: notes,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', orderId);
+
+        if (error) throw error;
+
+        await supabase.from('order_history').insert({
+          order_id: orderId,
+          stage: currentOrder.current_stage || 'order',
+          action: 'updated',
+          actor_name: (currentProfile && currentProfile.full_name) || 'Admin',
+          details: { garment_type: gType, quantity: qty, cloth_material: cloth, expected_delivery_date: expDate, notes: notes }
+        });
+
+        showToast('Order details updated successfully', 'success');
+        fetchOrderDetail();
+      } catch (err) {
+        showToast('Error saving order details: ' + err.message, 'error');
+      }
+    }
+
+    // Cancel Order Modal
+    function openCancelOrderModal() {
+      document.getElementById('cancelReasonInput').value = '';
+      openModalWithHistory('cancelOrderModal');
+    }
+    function closeCancelOrderModal() { closeModalWithHistory('cancelOrderModal'); }
+
+    async function confirmCancelOrder() {
+      const reason = document.getElementById('cancelReasonInput').value.trim();
+      closeCancelOrderModal();
+      try {
+        const { error } = await supabase
+          .from('orders')
+          .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+          .eq('id', orderId);
+
+        if (error) throw error;
+
+        await supabase.from('order_history').insert({
+          order_id: orderId,
+          stage: currentOrder.current_stage || 'order',
+          action: 'cancelled',
+          actor_name: (currentProfile && currentProfile.full_name) || 'Admin',
+          details: { reason: reason || 'Cancelled by admin' }
+        });
+
+        showToast('Order status changed to cancelled', 'info');
+        fetchOrderDetail();
+      } catch (err) {
+        showToast('Error cancelling order: ' + err.message, 'error');
+      }
+    }
+
+    // Delete Order Modal
+    function openDeleteOrderModal() {
+      openModalWithHistory('deleteOrderModal');
+    }
+    function closeDeleteOrderModal() { closeModalWithHistory('deleteOrderModal'); }
+
+    async function confirmDeleteOrder() {
+      closeDeleteOrderModal();
+      try {
+        await supabase.from('order_stages').delete().eq('order_id', orderId);
+        await supabase.from('order_history').delete().eq('order_id', orderId);
+        await supabase.from('notifications').delete().eq('order_id', orderId);
+        const { error } = await supabase.from('orders').delete().eq('id', orderId);
+        if (error) throw error;
+
+        showToast('Order permanently deleted', 'success');
+        setTimeout(() => {
+          window.location.replace('/orders.html');
+        }, 400);
+      } catch (err) {
+        showToast('Error deleting order: ' + err.message, 'error');
+      }
+    }
+
+    // Edit Stage Modal
+    let editingStageKey = null;
+    function openEditStageModal(stage) {
+      editingStageKey = stage;
+      const s = orderStages.find(x => x.stage === stage) || {};
+      document.getElementById('editStageModalTitle').textContent = `Edit Stage: ${stage.toUpperCase()}`;
+      document.getElementById('editStageStaffInput').value = s.employee_name_snapshot || '';
+      document.getElementById('editStageEstDate').value = s.estimated_date || '';
+      document.getElementById('editStageNotes').value = s.notes || '';
+      openModalWithHistory('editStageModal');
+
+      setupEditStageStaffCombobox(stage);
+    }
+    function closeEditStageModal() { closeModalWithHistory('editStageModal'); }
+
+    function setupEditStageStaffCombobox(stage) {
+      const input = document.getElementById('editStageStaffInput');
+      const dropdown = document.getElementById('editStageStaffDropdown');
+      if (!input || !dropdown) return;
+
+      function render(filter) {
+        const query = (filter || '').trim().toLowerCase();
+        const matches = allEmployees.filter(e => e.name.toLowerCase().includes(query));
+        let html = '';
+        if (query && !allEmployees.some(e => e.name.toLowerCase() === query)) {
+          html += `<div class="combobox-item" data-val="${escapeHtml(filter.trim())}">+ Add new: "${escapeHtml(filter.trim())}"</div>`;
+        }
+        matches.forEach(e => {
+          html += `<div class="combobox-item" data-val="${escapeHtml(e.name)}"><span>${escapeHtml(e.name)}</span></div>`;
+        });
+        dropdown.innerHTML = html;
+        dropdown.style.display = 'block';
+        dropdown.querySelectorAll('.combobox-item').forEach(el => {
+          el.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            input.value = el.getAttribute('data-val');
+            dropdown.style.display = 'none';
+          });
+        });
+      }
+      input.onfocus = () => render(input.value);
+      input.oninput = () => render(input.value);
+      input.onblur = () => { setTimeout(() => { dropdown.style.display = 'none'; }, 200); };
+    }
+
+    async function saveStageDetails() {
+      if (!editingStageKey) return;
+      const empName = document.getElementById('editStageStaffInput').value.trim();
+      const estDate = document.getElementById('editStageEstDate').value || null;
+      const notes = document.getElementById('editStageNotes').value.trim();
+
+      closeEditStageModal();
+      try {
+        let empId = null;
+        if (empName) {
+          const clean = empName.trim();
+          const found = allEmployees.find(e => e.name.toLowerCase() === clean.toLowerCase());
+          if (found) {
+            empId = found.id;
+          } else {
+            const { data } = await supabase
+              .from('employees')
+              .insert({ name: clean, roles: [editingStageKey], is_active: true })
+              .select('id')
+              .single();
+            if (data) {
+              empId = data.id;
+              await loadEmployees();
+            }
+          }
+        }
+
+        const { error } = await supabase
+          .from('order_stages')
+          .update({
+            employee_id: empId,
+            employee_name_snapshot: empName || null,
+            estimated_date: estDate,
+            notes: notes || null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('order_id', orderId)
+          .eq('stage', editingStageKey);
+
+        if (error) throw error;
+
+        await supabase.from('order_history').insert({
+          order_id: orderId,
+          stage: editingStageKey,
+          action: 'updated',
+          employee_name: empName,
+          actor_name: (currentProfile && currentProfile.full_name) || 'Admin',
+          details: { estimated_date: estDate, notes: notes }
+        });
+
+        showToast(`Stage ${editingStageKey} updated`, 'success');
+        fetchOrderDetail();
+      } catch (err) {
+        showToast('Error updating stage: ' + err.message, 'error');
+      }
+    }
+
+    // Revert/Undo stage
+    async function revertCurrentStage(stage) {
+      try {
+        const { error } = await supabase
+          .from('order_stages')
+          .update({
+            status: 'in_progress',
+            completed_at: null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('order_id', orderId)
+          .eq('stage', stage);
+
+        if (error) throw error;
+
+        await supabase
+          .from('orders')
+          .update({
+            current_stage: stage,
+            status: 'in_progress',
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', orderId);
+
+        await supabase.from('order_history').insert({
+          order_id: orderId,
+          stage: stage,
+          action: 'reopened',
+          actor_name: (currentProfile && currentProfile.full_name) || 'Admin',
+          details: { reverted_to: 'in_progress' }
+        });
+
+        showToast(`Reopened ${stage} step`, 'info');
+        fetchOrderDetail();
+      } catch (err) {
+        showToast('Error reopening stage: ' + err.message, 'error');
+      }
+    }
+
+    // Unskip washing
+    async function handleUnskipWashing() {
+      try {
+        const { error } = await supabase
+          .from('order_stages')
+          .update({
+            status: 'pending',
+            completed_at: null,
+            notes: null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('order_id', orderId)
+          .eq('stage', 'washing');
+
+        if (error) throw error;
+
+        await supabase
+          .from('orders')
+          .update({
+            current_stage: 'washing',
+            status: 'in_progress',
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', orderId);
+
+        await supabase.from('order_history').insert({
+          order_id: orderId,
+          stage: 'washing',
+          action: 'unskipped',
+          actor_name: (currentProfile && currentProfile.full_name) || 'Admin',
+          details: { message: 'Restored washing stage from skipped' }
+        });
+
+        showToast('Washing step restored to pending', 'success');
+        fetchOrderDetail();
+      } catch (err) {
+        showToast('Error restoring washing: ' + err.message, 'error');
+      }
+    }
+
+    // Move Delivered back to Ready
+    async function moveDeliveredBack() {
+      try {
+        const { error } = await supabase
+          .from('orders')
+          .update({
+            current_stage: 'ready',
+            status: 'ready',
+            delivered_at: null,
+            delivered_by: null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', orderId);
+
+        if (error) throw error;
+
+        await supabase
+          .from('order_stages')
+          .update({
+            status: 'pending',
+            completed_at: null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('order_id', orderId)
+          .eq('stage', 'delivered');
+
+        await supabase.from('order_history').insert({
+          order_id: orderId,
+          stage: 'delivered',
+          action: 'reopened',
+          actor_name: (currentProfile && currentProfile.full_name) || 'Admin',
+          details: { message: 'Reverted delivered status back to ready for pickup' }
+        });
+
+        showToast('Order moved back to Ready for Pickup', 'info');
+        fetchOrderDetail();
+      } catch (err) {
+        showToast('Error moving delivered back: ' + err.message, 'error');
+      }
+    }
+
+    // Modal Back Button & Accessibility
+    function openModalWithHistory(id) {
+      const modal = document.getElementById(id);
+      if (!modal) return;
+      modal.classList.add('open');
+      history.pushState({ modalOpen: id }, '');
+    }
+
+    function closeModalWithHistory(id) {
+      const modal = document.getElementById(id);
+      if (!modal) return;
+      modal.classList.remove('open');
+      if (history.state && history.state.modalOpen === id) {
+        history.back();
+      }
+    }
+
+    window.addEventListener('popstate', (e) => {
+      document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const openModal = document.querySelector('.modal-backdrop.open');
+        if (openModal) closeModalWithHistory(openModal.id);
+      }
+    });
+
+    document.querySelectorAll('.modal-backdrop').forEach(bd => {
+      bd.addEventListener('click', (e) => {
+        if (e.target === bd) closeModalWithHistory(bd.id);
+      });
+    });
+
+    // Connection state indicator
+    function updateOnlineStatus() {
+      const dot = document.getElementById('connectionDot');
+      const text = document.getElementById('connectionText');
+      if (!dot || !text) return;
+      if (navigator.onLine) {
+        dot.className = 'status-dot';
+        text.textContent = 'Online';
+      } else {
+        dot.className = 'status-dot reconnecting';
+        text.textContent = 'Offline';
+      }
+    }
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+
     // History Timeline Render
     function renderHistory() {
       const timeline = document.getElementById('orderHistoryTimeline');
@@ -1444,7 +1989,7 @@
         const timeStr = new Date(item.created_at).toLocaleDateString([], {
           month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
         });
-        const actor = item.actor_name || 'Staff';
+        const actor = item.actor_name || 'Admin';
         return `
           <div class="history-entry">
             <div class="history-bullet">

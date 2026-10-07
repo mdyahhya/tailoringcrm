@@ -287,6 +287,103 @@
     .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
     .toast-card { pointer-events: auto; background-color: #0A0A0A; color: #FFFFFF; padding: 12px 18px; border-radius: var(--radius-sm); font-size: 13px; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
 
+    /* Topbar actions & status */
+    .topbar-actions { display: flex; align-items: center; gap: 12px; }
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748B;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--success);
+      display: inline-block;
+    }
+    .status-dot.reconnecting {
+      background-color: var(--danger);
+      animation: pulse 1.5s infinite;
+    }
+    .btn-topbar {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      color: var(--text-black);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      min-height: 38px;
+    }
+    .btn-topbar:hover { background-color: #F1F5F9; }
+    .spinning svg {
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Modal System */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: #FFFFFF;
+      border-radius: var(--radius-md);
+      max-width: 440px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .modal-title { font-size: 17px; font-weight: 700; color: var(--text-black); }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+
+    /* Action buttons on notification cards */
+    .notif-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .btn-notif-act {
+      background: none;
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #475569;
+    }
+    .btn-notif-act:hover {
+      background-color: #F1F5F9;
+      color: var(--navy-primary);
+    }
+    .btn-notif-act.danger:hover {
+      background-color: #FEF2F2;
+      color: var(--danger);
+      border-color: #FCA5A5;
+    }
+
     @media (max-width: 768px) {
       .sidebar { transform: translateX(-100%); }
       .sidebar.open { transform: translateX(0); }
@@ -375,6 +472,16 @@
           <p id="notifSummaryLabel">Loading alerts...</p>
         </div>
       </div>
+      <div class="topbar-actions">
+        <div class="status-indicator">
+          <span class="status-dot" id="connectionDot"></span>
+          <span id="connectionText">Online</span>
+        </div>
+        <button class="btn-topbar" id="refreshBtn" onclick="fetchNotifications(true)" aria-label="Refresh notifications">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          <span>Refresh</span>
+        </button>
+      </div>
     </header>
 
     <main class="content-body">
@@ -383,16 +490,36 @@
           <button class="btn-filter-tab active" id="tabAll" onclick="setNotifFilter('all')">All</button>
           <button class="btn-filter-tab" id="tabUnread" onclick="setNotifFilter('unread')">Unread</button>
         </div>
-        <button class="btn-mark-all-read" onclick="markAllAsRead()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span>Mark All Read</span>
-        </button>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-mark-all-read" onclick="markAllAsRead()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Mark All Read</span>
+          </button>
+          <button class="btn-mark-all-read" style="color:var(--danger);" onclick="openClearAllModal()" id="btnClearAll">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <span>Clear All</span>
+          </button>
+        </div>
       </section>
 
       <section class="notifications-list" id="notificationsList">
         <div style="text-align:center; padding:40px; color:var(--text-muted);">Loading notifications...</div>
       </section>
     </main>
+  </div>
+
+  <!-- Clear All Notifications Confirmation Modal -->
+  <div class="modal-backdrop" id="clearAllModal">
+    <div class="modal-box">
+      <h3 class="modal-title" style="color:var(--danger);">Clear All Notifications</h3>
+      <p style="font-size:13px; color:var(--text-muted);">
+        Are you sure you want to permanently clear all notifications? This action cannot be undone.
+      </p>
+      <div class="modal-actions">
+        <button class="btn-filter-tab" onclick="closeClearAllModal()">Cancel</button>
+        <button class="btn-filter-tab" style="background:var(--danger); color:#FFFFFF; border-color:var(--danger);" onclick="confirmClearAll()">Clear All</button>
+      </div>
+    </div>
   </div>
 
   <!-- Mobile Bottom Nav -->
@@ -488,7 +615,7 @@
       }
 
       document.getElementById('userNameLabel').textContent = (profile && profile.full_name) || session.user.email.split('@')[0];
-      document.getElementById('userRoleBadge').textContent = ((profile && profile.role) || 'manager').toUpperCase();
+      document.getElementById('userRoleBadge').textContent = 'ADMIN';
 
       document.getElementById('logoutBtn').addEventListener('click', async () => {
         await supabase.auth.signOut();
@@ -499,7 +626,9 @@
       setupRealtime();
     }
 
-    async function fetchNotifications() {
+    async function fetchNotifications(manual = false) {
+      const refreshBtn = document.getElementById('refreshBtn');
+      if (manual && refreshBtn) refreshBtn.classList.add('spinning');
       try {
         const { data, error } = await supabase
           .from('notifications')
@@ -513,8 +642,11 @@
 
         const unreadCount = rawNotifications.filter(n => !n.is_read).length;
         document.getElementById('notifSummaryLabel').textContent = `${unreadCount} unread &bull; ${rawNotifications.length} total`;
+        if (manual) showToast('Notifications updated', 'success');
       } catch (err) {
         showToast('Error loading notifications: ' + err.message, 'error');
+      } finally {
+        if (refreshBtn) refreshBtn.classList.remove('spinning');
       }
     }
 
@@ -558,6 +690,14 @@
                 <span class="notif-time">${timeAgo}</span>
               </div>
               <div class="notif-text">${escapeHtml(n.body)}</div>
+              <div class="notif-actions" onclick="event.stopPropagation()">
+                <button class="btn-notif-act" onclick="toggleNotifRead('${n.id}', ${n.is_read}, event)">
+                  Mark ${n.is_read ? 'Unread' : 'Read'}
+                </button>
+                <button class="btn-notif-act danger" onclick="deleteNotification('${n.id}', event)">
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         `;
@@ -579,6 +719,36 @@
       }
     }
 
+    async function toggleNotifRead(notifId, currentRead, event) {
+      if (event) event.stopPropagation();
+      try {
+        const { error } = await supabase
+          .from('notifications')
+          .update({ is_read: !currentRead })
+          .eq('id', notifId);
+        if (error) throw error;
+        showToast(currentRead ? 'Marked as unread' : 'Marked as read', 'info');
+        fetchNotifications();
+      } catch (err) {
+        showToast('Error updating notification: ' + err.message, 'error');
+      }
+    }
+
+    async function deleteNotification(notifId, event) {
+      if (event) event.stopPropagation();
+      try {
+        const { error } = await supabase
+          .from('notifications')
+          .delete()
+          .eq('id', notifId);
+        if (error) throw error;
+        showToast('Notification deleted', 'info');
+        fetchNotifications();
+      } catch (err) {
+        showToast('Error deleting notification: ' + err.message, 'error');
+      }
+    }
+
     async function markAllAsRead() {
       try {
         const { error } = await supabase
@@ -593,6 +763,81 @@
         showToast('Error: ' + err.message, 'error');
       }
     }
+
+    // Clear All Modal Handlers
+    function openClearAllModal() {
+      openModalWithHistory('clearAllModal');
+    }
+    function closeClearAllModal() {
+      closeModalWithHistory('clearAllModal');
+    }
+
+    async function confirmClearAll() {
+      closeClearAllModal();
+      try {
+        const { error } = await supabase
+          .from('notifications')
+          .delete()
+          .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
+
+        if (error) throw error;
+        showToast('All notifications cleared', 'success');
+        fetchNotifications();
+      } catch (err) {
+        showToast('Error clearing notifications: ' + err.message, 'error');
+      }
+    }
+
+    // Modal Back Button & Accessibility
+    function openModalWithHistory(id) {
+      const modal = document.getElementById(id);
+      if (!modal) return;
+      modal.classList.add('open');
+      history.pushState({ modalOpen: id }, '');
+    }
+
+    function closeModalWithHistory(id) {
+      const modal = document.getElementById(id);
+      if (!modal) return;
+      modal.classList.remove('open');
+      if (history.state && history.state.modalOpen === id) {
+        history.back();
+      }
+    }
+
+    window.addEventListener('popstate', (e) => {
+      document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const openModal = document.querySelector('.modal-backdrop.open');
+        if (openModal) closeModalWithHistory(openModal.id);
+      }
+    });
+
+    document.querySelectorAll('.modal-backdrop').forEach(bd => {
+      bd.addEventListener('click', (e) => {
+        if (e.target === bd) closeModalWithHistory(bd.id);
+      });
+    });
+
+    // Connection state indicator
+    function updateOnlineStatus() {
+      const dot = document.getElementById('connectionDot');
+      const text = document.getElementById('connectionText');
+      if (!dot || !text) return;
+      if (navigator.onLine) {
+        dot.className = 'status-dot';
+        text.textContent = 'Online';
+      } else {
+        dot.className = 'status-dot reconnecting';
+        text.textContent = 'Offline';
+      }
+    }
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
 
     function formatTimeAgo(date) {
       const seconds = Math.floor((new Date() - date) / 1000);

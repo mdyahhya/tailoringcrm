@@ -118,6 +118,14 @@
     .page-heading h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; color: var(--text-black); }
     .page-heading p { font-size: 12px; color: var(--text-muted); }
     .topbar-actions { display: flex; align-items: center; gap: 12px; }
+    .status-indicator { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--text-muted); padding: 6px 10px; background-color: #F8FAFC; border-radius: 20px; border: 1px solid var(--border-light); }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background-color: var(--success); }
+    .status-dot.reconnecting { background-color: #F59E0B; animation: pulse 1s infinite alternate; }
+    @keyframes pulse { from { opacity: 0.4; } to { opacity: 1; } }
+    .btn-topbar { background-color: var(--bg-white); border: 1px solid var(--border-light); color: var(--text-black); padding: 8px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: background-color 0.15s ease; min-height: 38px; }
+    .btn-topbar:hover { background-color: #F1F5F9; }
+    .btn-topbar.spinning svg { animation: spin 0.8s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
     .content-body {
       padding: 24px;
@@ -468,6 +476,17 @@
           <p id="custCountLabel">Loading customers...</p>
         </div>
       </div>
+
+      <div class="topbar-actions">
+        <div class="status-indicator">
+          <span class="status-dot" id="connectionDot"></span>
+          <span id="connectionText">Online</span>
+        </div>
+        <button class="btn-topbar" id="refreshBtn" onclick="fetchCustomers(true)" aria-label="Refresh customers list">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          <span>Refresh</span>
+        </button>
+      </div>
     </header>
 
     <main class="content-body">
@@ -526,8 +545,11 @@
           <span class="profile-label">Notes</span>
           <span class="profile-val" id="drawerNotes" style="font-weight:normal;">None</span>
         </div>
-        <div style="text-align:right; margin-top:4px;">
-          <button onclick="openEditCustomerModal()" style="background:none; border:none; color:var(--navy-primary); font-size:12px; font-weight:600; cursor:pointer;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+          <button onclick="openDeleteCustomerModal()" style="background:none; border:none; color:var(--danger); font-size:12px; font-weight:600; cursor:pointer;" id="btnDeleteCustomer">
+            Delete Customer
+          </button>
+          <button onclick="openEditCustomerModal()" style="background:none; border:none; color:var(--navy-primary); font-size:12px; font-weight:600; cursor:pointer;" id="btnEditCustomer">
             Edit Customer Details
           </button>
         </div>
@@ -564,6 +586,20 @@
       <div class="modal-actions">
         <button class="btn-action-secondary" onclick="closeCustomerModal()">Cancel</button>
         <button class="btn-add-customer" onclick="saveCustomer()">Save Customer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Customer Confirmation Modal -->
+  <div class="modal-backdrop" id="deleteCustomerModal">
+    <div class="modal-box">
+      <h3 class="modal-title" style="color:var(--danger);" id="delCustModalTitle">Delete Customer</h3>
+      <p style="font-size:13px; color:var(--text-muted); margin-top:8px;" id="delCustModalMsg">
+        Are you sure you want to delete this customer?
+      </p>
+      <div class="modal-actions">
+        <button class="btn-action-secondary" onclick="closeDeleteCustomerModal()">Cancel</button>
+        <button class="btn-add-customer" style="background-color:var(--danger);" id="btnConfirmDeleteCust" onclick="executeDeleteCustomer()">Delete Permanently</button>
       </div>
     </div>
   </div>
@@ -662,7 +698,7 @@
       }
 
       document.getElementById('userNameLabel').textContent = (profile && profile.full_name) || session.user.email.split('@')[0];
-      document.getElementById('userRoleBadge').textContent = ((profile && profile.role) || 'manager').toUpperCase();
+      document.getElementById('userRoleBadge').textContent = 'ADMIN';
 
       document.getElementById('logoutBtn').addEventListener('click', async () => {
         await supabase.auth.signOut();
@@ -680,7 +716,9 @@
       }
     }
 
-    async function fetchCustomers() {
+    async function fetchCustomers(manual = false) {
+      const btn = document.getElementById('refreshBtn');
+      if (manual && btn) btn.classList.add('spinning');
       try {
         const { data: customers, error } = await supabase
           .from('customers')
@@ -694,8 +732,11 @@
         rawCustomers = customers || [];
         renderTable(rawCustomers);
         document.getElementById('custCountLabel').textContent = `Total ${rawCustomers.length} registered customers`;
+        if (manual) showToast('Customer list updated', 'success');
       } catch (err) {
         showToast('Error loading customers: ' + err.message, 'error');
+      } finally {
+        if (btn) btn.classList.remove('spinning');
       }
     }
 
@@ -798,7 +839,28 @@
     }
 
     function closeCustomerDrawer() {
-      document.getElementById('customerDrawer').classList.remove('open');
+      const drawer = document.getElementById('customerDrawer');
+      if (drawer) drawer.classList.remove('open');
+      if (history.state && history.state.drawerOpen) {
+        history.back();
+      }
+    }
+
+    // Modal helpers with history
+    function openModalWithHistory(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add('open');
+      history.pushState({ modalOpen: id }, '');
+    }
+
+    function closeModalWithHistory(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.remove('open');
+      if (history.state && history.state.modalOpen === id) {
+        history.back();
+      }
     }
 
     // Add / Edit Modal
@@ -808,7 +870,8 @@
       document.getElementById('inputCustName').value = '';
       document.getElementById('inputCustPhone').value = '';
       document.getElementById('inputCustNotes').value = '';
-      document.getElementById('customerModal').classList.add('open');
+      openModalWithHistory('customerModal');
+      setTimeout(() => document.getElementById('inputCustName').focus(), 50);
     }
 
     function openEditCustomerModal() {
@@ -818,11 +881,12 @@
       document.getElementById('inputCustName').value = activeCustomer.name;
       document.getElementById('inputCustPhone').value = activeCustomer.phone || '';
       document.getElementById('inputCustNotes').value = activeCustomer.notes || '';
-      document.getElementById('customerModal').classList.add('open');
+      openModalWithHistory('customerModal');
+      setTimeout(() => document.getElementById('inputCustName').focus(), 50);
     }
 
     function closeCustomerModal() {
-      document.getElementById('customerModal').classList.remove('open');
+      closeModalWithHistory('customerModal');
     }
 
     async function saveCustomer() {
@@ -863,6 +927,112 @@
         showToast('Error saving: ' + err.message, 'error');
       }
     }
+
+    // Delete Customer Handling
+    async function openDeleteCustomerModal() {
+      if (!activeCustomer) return;
+      const title = document.getElementById('delCustModalTitle');
+      const msg = document.getElementById('delCustModalMsg');
+      const confirmBtn = document.getElementById('btnConfirmDeleteCust');
+
+      // Check order count in database
+      const { data: orders, error } = await supabase
+        .from('orders')
+        .select('id')
+        .eq('customer_id', activeCustomer.id);
+
+      const orderCount = orders ? orders.length : 0;
+      if (orderCount > 0) {
+        title.textContent = 'Cannot Delete Customer';
+        msg.innerHTML = `Customer <strong>${escapeHtml(activeCustomer.name)}</strong> has <strong>${orderCount}</strong> order(s) on record. Customers with historical orders cannot be deleted to preserve tailoring audit history.<br><br>Please cancel or delete their orders first if needed.`;
+        confirmBtn.style.display = 'none';
+      } else {
+        title.textContent = 'Delete Customer';
+        msg.innerHTML = `Are you sure you want to permanently delete <strong>${escapeHtml(activeCustomer.name)}</strong>? This customer has 0 orders. This action cannot be undone.`;
+        confirmBtn.style.display = 'inline-flex';
+      }
+
+      openModalWithHistory('deleteCustomerModal');
+    }
+
+    function closeDeleteCustomerModal() {
+      closeModalWithHistory('deleteCustomerModal');
+    }
+
+    async function executeDeleteCustomer() {
+      if (!activeCustomer) return;
+      const custId = activeCustomer.id;
+      const custName = activeCustomer.name;
+
+      closeDeleteCustomerModal();
+
+      try {
+        const { error } = await supabase
+          .from('customers')
+          .delete()
+          .eq('id', custId);
+
+        if (error) throw error;
+
+        // Close drawer without navigating back if possible
+        const drawer = document.getElementById('customerDrawer');
+        if (drawer) drawer.classList.remove('open');
+        activeCustomer = null;
+
+        showToast(`Customer "${custName}" deleted successfully`, 'success');
+        await fetchCustomers();
+      } catch (err) {
+        showToast('Failed to delete customer: ' + err.message, 'error');
+      }
+    }
+
+    // Popstate & Escape handling
+    window.addEventListener('popstate', (e) => {
+      document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
+      const drawer = document.getElementById('customerDrawer');
+      if (drawer && drawer.classList.contains('open')) {
+        drawer.classList.remove('open');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const openModal = document.querySelector('.modal-backdrop.open');
+        if (openModal) {
+          closeModalWithHistory(openModal.id);
+          return;
+        }
+        const drawer = document.getElementById('customerDrawer');
+        if (drawer && drawer.classList.contains('open')) {
+          closeCustomerDrawer();
+        }
+      }
+    });
+
+    document.querySelectorAll('.modal-backdrop').forEach(bd => {
+      bd.addEventListener('click', (e) => {
+        if (e.target === bd) {
+          closeModalWithHistory(bd.id);
+        }
+      });
+    });
+
+    // Connection state indicator
+    function updateOnlineStatus() {
+      const dot = document.getElementById('connectionDot');
+      const text = document.getElementById('connectionText');
+      if (!dot || !text) return;
+      if (navigator.onLine) {
+        dot.className = 'status-dot';
+        text.textContent = 'Online';
+      } else {
+        dot.className = 'status-dot reconnecting';
+        text.textContent = 'Offline';
+      }
+    }
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {

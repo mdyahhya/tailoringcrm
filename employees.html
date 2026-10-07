@@ -116,6 +116,15 @@
       z-index: 50;
     }
     .topbar-left { display: flex; align-items: center; gap: 16px; }
+    .topbar-actions { display: flex; align-items: center; gap: 12px; }
+    .status-indicator { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--text-muted); padding: 6px 10px; background-color: #F8FAFC; border-radius: 20px; border: 1px solid var(--border-light); }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background-color: var(--success); }
+    .status-dot.reconnecting { background-color: #F59E0B; animation: pulse 1s infinite alternate; }
+    @keyframes pulse { from { opacity: 0.4; } to { opacity: 1; } }
+    .btn-topbar { background-color: var(--bg-white); border: 1px solid var(--border-light); color: var(--text-black); padding: 8px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: background-color 0.15s ease; min-height: 38px; }
+    .btn-topbar:hover { background-color: #F1F5F9; }
+    .btn-topbar.spinning svg { animation: spin 0.8s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .menu-toggle { display: none; background: none; border: none; color: var(--text-black); padding: 8px; cursor: pointer; min-height: 44px; min-width: 44px; align-items: center; justify-content: center; }
     .page-heading h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; color: var(--text-black); }
     .page-heading p { font-size: 12px; color: var(--text-muted); }
@@ -439,6 +448,17 @@
           <p id="staffSummaryLabel">Loading staff list...</p>
         </div>
       </div>
+
+      <div class="topbar-actions">
+        <div class="status-indicator">
+          <span class="status-dot" id="connectionDot"></span>
+          <span id="connectionText">Online</span>
+        </div>
+        <button class="btn-topbar" id="refreshBtn" onclick="fetchStaffData(true)" aria-label="Refresh staff data">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          <span>Refresh</span>
+        </button>
+      </div>
     </header>
 
     <main class="content-body">
@@ -493,6 +513,20 @@
       <div class="modal-actions">
         <button class="role-tab-btn" onclick="closeStaffModal()">Cancel</button>
         <button class="btn-add-staff" onclick="saveStaff()">Save Staff</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Staff Confirmation Modal -->
+  <div class="modal-backdrop" id="deleteStaffModal">
+    <div class="modal-box">
+      <h3 class="modal-title" style="color:var(--danger);" id="delStaffModalTitle">Delete Staff Member</h3>
+      <p style="font-size:13px; color:var(--text-muted); margin-top:8px;" id="delStaffModalMsg">
+        Are you sure you want to remove this staff member? Historical orders and stage records will safely retain their name in audit logs.
+      </p>
+      <div class="modal-actions">
+        <button class="role-tab-btn" onclick="closeDeleteStaffModal()">Cancel</button>
+        <button class="btn-add-staff" style="background-color:var(--danger);" id="btnConfirmDeleteStaff" onclick="executeDeleteStaff()">Delete Permanently</button>
       </div>
     </div>
   </div>
@@ -592,7 +626,7 @@
       }
 
       document.getElementById('userNameLabel').textContent = (profile && profile.full_name) || session.user.email.split('@')[0];
-      document.getElementById('userRoleBadge').textContent = ((profile && profile.role) || 'manager').toUpperCase();
+      document.getElementById('userRoleBadge').textContent = 'ADMIN';
 
       document.getElementById('logoutBtn').addEventListener('click', async () => {
         await supabase.auth.signOut();
@@ -602,7 +636,9 @@
       await fetchStaffData();
     }
 
-    async function fetchStaffData() {
+    async function fetchStaffData(manual = false) {
+      const btn = document.getElementById('refreshBtn');
+      if (manual && btn) btn.classList.add('spinning');
       try {
         const [{ data: employees, error: empErr }, { data: stages, error: stgErr }] = await Promise.all([
           supabase.from('employees').select('*').order('name'),
@@ -627,10 +663,13 @@
 
         document.getElementById('staffSummaryLabel').textContent = `Total ${rawEmployees.length} staff members registered`;
         renderGrid();
+        if (manual) showToast('Staff list refreshed', 'success');
 
       } catch (err) {
         console.error('Fetch staff error:', err);
         showToast('Error loading staff: ' + err.message, 'error');
+      } finally {
+        if (btn) btn.classList.remove('spinning');
       }
     }
 
@@ -684,7 +723,8 @@
             </div>
 
             <div class="staff-card-footer">
-              <button class="btn-edit-staff" onclick="openEditStaffModal('${e.id}')">Edit Details</button>
+              <button class="btn-edit-staff" onclick="openEditStaffModal('${e.id}')">Edit</button>
+              <button onclick="openDeleteStaffModal('${e.id}')" style="background:none; border:none; color:var(--danger); font-size:12px; font-weight:600; cursor:pointer;">Delete</button>
               <button class="btn-toggle-active" onclick="toggleActiveStaff('${e.id}', ${!e.is_active})">
                 ${e.is_active ? 'Deactivate' : 'Activate'}
               </button>
@@ -694,6 +734,23 @@
       }).join('');
     }
 
+    // Modal helpers with history
+    function openModalWithHistory(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add('open');
+      history.pushState({ modalOpen: id }, '');
+    }
+
+    function closeModalWithHistory(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.remove('open');
+      if (history.state && history.state.modalOpen === id) {
+        history.back();
+      }
+    }
+
     // Modal Add / Edit
     function openAddStaffModal() {
       editingStaffId = null;
@@ -701,7 +758,8 @@
       document.getElementById('inputStaffName').value = '';
       document.getElementById('inputStaffPhone').value = '';
       document.querySelectorAll('input[name="roleCheck"]').forEach(cb => cb.checked = false);
-      document.getElementById('staffModal').classList.add('open');
+      openModalWithHistory('staffModal');
+      setTimeout(() => document.getElementById('inputStaffName').focus(), 50);
     }
 
     function openEditStaffModal(id) {
@@ -715,11 +773,12 @@
       document.querySelectorAll('input[name="roleCheck"]').forEach(cb => {
         cb.checked = roles.includes(cb.value);
       });
-      document.getElementById('staffModal').classList.add('open');
+      openModalWithHistory('staffModal');
+      setTimeout(() => document.getElementById('inputStaffName').focus(), 50);
     }
 
     function closeStaffModal() {
-      document.getElementById('staffModal').classList.remove('open');
+      closeModalWithHistory('staffModal');
     }
 
     async function saveStaff() {
@@ -775,6 +834,80 @@
         showToast('Error updating status: ' + err.message, 'error');
       }
     }
+
+    // Delete Staff Member
+    let deletingStaffId = null;
+
+    function openDeleteStaffModal(id) {
+      const e = rawEmployees.find(item => item.id === id);
+      if (!e) return;
+      deletingStaffId = id;
+      document.getElementById('delStaffModalMsg').innerHTML = `Are you sure you want to permanently remove <strong>${escapeHtml(e.name)}</strong>? Historical stages and audit logs will safely retain their name snapshot.`;
+      openModalWithHistory('deleteStaffModal');
+    }
+
+    function closeDeleteStaffModal() {
+      deletingStaffId = null;
+      closeModalWithHistory('deleteStaffModal');
+    }
+
+    async function executeDeleteStaff() {
+      if (!deletingStaffId) return;
+      const targetId = deletingStaffId;
+      closeDeleteStaffModal();
+
+      try {
+        const { error } = await supabase
+          .from('employees')
+          .delete()
+          .eq('id', targetId);
+
+        if (error) throw error;
+        showToast('Staff member removed successfully', 'success');
+        await fetchStaffData();
+      } catch (err) {
+        showToast('Error removing staff member: ' + err.message, 'error');
+      }
+    }
+
+    // Popstate & Escape handling
+    window.addEventListener('popstate', (e) => {
+      document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const openModal = document.querySelector('.modal-backdrop.open');
+        if (openModal) {
+          closeModalWithHistory(openModal.id);
+        }
+      }
+    });
+
+    document.querySelectorAll('.modal-backdrop').forEach(bd => {
+      bd.addEventListener('click', (e) => {
+        if (e.target === bd) {
+          closeModalWithHistory(bd.id);
+        }
+      });
+    });
+
+    // Connection state indicator
+    function updateOnlineStatus() {
+      const dot = document.getElementById('connectionDot');
+      const text = document.getElementById('connectionText');
+      if (!dot || !text) return;
+      if (navigator.onLine) {
+        dot.className = 'status-dot';
+        text.textContent = 'Online';
+      } else {
+        dot.className = 'status-dot reconnecting';
+        text.textContent = 'Offline';
+      }
+    }
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
