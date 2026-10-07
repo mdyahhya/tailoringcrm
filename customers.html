@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customers Directory | Iqbal Fashion CRM</title>
+  <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#12306B">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Iqbal CRM">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png">
+  <style>
+    /* ==============================================================================
+       DESIGN SYSTEM: PURE WHITE, BLACK, NAVY ACCENT (#12306B)
+       ============================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    :root {
+      --bg-white: #FFFFFF;
+      --bg-canvas: #F8FAFC;
+      --text-black: #0A0A0A;
+      --text-muted: #64748B;
+      --border-light: #E2E8F0;
+      --navy-primary: #12306B;
+      --navy-hover: #1E3A8A;
+      --navy-light: #EFF6FF;
+      --sidebar-width: 260px;
+      --topbar-height: 64px;
+      --bottom-bar-height: 64px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --success: #16A34A;
+      --warning: #D97706;
+      --danger: #DC2626;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--text-black);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--bg-white);
+      border-right: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .sidebar-brand {
+      height: var(--topbar-height);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .brand-badge {
+      width: 36px;
+      height: 36px;
+      background-color: var(--navy-primary);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .brand-meta { display: flex; flex-direction: column; }
+    .brand-name { font-weight: 700; font-size: 15px; letter-spacing: -0.01em; color: var(--text-black); }
+    .brand-sub { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .sidebar-nav { flex: 1; overflow-y: auto; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
+    .nav-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #94A3B8; padding: 8px 12px 4px; margin-top: 8px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; color: #334155; text-decoration: none; min-height: 44px; }
+    .nav-item svg { width: 20px; height: 20px; flex-shrink: 0; stroke-width: 1.75; }
+    .nav-item:hover { background-color: #F1F5F9; color: var(--navy-primary); }
+    .nav-item.active { background-color: var(--navy-primary); color: #FFFFFF; font-weight: 600; }
+    .sidebar-user { padding: 16px; border-top: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
+    .user-info { display: flex; flex-direction: column; overflow: hidden; }
+    .user-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-role-badge { display: inline-block; font-size: 11px; font-weight: 600; text-transform: capitalize; color: var(--navy-primary); }
+    .btn-logout { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 6px; }
+
+    /* ===== MAIN CONTENT & TOPBAR ===== */
+    .app-main { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; min-width: 0; }
+    .topbar {
+      height: var(--topbar-height);
+      background-color: var(--bg-white);
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 16px; }
+    .menu-toggle { display: none; background: none; border: none; color: var(--text-black); padding: 8px; cursor: pointer; min-height: 44px; min-width: 44px; align-items: center; justify-content: center; }
+    .page-heading h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; color: var(--text-black); }
+    .page-heading p { font-size: 12px; color: var(--text-muted); }
+    .topbar-actions { display: flex; align-items: center; gap: 12px; }
+
+    .content-body {
+      padding: 24px;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Controls Bar */
+    .controls-card {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .search-input-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 260px;
+      max-width: 440px;
+    }
+    .search-input-wrap svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      padding: 10px 14px 10px 38px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      background-color: #FFFFFF;
+      outline: none;
+      min-height: 42px;
+    }
+    .search-input:focus {
+      border-color: var(--navy-primary);
+      box-shadow: 0 0 0 3px rgba(18, 48, 107, 0.1);
+    }
+    .btn-add-customer {
+      background-color: var(--navy-primary);
+      color: #FFFFFF;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+    }
+    .btn-add-customer:hover { background-color: var(--navy-hover); }
+
+    /* Customer Table Card */
+    .table-card {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+    .data-table th {
+      background-color: #F8FAFC;
+      padding: 12px 18px;
+      font-weight: 600;
+      color: #475569;
+      border-bottom: 1px solid var(--border-light);
+      white-space: nowrap;
+    }
+    .data-table td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-black);
+    }
+    .data-table tr {
+      cursor: pointer;
+      transition: background-color 0.1s ease;
+    }
+    .data-table tr:hover td {
+      background-color: #F8FAFC;
+    }
+    .order-count-pill {
+      display: inline-block;
+      background-color: var(--navy-light);
+      color: var(--navy-primary);
+      font-weight: 700;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
+    /* ===== CUSTOMER DETAIL SLIDE-IN DRAWER ===== */
+    .customer-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      max-width: 520px;
+      background: #FFFFFF;
+      box-shadow: -10px 0 30px rgba(0,0,0,0.15);
+      z-index: 1001;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .customer-drawer.open {
+      transform: translateX(0);
+    }
+    .drawer-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .drawer-title { font-size: 18px; font-weight: 700; color: var(--text-black); }
+    .btn-close-drawer {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .drawer-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .profile-card-inner {
+      background-color: #F8FAFC;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .profile-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+    .profile-label { color: var(--text-muted); font-weight: 500; }
+    .profile-val { font-weight: 600; color: var(--text-black); }
+
+    /* Garment Step History in Drawer */
+    .drawer-section-heading {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--navy-primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .garment-history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .garment-card {
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      background: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: border-color 0.15s ease;
+    }
+    .garment-card:hover { border-color: var(--navy-primary); }
+    .garment-top-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .garment-stage-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+      text-transform: capitalize;
+    }
+
+    /* Modal Form Backdrop */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1002;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: #FFFFFF;
+      border-radius: var(--radius-md);
+      max-width: 440px;
+      width: 100%;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .modal-form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .modal-form-group label { font-size: 12px; font-weight: 600; color: #1E293B; }
+    .modal-form-group input, .modal-form-group textarea {
+      padding: 10px 12px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      outline: none;
+    }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+
+    /* Mobile bottom bar & toast */
+    .drawer-overlay { display: none; position: fixed; inset: 0; background-color: rgba(0,0,0,0.4); z-index: 99; }
+    .bottom-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: var(--bottom-bar-height); background-color: #FFFFFF; border-top: 1px solid var(--border-light); z-index: 100; justify-content: space-around; align-items: center; }
+    .bottom-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #64748B; font-size: 10px; font-weight: 500; gap: 2px; flex: 1; height: 100%; }
+    .bottom-nav-item svg { width: 22px; height: 22px; stroke-width: 1.75; }
+    .bottom-nav-item.active { color: var(--navy-primary); font-weight: 700; }
+    .bottom-nav-fab { width: 44px; height: 44px; border-radius: 50%; background-color: var(--navy-primary); color: #FFFFFF; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(18, 48, 107, 0.3); margin-top: -12px; }
+    .bottom-nav-fab svg { width: 24px; height: 24px; color: #FFFFFF; }
+
+    .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+    .toast-card { pointer-events: auto; background-color: #0A0A0A; color: #FFFFFF; padding: 12px 18px; border-radius: var(--radius-sm); font-size: 13px; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .drawer-overlay.open { display: block; }
+      .app-main { margin-left: 0; padding-bottom: var(--bottom-bar-height); }
+      .menu-toggle { display: flex; }
+      .bottom-bar { display: flex; }
+      .content-body { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="drawerOverlay" class="drawer-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-badge">IF</div>
+      <div class="brand-meta">
+        <span class="brand-name">Iqbal Fashion</span>
+        <span class="brand-sub">Tailoring CRM</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Core Pipeline</div>
+      <a href="/index.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="/orders.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 12h6M9 16h6"></path></svg>
+        <span>Orders Board</span>
+      </a>
+      <a href="/new-order.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+        <span>Book New Order</span>
+      </a>
+
+      <div class="nav-label">Management</div>
+      <a href="/customers.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <span>Customers</span>
+      </a>
+      <a href="/employees.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+        <span>Tailor Staff</span>
+      </a>
+      <a href="/history.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <span>Activity Log</span>
+      </a>
+      <a href="/notifications.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <span>Notifications</span>
+      </a>
+
+      <div class="nav-label">System</div>
+      <a href="/settings.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span>Settings & PWA</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-info">
+        <span class="user-name" id="userNameLabel">Loading...</span>
+        <span class="user-role-badge" id="userRoleBadge">Staff</span>
+      </div>
+      <button class="btn-logout" id="logoutBtn" title="Sign Out">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main View -->
+  <div class="app-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <div class="page-heading">
+          <h1>Customers Directory</h1>
+          <p id="custCountLabel">Loading customers...</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="content-body">
+      <!-- Search & Add Bar -->
+      <section class="controls-card">
+        <div class="search-input-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="custSearchInput" class="search-input" placeholder="Search customer name or phone number..." autocomplete="off">
+        </div>
+        <button class="btn-add-customer" onclick="openAddCustomerModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span>Add New Customer</span>
+        </button>
+      </section>
+
+      <!-- Customers Table -->
+      <section class="table-card">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Customer Name</th>
+              <th>Phone</th>
+              <th>Fitting Notes</th>
+              <th>Total Orders</th>
+              <th>Registered</th>
+            </tr>
+          </thead>
+          <tbody id="customersTableBody">
+            <tr><td colspan="5" style="text-align:center; padding:32px; color:var(--text-muted);">Loading customers...</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <!-- CUSTOMER DETAIL DRAWER (WHICH CUSTOMER'S CLOTH IS AT WHICH STEP) -->
+  <div class="customer-drawer" id="customerDrawer">
+    <div class="drawer-header">
+      <div>
+        <div class="drawer-title" id="drawerCustomerName">Customer Details</div>
+        <div style="font-size:12px; color:var(--text-muted);" id="drawerCustomerSince">Customer Profile</div>
+      </div>
+      <button class="btn-close-drawer" onclick="closeCustomerDrawer()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+
+    <div class="drawer-content">
+      <!-- Profile Info -->
+      <div class="profile-card-inner">
+        <div class="profile-row">
+          <span class="profile-label">Phone</span>
+          <span class="profile-val" id="drawerPhone">-</span>
+        </div>
+        <div class="profile-row">
+          <span class="profile-label">Notes</span>
+          <span class="profile-val" id="drawerNotes" style="font-weight:normal;">None</span>
+        </div>
+        <div style="text-align:right; margin-top:4px;">
+          <button onclick="openEditCustomerModal()" style="background:none; border:none; color:var(--navy-primary); font-size:12px; font-weight:600; cursor:pointer;">
+            Edit Customer Details
+          </button>
+        </div>
+      </div>
+
+      <!-- Garments & Pipeline Status (Which cloth is at which step) -->
+      <div class="drawer-section-heading">
+        <span>Active & Past Garments</span>
+        <span class="order-count-pill" id="drawerOrderCount">0</span>
+      </div>
+
+      <div class="garment-history-list" id="drawerOrdersList">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Customer Modal -->
+  <div class="modal-backdrop" id="customerModal">
+    <div class="modal-box">
+      <h3 class="modal-title" id="modalCustomerTitle">Add New Customer</h3>
+      <div class="modal-form-group">
+        <label for="inputCustName">Full Name *</label>
+        <input type="text" id="inputCustName" placeholder="e.g. Mohammad Rizwan" required>
+      </div>
+      <div class="modal-form-group">
+        <label for="inputCustPhone">Phone Number (Optional)</label>
+        <input type="tel" id="inputCustPhone" placeholder="e.g. +91 98200 00000">
+      </div>
+      <div class="modal-form-group">
+        <label for="inputCustNotes">Fitting & Preference Notes (Optional)</label>
+        <textarea id="inputCustNotes" placeholder="Collar fit preferences, etc." rows="3"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-action-secondary" onclick="closeCustomerModal()">Cancel</button>
+        <button class="btn-add-customer" onclick="saveCustomer()">Save Customer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="bottom-bar">
+    <a href="/index.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="/orders.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+      <span>Orders</span>
+    </a>
+    <a href="/new-order.html" class="bottom-nav-item">
+      <div class="bottom-nav-fab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </div>
+      <span>New</span>
+    </a>
+    <a href="/customers.html" class="bottom-nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+      <span>Clients</span>
+    </a>
+    <a href="/notifications.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+      <span>Alerts</span>
+    </a>
+  </nav>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+  <script>
+    /* ===== SHARED: SUPABASE CLIENT CONFIG ===== */
+    const SUPABASE_URL = "https://ajapvxdpxifdhvvszuhp.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqYXB2eGRweGlmZGh2dnN6dWhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU3ODk5NTMsImV4cCI6MjA4MTM2NTk1M30.iC9U-MQC6VYZNXd_RugA6_hxZwrhYRsapffOYDCikio";
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true }
+    });
+
+    let rawCustomers = [];
+    let activeCustomer = null;
+    let editingCustomerId = null;
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast-card';
+      toast.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span>${escapeHtml(message)}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.2s ease';
+        setTimeout(() => toast.remove(), 200);
+      }, 3500);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('drawerOverlay').classList.toggle('open');
+    }
+
+    async function initAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        window.location.replace('/login.html?redirect=' + encodeURIComponent(window.location.pathname));
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      if (profile && !profile.is_active) {
+        await supabase.auth.signOut();
+        window.location.replace('/login.html');
+        return;
+      }
+
+      document.getElementById('userNameLabel').textContent = (profile && profile.full_name) || session.user.email.split('@')[0];
+      document.getElementById('userRoleBadge').textContent = ((profile && profile.role) || 'manager').toUpperCase();
+
+      document.getElementById('logoutBtn').addEventListener('click', async () => {
+        await supabase.auth.signOut();
+        window.location.replace('/login.html');
+      });
+
+      await fetchCustomers();
+
+      // Check if URL has ?id=... to auto-open customer drawer
+      const urlParams = new URLSearchParams(window.location.search);
+      const openId = urlParams.get('id');
+      if (openId) {
+        const found = rawCustomers.find(c => c.id === openId);
+        if (found) openCustomerDrawer(found);
+      }
+    }
+
+    async function fetchCustomers() {
+      try {
+        const { data: customers, error } = await supabase
+          .from('customers')
+          .select(`
+            id, name, phone, notes, created_at,
+            orders (id)
+          `)
+          .order('name');
+
+        if (error) throw error;
+        rawCustomers = customers || [];
+        renderTable(rawCustomers);
+        document.getElementById('custCountLabel').textContent = `Total ${rawCustomers.length} registered customers`;
+      } catch (err) {
+        showToast('Error loading customers: ' + err.message, 'error');
+      }
+    }
+
+    function renderTable(list) {
+      const tbody = document.getElementById('customersTableBody');
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:32px; color:var(--text-muted);">No customers found matching search.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map(c => {
+        const orderCount = (c.orders && c.orders.length) || 0;
+        const regDate = new Date(c.created_at).toLocaleDateString([], { year:'numeric', month:'short', day:'numeric' });
+        return `
+          <tr onclick="openCustomerDrawerById('${c.id}')">
+            <td><strong style="color:var(--navy-primary);">${escapeHtml(c.name)}</strong></td>
+            <td>${escapeHtml(c.phone || '-')}</td>
+            <td><span style="color:#475569;">${escapeHtml(c.notes || '-')}</span></td>
+            <td><span class="order-count-pill">${orderCount} orders</span></td>
+            <td style="color:var(--text-muted);">${regDate}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Search filter
+    document.getElementById('custSearchInput').addEventListener('input', (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      const filtered = rawCustomers.filter(c => {
+        return c.name.toLowerCase().includes(q) || (c.phone && c.phone.toLowerCase().includes(q));
+      });
+      renderTable(filtered);
+    });
+
+    window.openCustomerDrawerById = function(id) {
+      const c = rawCustomers.find(item => item.id === id);
+      if (c) openCustomerDrawer(c);
+    };
+
+    // Open Customer Drawer
+    async function openCustomerDrawer(customer) {
+      activeCustomer = customer;
+      document.getElementById('drawerCustomerName').textContent = customer.name;
+      document.getElementById('drawerPhone').textContent = customer.phone || 'No phone provided';
+      document.getElementById('drawerNotes').textContent = customer.notes || 'No fitting notes recorded.';
+      document.getElementById('drawerCustomerSince').textContent = 'Registered: ' + new Date(customer.created_at).toLocaleDateString();
+
+      const drawer = document.getElementById('customerDrawer');
+      drawer.classList.add('open');
+
+      const ordersList = document.getElementById('drawerOrdersList');
+      ordersList.innerHTML = `<p style="font-size:13px; color:var(--text-muted);">Loading garments pipeline...</p>`;
+
+      try {
+        const { data: orders, error } = await supabase
+          .from('orders')
+          .select(`
+            id, order_no, garment_type, cloth_material, current_stage, status, expected_delivery_date,
+            order_stages (stage, status, employee_name_snapshot)
+          `)
+          .eq('customer_id', customer.id)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        document.getElementById('drawerOrderCount').textContent = `${orders.length} orders`;
+
+        if (!orders || orders.length === 0) {
+          ordersList.innerHTML = `<p style="font-size:13px; color:var(--text-muted);">No garments booked yet.</p>`;
+          return;
+        }
+
+        ordersList.innerHTML = orders.map(o => {
+          const activeStageObj = (o.order_stages || []).find(s => s.stage === o.current_stage);
+          const assigned = activeStageObj ? activeStageObj.employee_name_snapshot : 'Unassigned';
+
+          return `
+            <div class="garment-card">
+              <div class="garment-top-line">
+                <strong style="color:var(--navy-primary);">${escapeHtml(o.order_no)}</strong>
+                <span class="garment-stage-badge" style="background:#F1F5F9; color:var(--navy-primary); font-weight:700;">
+                  Step: ${escapeHtml(o.current_stage.toUpperCase())}
+                </span>
+              </div>
+              <div style="font-size:14px; font-weight:600;">${escapeHtml(o.garment_type)} ${o.cloth_material ? `<span style="font-size:12px; font-weight:normal; color:#64748B;">(${escapeHtml(o.cloth_material)})</span>` : ''}</div>
+              <div style="font-size:12px; color:#475569;">
+                Handled by: <strong>${escapeHtml(assigned || 'Staff')}</strong>
+                ${o.expected_delivery_date ? ` &bull; Due: ${escapeHtml(o.expected_delivery_date)}` : ''}
+              </div>
+              <div style="text-align:right; margin-top:4px;">
+                <a href="/order-detail.html?id=${o.id}" style="color:var(--navy-primary); font-size:12px; font-weight:600; text-decoration:none;">View Full Stepper &rarr;</a>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+      } catch (err) {
+        ordersList.innerHTML = `<p style="color:var(--danger); font-size:13px;">Error loading orders.</p>`;
+      }
+    }
+
+    function closeCustomerDrawer() {
+      document.getElementById('customerDrawer').classList.remove('open');
+    }
+
+    // Add / Edit Modal
+    function openAddCustomerModal() {
+      editingCustomerId = null;
+      document.getElementById('modalCustomerTitle').textContent = 'Add New Customer';
+      document.getElementById('inputCustName').value = '';
+      document.getElementById('inputCustPhone').value = '';
+      document.getElementById('inputCustNotes').value = '';
+      document.getElementById('customerModal').classList.add('open');
+    }
+
+    function openEditCustomerModal() {
+      if (!activeCustomer) return;
+      editingCustomerId = activeCustomer.id;
+      document.getElementById('modalCustomerTitle').textContent = 'Edit Customer Details';
+      document.getElementById('inputCustName').value = activeCustomer.name;
+      document.getElementById('inputCustPhone').value = activeCustomer.phone || '';
+      document.getElementById('inputCustNotes').value = activeCustomer.notes || '';
+      document.getElementById('customerModal').classList.add('open');
+    }
+
+    function closeCustomerModal() {
+      document.getElementById('customerModal').classList.remove('open');
+    }
+
+    async function saveCustomer() {
+      const name = document.getElementById('inputCustName').value.trim();
+      const phone = document.getElementById('inputCustPhone').value.trim();
+      const notes = document.getElementById('inputCustNotes').value.trim();
+
+      if (!name) {
+        showToast('Customer name is required', 'error');
+        return;
+      }
+
+      closeCustomerModal();
+
+      try {
+        if (editingCustomerId) {
+          const { error } = await supabase
+            .from('customers')
+            .update({ name, phone: phone || null, notes: notes || null })
+            .eq('id', editingCustomerId);
+          if (error) throw error;
+          showToast('Customer updated', 'success');
+        } else {
+          const { error } = await supabase
+            .from('customers')
+            .insert({ name, phone: phone || null, notes: notes || null });
+          if (error) throw error;
+          showToast('Customer registered', 'success');
+        }
+        await fetchCustomers();
+        if (editingCustomerId && activeCustomer) {
+          activeCustomer.name = name;
+          activeCustomer.phone = phone;
+          activeCustomer.notes = notes;
+          openCustomerDrawer(activeCustomer);
+        }
+      } catch (err) {
+        showToast('Error saving: ' + err.message, 'error');
+      }
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(console.warn);
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', initAuth);
+  </script>
+</body>
+</html>

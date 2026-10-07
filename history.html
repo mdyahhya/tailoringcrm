@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activity History & Audit | Iqbal Fashion CRM</title>
+  <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#12306B">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Iqbal CRM">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png">
+  <style>
+    /* ==============================================================================
+       DESIGN SYSTEM: PURE WHITE, BLACK, NAVY ACCENT (#12306B)
+       ============================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    :root {
+      --bg-white: #FFFFFF;
+      --bg-canvas: #F8FAFC;
+      --text-black: #0A0A0A;
+      --text-muted: #64748B;
+      --border-light: #E2E8F0;
+      --navy-primary: #12306B;
+      --navy-hover: #1E3A8A;
+      --navy-light: #EFF6FF;
+      --sidebar-width: 260px;
+      --topbar-height: 64px;
+      --bottom-bar-height: 64px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --success: #16A34A;
+      --warning: #D97706;
+      --danger: #DC2626;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--text-black);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--bg-white);
+      border-right: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .sidebar-brand {
+      height: var(--topbar-height);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .brand-badge {
+      width: 36px;
+      height: 36px;
+      background-color: var(--navy-primary);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .brand-meta { display: flex; flex-direction: column; }
+    .brand-name { font-weight: 700; font-size: 15px; letter-spacing: -0.01em; color: var(--text-black); }
+    .brand-sub { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .sidebar-nav { flex: 1; overflow-y: auto; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
+    .nav-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #94A3B8; padding: 8px 12px 4px; margin-top: 8px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; color: #334155; text-decoration: none; min-height: 44px; }
+    .nav-item svg { width: 20px; height: 20px; flex-shrink: 0; stroke-width: 1.75; }
+    .nav-item:hover { background-color: #F1F5F9; color: var(--navy-primary); }
+    .nav-item.active { background-color: var(--navy-primary); color: #FFFFFF; font-weight: 600; }
+    .sidebar-user { padding: 16px; border-top: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
+    .user-info { display: flex; flex-direction: column; overflow: hidden; }
+    .user-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-role-badge { display: inline-block; font-size: 11px; font-weight: 600; text-transform: capitalize; color: var(--navy-primary); }
+    .btn-logout { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 6px; }
+
+    /* ===== MAIN CONTENT & TOPBAR ===== */
+    .app-main { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; min-width: 0; }
+    .topbar {
+      height: var(--topbar-height);
+      background-color: var(--bg-white);
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 16px; }
+    .menu-toggle { display: none; background: none; border: none; color: var(--text-black); padding: 8px; cursor: pointer; min-height: 44px; min-width: 44px; align-items: center; justify-content: center; }
+    .page-heading h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; color: var(--text-black); }
+    .page-heading p { font-size: 12px; color: var(--text-muted); }
+
+    .content-body {
+      padding: 24px;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Filters Card */
+    .filters-card {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .filter-group label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .filter-group select, .filter-group input {
+      padding: 8px 12px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      background: #FFFFFF;
+      outline: none;
+      min-height: 38px;
+    }
+    .filters-actions-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-top: 1px solid #F1F5F9;
+      padding-top: 12px;
+    }
+    .btn-export-csv {
+      background-color: #F1F5F9;
+      color: var(--navy-primary);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 38px;
+      transition: all 0.15s ease;
+    }
+    .btn-export-csv:hover {
+      background-color: var(--navy-primary);
+      color: #FFFFFF;
+    }
+
+    /* History Table */
+    .table-card {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+    .history-table th {
+      background-color: #F8FAFC;
+      padding: 12px 16px;
+      font-weight: 600;
+      color: #475569;
+      border-bottom: 1px solid var(--border-light);
+      white-space: nowrap;
+    }
+    .history-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-black);
+    }
+    .history-table tr:hover td { background-color: #F8FAFC; }
+
+    /* Action tag */
+    .action-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: capitalize;
+    }
+    .action-tag.created { background: #EFF6FF; color: #1D4ED8; }
+    .action-tag.started { background: #FEF3C7; color: #B45309; }
+    .action-tag.completed { background: #F0FDF4; color: #15803D; }
+    .action-tag.skipped { background: #F1F5F9; color: #64748B; }
+    .action-tag.reassigned { background: #F3E8FF; color: #7E22CE; }
+    .action-tag.delivered { background: #DCFCE7; color: #16A34A; }
+
+    /* Mobile bottom bar & toast */
+    .drawer-overlay { display: none; position: fixed; inset: 0; background-color: rgba(0,0,0,0.4); z-index: 99; }
+    .bottom-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: var(--bottom-bar-height); background-color: #FFFFFF; border-top: 1px solid var(--border-light); z-index: 100; justify-content: space-around; align-items: center; }
+    .bottom-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #64748B; font-size: 10px; font-weight: 500; gap: 2px; flex: 1; height: 100%; }
+    .bottom-nav-item svg { width: 22px; height: 22px; stroke-width: 1.75; }
+    .bottom-nav-item.active { color: var(--navy-primary); font-weight: 700; }
+    .bottom-nav-fab { width: 44px; height: 44px; border-radius: 50%; background-color: var(--navy-primary); color: #FFFFFF; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(18, 48, 107, 0.3); margin-top: -12px; }
+    .bottom-nav-fab svg { width: 24px; height: 24px; color: #FFFFFF; }
+
+    .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+    .toast-card { pointer-events: auto; background-color: #0A0A0A; color: #FFFFFF; padding: 12px 18px; border-radius: var(--radius-sm); font-size: 13px; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .drawer-overlay.open { display: block; }
+      .app-main { margin-left: 0; padding-bottom: var(--bottom-bar-height); }
+      .menu-toggle { display: flex; }
+      .bottom-bar { display: flex; }
+      .content-body { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="drawerOverlay" class="drawer-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-badge">IF</div>
+      <div class="brand-meta">
+        <span class="brand-name">Iqbal Fashion</span>
+        <span class="brand-sub">Tailoring CRM</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Core Pipeline</div>
+      <a href="/index.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="/orders.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 12h6M9 16h6"></path></svg>
+        <span>Orders Board</span>
+      </a>
+      <a href="/new-order.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+        <span>Book New Order</span>
+      </a>
+
+      <div class="nav-label">Management</div>
+      <a href="/customers.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <span>Customers</span>
+      </a>
+      <a href="/employees.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+        <span>Tailor Staff</span>
+      </a>
+      <a href="/history.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <span>Activity Log</span>
+      </a>
+      <a href="/notifications.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <span>Notifications</span>
+      </a>
+
+      <div class="nav-label">System</div>
+      <a href="/settings.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span>Settings & PWA</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-info">
+        <span class="user-name" id="userNameLabel">Loading...</span>
+        <span class="user-role-badge" id="userRoleBadge">Staff</span>
+      </div>
+      <button class="btn-logout" id="logoutBtn" title="Sign Out">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main View -->
+  <div class="app-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <div class="page-heading">
+          <h1>Global Activity Log</h1>
+          <p id="historySummaryLabel">Complete tailoring pipeline audit trail</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="content-body">
+      <!-- Filters -->
+      <section class="filters-card">
+        <div class="filters-grid">
+          <div class="filter-group">
+            <label>Search Order or Customer</label>
+            <input type="text" id="filterSearch" placeholder="Type name or IF-000..." oninput="applyFilters()">
+          </div>
+
+          <div class="filter-group">
+            <label>Pipeline Stage</label>
+            <select id="filterStage" onchange="applyFilters()">
+              <option value="">All Stages</option>
+              <option value="measurement">Measurement</option>
+              <option value="washing">Washing</option>
+              <option value="cutting">Cutting</option>
+              <option value="stitching">Stitching</option>
+              <option value="finishing">Finishing</option>
+              <option value="ready">Ready</option>
+              <option value="delivered">Delivered</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Action</label>
+            <select id="filterAction" onchange="applyFilters()">
+              <option value="">All Actions</option>
+              <option value="created">Created</option>
+              <option value="started">Started</option>
+              <option value="completed">Completed</option>
+              <option value="skipped">Skipped</option>
+              <option value="reassigned">Reassigned</option>
+              <option value="delivered">Delivered</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>From Date</label>
+            <input type="date" id="filterFromDate" onchange="applyFilters()">
+          </div>
+
+          <div class="filter-group">
+            <label>To Date</label>
+            <input type="date" id="filterToDate" onchange="applyFilters()">
+          </div>
+        </div>
+
+        <div class="filters-actions-bar">
+          <span style="font-size:13px; color:var(--text-muted);" id="filteredCountLabel">Showing 0 events</span>
+          <div style="display:flex; gap:10px;">
+            <button class="role-tab-btn" onclick="resetFilters()">Reset</button>
+            <button class="btn-export-csv" onclick="exportToCsv()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              <span>Export CSV</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- History Table -->
+      <section class="table-card">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Order #</th>
+              <th>Customer</th>
+              <th>Stage</th>
+              <th>Action</th>
+              <th>Assigned Staff</th>
+              <th>Recorded By</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <tr><td colspan="8" style="text-align:center; padding:32px; color:var(--text-muted);">Loading audit log...</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="bottom-bar">
+    <a href="/index.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="/orders.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+      <span>Orders</span>
+    </a>
+    <a href="/new-order.html" class="bottom-nav-item">
+      <div class="bottom-nav-fab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </div>
+      <span>New</span>
+    </a>
+    <a href="/customers.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+      <span>Clients</span>
+    </a>
+    <a href="/notifications.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+      <span>Alerts</span>
+    </a>
+  </nav>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+  <script>
+    /* ===== SHARED: SUPABASE CLIENT CONFIG ===== */
+    const SUPABASE_URL = "https://ajapvxdpxifdhvvszuhp.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqYXB2eGRweGlmZGh2dnN6dWhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU3ODk5NTMsImV4cCI6MjA4MTM2NTk1M30.iC9U-MQC6VYZNXd_RugA6_hxZwrhYRsapffOYDCikio";
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true }
+    });
+
+    let rawHistory = [];
+    let currentFiltered = [];
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast-card';
+      toast.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span>${escapeHtml(message)}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.2s ease';
+        setTimeout(() => toast.remove(), 200);
+      }, 3500);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('drawerOverlay').classList.toggle('open');
+    }
+
+    async function initAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        window.location.replace('/login.html?redirect=' + encodeURIComponent(window.location.pathname));
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      if (profile && !profile.is_active) {
+        await supabase.auth.signOut();
+        window.location.replace('/login.html');
+        return;
+      }
+
+      document.getElementById('userNameLabel').textContent = (profile && profile.full_name) || session.user.email.split('@')[0];
+      document.getElementById('userRoleBadge').textContent = ((profile && profile.role) || 'manager').toUpperCase();
+
+      document.getElementById('logoutBtn').addEventListener('click', async () => {
+        await supabase.auth.signOut();
+        window.location.replace('/login.html');
+      });
+
+      await fetchHistory();
+    }
+
+    async function fetchHistory() {
+      try {
+        const { data, error } = await supabase
+          .from('order_history')
+          .select(`
+            id, order_id, stage, action, employee_name, actor_name, details, created_at,
+            orders (order_no, garment_type, customers (name))
+          `)
+          .order('created_at', { ascending: false })
+          .limit(200);
+
+        if (error) throw error;
+        rawHistory = data || [];
+        applyFilters();
+      } catch (err) {
+        showToast('Error loading history: ' + err.message, 'error');
+      }
+    }
+
+    function applyFilters() {
+      const q = document.getElementById('filterSearch').value.trim().toLowerCase();
+      const stage = document.getElementById('filterStage').value;
+      const action = document.getElementById('filterAction').value;
+      const fromDate = document.getElementById('filterFromDate').value;
+      const toDate = document.getElementById('filterToDate').value;
+
+      currentFiltered = rawHistory.filter(h => {
+        const orderNo = (h.orders && h.orders.order_no) ? h.orders.order_no.toLowerCase() : '';
+        const custName = (h.orders && h.orders.customers && h.orders.customers.name) ? h.orders.customers.name.toLowerCase() : '';
+
+        if (q && !orderNo.includes(q) && !custName.includes(q)) return false;
+        if (stage && h.stage !== stage) return false;
+        if (action && h.action !== action) return false;
+
+        const dateStr = h.created_at.split('T')[0];
+        if (fromDate && dateStr < fromDate) return false;
+        if (toDate && dateStr > toDate) return false;
+
+        return true;
+      });
+
+      document.getElementById('filteredCountLabel').textContent = `Showing ${currentFiltered.length} of ${rawHistory.length} audit records`;
+      renderTable(currentFiltered);
+    }
+
+    function resetFilters() {
+      document.getElementById('filterSearch').value = '';
+      document.getElementById('filterStage').value = '';
+      document.getElementById('filterAction').value = '';
+      document.getElementById('filterFromDate').value = '';
+      document.getElementById('filterToDate').value = '';
+      applyFilters();
+    }
+
+    function renderTable(list) {
+      const tbody = document.getElementById('historyTableBody');
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:32px; color:var(--text-muted);">No activity matches the current filters.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map(item => {
+        const timeStr = new Date(item.created_at).toLocaleDateString([], {
+          year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+        const orderNo = item.orders ? item.orders.order_no : 'Order';
+        const custName = (item.orders && item.orders.customers) ? item.orders.customers.name : '-';
+        const detailsStr = item.details ? JSON.stringify(item.details) : '';
+
+        return `
+          <tr>
+            <td style="color:var(--text-muted); white-space:nowrap;">${timeStr}</td>
+            <td><a href="/order-detail.html?id=${item.order_id}" style="font-weight:700; color:var(--navy-primary); text-decoration:none;">${escapeHtml(orderNo)}</a></td>
+            <td>${escapeHtml(custName)}</td>
+            <td style="text-transform:capitalize;">${escapeHtml(item.stage || '-')}</td>
+            <td><span class="action-tag ${escapeHtml(item.action)}">${escapeHtml(item.action)}</span></td>
+            <td>${escapeHtml(item.employee_name || '-')}</td>
+            <td><strong>${escapeHtml(item.actor_name || 'Staff')}</strong></td>
+            <td style="font-size:11px; color:#475569; max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHtml(detailsStr)}">
+              ${escapeHtml(detailsStr)}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // CSV Export
+    function exportToCsv() {
+      if (currentFiltered.length === 0) {
+        showToast('No records to export', 'error');
+        return;
+      }
+
+      const headers = ['Timestamp', 'Order No', 'Customer Name', 'Stage', 'Action', 'Assigned Staff', 'Actor', 'Details'];
+      const rows = currentFiltered.map(item => [
+        `"${item.created_at}"`,
+        `"${item.orders ? item.orders.order_no : ''}"`,
+        `"${(item.orders && item.orders.customers) ? item.orders.customers.name : ''}"`,
+        `"${item.stage || ''}"`,
+        `"${item.action || ''}"`,
+        `"${item.employee_name || ''}"`,
+        `"${item.actor_name || ''}"`,
+        `"${JSON.stringify(item.details || {}).replace(/"/g, '""')}"`
+      ]);
+
+      const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `iqbal-fashion-history-${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Exported audit history to CSV', 'success');
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(console.warn);
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', initAuth);
+  </script>
+</body>
+</html>

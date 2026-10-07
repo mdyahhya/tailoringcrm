@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Iqbal Fashion Tailoring CRM</title>
+  <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#12306B">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Iqbal CRM">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png">
+  <style>
+    /* ==============================================================================
+       DESIGN SYSTEM: PURE WHITE, BLACK, NAVY ACCENT (#12306B), MUTED STATUSES
+       ============================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    :root {
+      --bg-white: #FFFFFF;
+      --bg-canvas: #F8FAFC;
+      --text-black: #0A0A0A;
+      --text-muted: #64748B;
+      --border-light: #E2E8F0;
+      --navy-primary: #12306B;
+      --navy-hover: #1E3A8A;
+      --navy-light: #EFF6FF;
+      --sidebar-width: 260px;
+      --topbar-height: 64px;
+      --bottom-bar-height: 64px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --success: #16A34A;
+      --success-bg: #F0FDF4;
+      --warning: #D97706;
+      --warning-bg: #FFFBEB;
+      --danger: #DC2626;
+      --danger-bg: #FEF2F2;
+      --info: #2563EB;
+      --info-bg: #EFF6FF;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--text-black);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* ===== SIDEBAR STYLING ===== */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--bg-white);
+      border-right: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .sidebar-brand {
+      height: var(--topbar-height);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .brand-badge {
+      width: 36px;
+      height: 36px;
+      background-color: var(--navy-primary);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .brand-meta {
+      display: flex;
+      flex-direction: column;
+    }
+    .brand-name {
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -0.01em;
+      color: var(--text-black);
+    }
+    .brand-sub {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .nav-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94A3B8;
+      padding: 8px 12px 4px;
+      margin-top: 8px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 500;
+      color: #334155;
+      text-decoration: none;
+      transition: background-color 0.15s ease, color 0.15s ease;
+      min-height: 44px;
+    }
+    .nav-item svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      stroke-width: 1.75;
+    }
+    .nav-item:hover {
+      background-color: #F1F5F9;
+      color: var(--navy-primary);
+    }
+    .nav-item.active {
+      background-color: var(--navy-primary);
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+    .nav-item.active svg {
+      color: #FFFFFF;
+    }
+    .sidebar-user {
+      padding: 16px;
+      border-top: 1px solid var(--border-light);
+      background-color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .user-name {
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .user-role-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: capitalize;
+      color: var(--navy-primary);
+    }
+    .btn-logout {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 6px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-logout:hover {
+      background-color: #FEE2E2;
+      color: var(--danger);
+    }
+
+    /* ===== MAIN CONTENT & TOPBAR ===== */
+    .app-main {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .topbar {
+      height: var(--topbar-height);
+      background-color: var(--bg-white);
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-black);
+      padding: 8px;
+      cursor: pointer;
+      min-height: 44px;
+      min-width: 44px;
+      align-items: center;
+      justify-content: center;
+    }
+    .page-heading h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text-black);
+    }
+    .page-heading p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      padding: 6px 10px;
+      background-color: var(--bg-canvas);
+      border-radius: 20px;
+      border: 1px solid var(--border-light);
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--success);
+    }
+    .status-dot.reconnecting {
+      background-color: var(--warning);
+      animation: pulse 1s infinite alternate;
+    }
+    @keyframes pulse {
+      from { opacity: 0.4; }
+      to { opacity: 1; }
+    }
+    .btn-topbar {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      color: var(--text-black);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+      min-height: 38px;
+    }
+    .btn-topbar:hover {
+      background-color: #F1F5F9;
+    }
+    .btn-topbar.spinning svg {
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .notification-bell-btn {
+      position: relative;
+      background: none;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 8px;
+      color: var(--text-black);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      min-height: 38px;
+      min-width: 38px;
+    }
+    .badge-count {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background-color: var(--danger);
+      color: #FFFFFF;
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 1px 5px;
+      min-width: 16px;
+      text-align: center;
+      display: none;
+    }
+
+    /* ===== CONTENT AREA ===== */
+    .content-body {
+      padding: 24px;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Header Action Bar */
+    .dashboard-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .greeting-title {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .greeting-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .btn-primary-action {
+      background-color: var(--navy-primary);
+      color: #FFFFFF;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background-color 0.15s ease;
+      min-height: 44px;
+    }
+    .btn-primary-action:hover {
+      background-color: var(--navy-hover);
+    }
+
+    /* Metric Cards Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .metric-card {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .metric-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .metric-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .metric-value {
+      font-size: 28px;
+      font-weight: 700;
+      margin-top: 6px;
+      color: var(--text-black);
+    }
+    .metric-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .metric-icon-wrap {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .metric-icon-wrap.navy { background-color: #EFF6FF; color: var(--navy-primary); }
+    .metric-icon-wrap.amber { background-color: var(--warning-bg); color: var(--warning); }
+    .metric-icon-wrap.green { background-color: var(--success-bg); color: var(--success); }
+    .metric-icon-wrap.red { background-color: var(--danger-bg); color: var(--danger); }
+
+    /* Pipeline Stage Stepper Overview */
+    .pipeline-section {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .section-title-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-black);
+    }
+    .section-action-link {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--navy-primary);
+      text-decoration: none;
+    }
+    .pipeline-stepper {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      position: relative;
+    }
+    .stage-step-card {
+      background-color: #F8FAFC;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 14px 12px;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text-black);
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+    }
+    .stage-step-card:hover {
+      border-color: var(--navy-primary);
+      background-color: #FFFFFF;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .step-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background-color: #E2E8F0;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .step-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1E293B;
+    }
+    .step-count {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy-primary);
+    }
+    .step-count-label {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Attention & Feed Two-Column Grid */
+    .two-column-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 1024px) {
+      .two-column-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .card-panel {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .card-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-light);
+      margin-bottom: 16px;
+    }
+    .panel-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-black);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .panel-count-pill {
+      font-size: 11px;
+      font-weight: 700;
+      background-color: var(--danger-bg);
+      color: var(--danger);
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
+    /* List items inside panels */
+    .attention-list, .activity-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+      max-height: 420px;
+    }
+    .attention-item {
+      border: 1px solid var(--border-light);
+      border-left: 4px solid var(--danger);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background-color: #FFFFFF;
+      transition: background-color 0.1s ease;
+    }
+    .attention-item.ready-item {
+      border-left-color: var(--warning);
+    }
+    .attention-item:hover {
+      background-color: #F8FAFC;
+    }
+    .attention-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .attention-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-black);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .attention-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .attention-chip {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-top: 4px;
+    }
+    .chip-overdue {
+      background-color: var(--danger-bg);
+      color: var(--danger);
+    }
+    .chip-ready {
+      background-color: var(--warning-bg);
+      color: var(--warning);
+    }
+    .btn-view-order {
+      background-color: #F1F5F9;
+      color: var(--navy-primary);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-view-order:hover {
+      background-color: var(--navy-primary);
+      color: #FFFFFF;
+    }
+
+    /* Activity Feed Items */
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #F1F5F9;
+    }
+    .activity-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .activity-icon-bullet {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background-color: var(--navy-light);
+      color: var(--navy-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .activity-body {
+      flex: 1;
+      min-width: 0;
+      font-size: 13px;
+    }
+    .activity-text {
+      color: #1E293B;
+      line-height: 1.4;
+    }
+    .activity-text strong {
+      color: var(--navy-primary);
+    }
+    .activity-time {
+      font-size: 11px;
+      color: #94A3B8;
+      margin-top: 2px;
+    }
+
+    /* Empty States */
+    .empty-state {
+      padding: 32px 16px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--text-muted);
+    }
+    .empty-state svg {
+      width: 40px;
+      height: 40px;
+      margin-bottom: 8px;
+      stroke-width: 1.5;
+      color: #94A3B8;
+    }
+    .empty-state p {
+      font-size: 13px;
+    }
+
+    /* ===== MOBILE BOTTOM BAR ===== */
+    .bottom-bar {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--bottom-bar-height);
+      background-color: #FFFFFF;
+      border-top: 1px solid var(--border-light);
+      z-index: 100;
+      justify-content: space-around;
+      align-items: center;
+    }
+    .bottom-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: #64748B;
+      font-size: 10px;
+      font-weight: 500;
+      gap: 2px;
+      flex: 1;
+      height: 100%;
+    }
+    .bottom-nav-item svg {
+      width: 22px;
+      height: 22px;
+      stroke-width: 1.75;
+    }
+    .bottom-nav-item.active {
+      color: var(--navy-primary);
+      font-weight: 700;
+    }
+    .bottom-nav-fab {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background-color: var(--navy-primary);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(18, 48, 107, 0.3);
+      margin-top: -12px;
+    }
+    .bottom-nav-fab svg {
+      width: 24px;
+      height: 24px;
+      color: #FFFFFF;
+    }
+
+    /* Drawer overlay for mobile */
+    .drawer-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.4);
+      z-index: 99;
+    }
+
+    /* Toast Notification Element */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .toast-card {
+      pointer-events: auto;
+      background-color: #0A0A0A;
+      color: #FFFFFF;
+      padding: 12px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      animation: slideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      max-width: 360px;
+    }
+    @keyframes slideIn {
+      from { transform: translateY(10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .drawer-overlay.open {
+        display: block;
+      }
+      .app-main {
+        margin-left: 0;
+        padding-bottom: var(--bottom-bar-height);
+      }
+      .menu-toggle {
+        display: flex;
+      }
+      .bottom-bar {
+        display: flex;
+      }
+      .content-body {
+        padding: 16px;
+        gap: 16px;
+      }
+      .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .topbar {
+        padding: 0 16px;
+      }
+      .status-text {
+        display: none;
+      }
+    }
+    @media (max-width: 480px) {
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+      .pipeline-stepper {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Drawer Overlay for Mobile -->
+  <div id="drawerOverlay" class="drawer-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Left Sidebar (Desktop & Mobile Drawer) -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-badge">IF</div>
+      <div class="brand-meta">
+        <span class="brand-name">Iqbal Fashion</span>
+        <span class="brand-sub">Tailoring CRM</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Core Pipeline</div>
+      <a href="/index.html" class="nav-item active">
+        <!-- Grid SVG -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="/orders.html" class="nav-item">
+        <!-- Clipboard List SVG -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 12h6M9 16h6"></path></svg>
+        <span>Orders Board</span>
+      </a>
+      <a href="/new-order.html" class="nav-item">
+        <!-- Plus Circle SVG -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+        <span>Book New Order</span>
+      </a>
+
+      <div class="nav-label">Management</div>
+      <a href="/customers.html" class="nav-item">
+        <!-- Users SVG -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <span>Customers</span>
+      </a>
+      <a href="/employees.html" class="nav-item">
+        <!-- User Check SVG -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+        <span>Tailor Staff</span>
+      </a>
+      <a href="/history.html" class="nav-item">
+        <!-- Clock Activity SVG -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <span>Activity Log</span>
+      </a>
+      <a href="/notifications.html" class="nav-item">
+        <!-- Bell SVG -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <span>Notifications</span>
+      </a>
+
+      <div class="nav-label">System</div>
+      <a href="/settings.html" class="nav-item">
+        <!-- Settings Gear SVG -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span>Settings & PWA</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-info">
+        <span class="user-name" id="userNameLabel">Loading...</span>
+        <span class="user-role-badge" id="userRoleBadge">Staff</span>
+      </div>
+      <button class="btn-logout" id="logoutBtn" title="Sign Out">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- App Main Content Container -->
+  <div class="app-main">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <div class="page-heading">
+          <h1>Shop Dashboard</h1>
+          <p id="lastUpdatedLabel">Updated just now</p>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <!-- Live Connection Indicator -->
+        <div class="status-indicator">
+          <span class="status-dot" id="connectionDot"></span>
+          <span class="status-text" id="connectionText">Connected</span>
+        </div>
+
+        <!-- Refresh Button -->
+        <button class="btn-topbar" id="refreshBtn" onclick="fetchDashboardData(true)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          <span>Refresh</span>
+        </button>
+
+        <!-- Notification Bell -->
+        <a href="/notifications.html" class="notification-bell-btn" title="View Notifications">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          <span class="badge-count" id="unreadBadge">0</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Main Dashboard Body -->
+    <main class="content-body">
+      <!-- Greeting and Quick Book Action -->
+      <div class="dashboard-header-bar">
+        <div>
+          <h2 class="greeting-title" id="greetingHeader">Welcome back</h2>
+          <p class="greeting-sub">Track active garments through measurement, cutting, stitching, and finishing.</p>
+        </div>
+        <a href="/new-order.html" class="btn-primary-action">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span>Book New Order</span>
+        </a>
+      </div>
+
+      <!-- Metrics Cards Grid -->
+      <section class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-info">
+            <span class="metric-label">In Pipeline</span>
+            <span class="metric-value" id="valInPipeline">0</span>
+            <span class="metric-sub">Active tailoring work</span>
+          </div>
+          <div class="metric-icon-wrap navy">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-info">
+            <span class="metric-label">Ready for Pickup</span>
+            <span class="metric-value" id="valReady">0</span>
+            <span class="metric-sub">Finished garments</span>
+          </div>
+          <div class="metric-icon-wrap amber">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-info">
+            <span class="metric-label">Delivered Today</span>
+            <span class="metric-value" id="valDeliveredToday">0</span>
+            <span class="metric-sub">Handed to customers</span>
+          </div>
+          <div class="metric-icon-wrap green">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"></path></svg>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-info">
+            <span class="metric-label">Needs Attention</span>
+            <span class="metric-value" id="valAttention">0</span>
+            <span class="metric-sub">Overdue or pending pickup</span>
+          </div>
+          <div class="metric-icon-wrap red">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pipeline Overview Stepper -->
+      <section class="pipeline-section">
+        <div class="section-title-wrap">
+          <h3 class="section-title">Tailoring Pipeline Overview</h3>
+          <a href="/orders.html" class="section-action-link">View Orders Board &rarr;</a>
+        </div>
+        <div class="pipeline-stepper" id="pipelineStepper">
+          <!-- Stage Cards populated dynamically -->
+          <a href="/orders.html?stage=measurement" class="stage-step-card">
+            <div class="step-badge">1</div>
+            <span class="step-title">Measurement</span>
+            <span class="step-count" id="countMeasurement">0</span>
+            <span class="step-count-label">garments</span>
+          </a>
+          <a href="/orders.html?stage=washing" class="stage-step-card">
+            <div class="step-badge">2</div>
+            <span class="step-title">Washing</span>
+            <span class="step-count" id="countWashing">0</span>
+            <span class="step-count-label">garments</span>
+          </a>
+          <a href="/orders.html?stage=cutting" class="stage-step-card">
+            <div class="step-badge">3</div>
+            <span class="step-title">Cutting</span>
+            <span class="step-count" id="countCutting">0</span>
+            <span class="step-count-label">garments</span>
+          </a>
+          <a href="/orders.html?stage=stitching" class="stage-step-card">
+            <div class="step-badge">4</div>
+            <span class="step-title">Stitching</span>
+            <span class="step-count" id="countStitching">0</span>
+            <span class="step-count-label">garments</span>
+          </a>
+          <a href="/orders.html?stage=finishing" class="stage-step-card">
+            <div class="step-badge">5</div>
+            <span class="step-title">Finishing</span>
+            <span class="step-count" id="countFinishing">0</span>
+            <span class="step-count-label">garments</span>
+          </a>
+          <a href="/orders.html?stage=ready" class="stage-step-card">
+            <div class="step-badge">6</div>
+            <span class="step-title">Ready</span>
+            <span class="step-count" id="countReady">0</span>
+            <span class="step-count-label">garments</span>
+          </a>
+          <a href="/orders.html?stage=delivered" class="stage-step-card">
+            <div class="step-badge">7</div>
+            <span class="step-title">Delivered</span>
+            <span class="step-count" id="countDelivered">0</span>
+            <span class="step-count-label">completed</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Two-Column Grid: Needs Attention & Live Activity Feed -->
+      <div class="two-column-grid">
+        <!-- Needs Attention Panel -->
+        <div class="card-panel">
+          <div class="card-panel-header">
+            <div class="panel-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" color="var(--danger)"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <span>Needs Attention</span>
+            </div>
+            <span class="panel-count-pill" id="attentionPill">0 orders</span>
+          </div>
+
+          <div class="attention-list" id="attentionList">
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+              <p>Everything is on schedule! No overdue orders.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Activity Feed Panel -->
+        <div class="card-panel">
+          <div class="card-panel-header">
+            <div class="panel-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" color="var(--navy-primary)"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+              <span>Recent Activity Feed</span>
+            </div>
+            <a href="/history.html" class="section-action-link">View All</a>
+          </div>
+
+          <div class="activity-feed" id="activityFeed">
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+              <p>No activity recorded yet.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Mobile Bottom Action Bar -->
+  <nav class="bottom-bar">
+    <a href="/index.html" class="bottom-nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="/orders.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+      <span>Orders</span>
+    </a>
+    <a href="/new-order.html" class="bottom-nav-item">
+      <div class="bottom-nav-fab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </div>
+      <span>New</span>
+    </a>
+    <a href="/customers.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+      <span>Clients</span>
+    </a>
+    <a href="/notifications.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+      <span>Alerts</span>
+    </a>
+  </nav>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Supabase Client CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+  <script>
+    /* ===== SHARED: SUPABASE CLIENT CONFIG ===== */
+    const SUPABASE_URL = "https://ajapvxdpxifdhvvszuhp.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqYXB2eGRweGlmZGh2dnN6dWhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU3ODk5NTMsImV4cCI6MjA4MTM2NTk1M30.iC9U-MQC6VYZNXd_RugA6_hxZwrhYRsapffOYDCikio";
+    const VAPID_PUBLIC_KEY = "BIHD9xC9bGzRyYITKivlmj0ePMBYgihxBp2n6r6alspYH-Y1hsvkGncwE3p_luJTOGew2zDNwzlGykR_jLO4CbA";
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true }
+    });
+
+    let currentUser = null;
+    let currentProfile = null;
+
+    // Toast Helper
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast-card';
+      toast.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span>${escapeHtml(message)}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.2s ease';
+        setTimeout(() => toast.remove(), 200);
+      }, 3500);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // Web Audio Chime on Realtime Notifications
+    function playNotificationChime() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.1); // A5
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.35);
+      } catch (e) {
+        // AudioContext might be restricted until user gesture
+      }
+    }
+
+    // Sidebar Toggle for Mobile Drawer
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('drawerOverlay');
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('open');
+    }
+
+    // Session Verification Guard
+    async function initAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        window.location.replace('/login.html?redirect=' + encodeURIComponent(window.location.pathname));
+        return;
+      }
+      currentUser = session.user;
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', currentUser.id)
+        .single();
+
+      if (profile && !profile.is_active) {
+        await supabase.auth.signOut();
+        window.location.replace('/login.html');
+        return;
+      }
+
+      currentProfile = profile;
+      const userName = (profile && profile.full_name) || currentUser.email.split('@')[0];
+      const userRole = (profile && profile.role) || 'manager';
+
+      document.getElementById('userNameLabel').textContent = userName;
+      document.getElementById('userRoleBadge').textContent = userRole.toUpperCase();
+      document.getElementById('greetingHeader').textContent = `Welcome back, ${userName}`;
+
+      document.getElementById('logoutBtn').addEventListener('click', async () => {
+        await supabase.auth.signOut();
+        window.location.replace('/login.html');
+      });
+
+      // Load initial dashboard data
+      fetchDashboardData();
+      fetchUnreadNotificationsCount();
+      setupRealtimeSubscriptions();
+    }
+
+    // Fetch Unread Notification Count
+    async function fetchUnreadNotificationsCount() {
+      const { count } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_read', false);
+
+      const badge = document.getElementById('unreadBadge');
+      if (count && count > 0) {
+        badge.textContent = count > 99 ? '99+' : count;
+        badge.style.display = 'block';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    // Fetch Main Dashboard Data
+    async function fetchDashboardData(manualRefresh = false) {
+      const refreshBtn = document.getElementById('refreshBtn');
+      if (manualRefresh && refreshBtn) {
+        refreshBtn.classList.add('spinning');
+      }
+
+      try {
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        // 1. Fetch Orders for pipeline & metric calculations
+        const { data: orders, error: ordersErr } = await supabase
+          .from('orders')
+          .select(`
+            id, order_no, garment_type, quantity, current_stage, status, expected_delivery_date, delivered_at,
+            customers (id, name, phone),
+            order_stages (stage, status, estimated_date, employee_name_snapshot)
+          `)
+          .order('created_at', { ascending: false });
+
+        if (ordersErr) throw ordersErr;
+
+        // 2. Fetch Recent Activities from order_history
+        const { data: history, error: historyErr } = await supabase
+          .from('order_history')
+          .select(`
+            id, stage, action, employee_name, actor_name, details, created_at,
+            orders (order_no, garment_type, customers(name))
+          `)
+          .order('created_at', { ascending: false })
+          .limit(10);
+
+        if (historyErr) throw historyErr;
+
+        renderMetrics(orders || [], todayStr);
+        renderPipelineCounts(orders || []);
+        renderAttentionList(orders || [], todayStr);
+        renderActivityFeed(history || []);
+
+        document.getElementById('lastUpdatedLabel').textContent = 'Updated ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        if (manualRefresh) showToast('Dashboard updated with live data', 'success');
+
+      } catch (err) {
+        console.error('Error fetching dashboard:', err);
+        showToast('Error refreshing data: ' + err.message, 'error');
+      } finally {
+        if (refreshBtn) refreshBtn.classList.remove('spinning');
+      }
+    }
+
+    // Render Metrics
+    function renderMetrics(orders, todayStr) {
+      let inPipelineCount = 0;
+      let readyCount = 0;
+      let deliveredTodayCount = 0;
+      let attentionCount = 0;
+
+      for (const order of orders) {
+        if (order.status === 'in_progress') inPipelineCount++;
+        if (order.status === 'ready' || order.current_stage === 'ready') readyCount++;
+
+        // Delivered Today
+        if (order.status === 'delivered' && order.delivered_at) {
+          const delDate = new Date(order.delivered_at).toISOString().split('T')[0];
+          if (delDate === todayStr) deliveredTodayCount++;
+        }
+
+        // Needs Attention: Overdue delivery date OR active stage overdue OR ready but unpicked > 2 days
+        const isOverdue = order.status !== 'delivered' && order.expected_delivery_date && order.expected_delivery_date < todayStr;
+        const isReadyAttention = order.status === 'ready';
+        if (isOverdue || isReadyAttention) {
+          attentionCount++;
+        }
+      }
+
+      document.getElementById('valInPipeline').textContent = inPipelineCount;
+      document.getElementById('valReady').textContent = readyCount;
+      document.getElementById('valDeliveredToday').textContent = deliveredTodayCount;
+      document.getElementById('valAttention').textContent = attentionCount;
+      document.getElementById('attentionPill').textContent = `${attentionCount} orders`;
+    }
+
+    // Render Pipeline Stage Stepper Counts
+    function renderPipelineCounts(orders) {
+      const counts = {
+        measurement: 0,
+        washing: 0,
+        cutting: 0,
+        stitching: 0,
+        finishing: 0,
+        ready: 0,
+        delivered: 0
+      };
+
+      for (const order of orders) {
+        if (order.status === 'delivered') {
+          counts.delivered++;
+        } else if (order.current_stage && counts[order.current_stage] !== undefined) {
+          counts[order.current_stage]++;
+        }
+      }
+
+      document.getElementById('countMeasurement').textContent = counts.measurement;
+      document.getElementById('countWashing').textContent = counts.washing;
+      document.getElementById('countCutting').textContent = counts.cutting;
+      document.getElementById('countStitching').textContent = counts.stitching;
+      document.getElementById('countFinishing').textContent = counts.finishing;
+      document.getElementById('countReady').textContent = counts.ready;
+      document.getElementById('countDelivered').textContent = counts.delivered;
+    }
+
+    // Render Needs Attention List
+    function renderAttentionList(orders, todayStr) {
+      const listEl = document.getElementById('attentionList');
+      const attentionOrders = [];
+
+      for (const order of orders) {
+        if (order.status === 'delivered') continue;
+
+        let reason = null;
+        let isDanger = false;
+
+        // Check if delivery date overdue
+        if (order.expected_delivery_date && order.expected_delivery_date < todayStr) {
+          reason = `Delivery overdue since ${order.expected_delivery_date}`;
+          isDanger = true;
+        } else if (order.status === 'ready' || order.current_stage === 'ready') {
+          reason = `Finished & ready for customer pickup`;
+          isDanger = false;
+        } else {
+          // Check if active stage is past estimated date
+          const activeStage = (order.order_stages || []).find(s => s.stage === order.current_stage && s.status === 'in_progress');
+          if (activeStage && activeStage.estimated_date && activeStage.estimated_date < todayStr) {
+            reason = `${activeStage.stage.toUpperCase()} overdue (Est: ${activeStage.estimated_date})`;
+            isDanger = true;
+          }
+        }
+
+        if (reason) {
+          attentionOrders.push({ order, reason, isDanger });
+        }
+      }
+
+      if (attentionOrders.length === 0) {
+        listEl.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+            <p>Everything is on schedule! No orders need immediate attention.</p>
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = attentionOrders.map(({ order, reason, isDanger }) => {
+        const custName = (order.customers && order.customers.name) ? order.customers.name : 'Unknown Customer';
+        const cardClass = isDanger ? 'attention-item' : 'attention-item ready-item';
+        const chipClass = isDanger ? 'attention-chip chip-overdue' : 'attention-chip chip-ready';
+
+        return `
+          <div class="${cardClass}">
+            <div class="attention-info">
+              <span class="attention-title">${escapeHtml(order.order_no)} &bull; ${escapeHtml(custName)}</span>
+              <span class="attention-meta">${escapeHtml(order.garment_type)} &bull; Current Step: <strong>${escapeHtml(order.current_stage)}</strong></span>
+              <div><span class="${chipClass}">${escapeHtml(reason)}</span></div>
+            </div>
+            <a href="/order-detail.html?id=${order.id}" class="btn-view-order">
+              <span>View</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Render Activity Feed
+    function renderActivityFeed(historyList) {
+      const feedEl = document.getElementById('activityFeed');
+
+      if (!historyList || historyList.length === 0) {
+        feedEl.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+            <p>No activity recorded yet.</p>
+          </div>
+        `;
+        return;
+      }
+
+      feedEl.innerHTML = historyList.map(item => {
+        const orderNo = item.orders ? item.orders.order_no : 'Order';
+        const custName = (item.orders && item.orders.customers) ? item.orders.customers.name : '';
+        const actor = item.actor_name || 'Staff';
+        const employee = item.employee_name;
+        const timeAgo = formatTimeAgo(new Date(item.created_at));
+
+        let actionDesc = '';
+        if (item.action === 'created') {
+          actionDesc = `created new order <strong>${escapeHtml(orderNo)}</strong> for ${escapeHtml(custName)}.`;
+        } else if (item.action === 'started') {
+          actionDesc = `started <strong>${escapeHtml(item.stage)}</strong> on ${escapeHtml(orderNo)} assigned to ${escapeHtml(employee || 'staff')}.`;
+        } else if (item.action === 'completed') {
+          actionDesc = `completed <strong>${escapeHtml(item.stage)}</strong> on ${escapeHtml(orderNo)}.`;
+        } else if (item.action === 'skipped') {
+          actionDesc = `skipped <strong>${escapeHtml(item.stage)}</strong> on ${escapeHtml(orderNo)}.`;
+        } else if (item.action === 'reassigned') {
+          actionDesc = `reassigned <strong>${escapeHtml(item.stage)}</strong> on ${escapeHtml(orderNo)} to ${escapeHtml(employee || 'staff')}.`;
+        } else {
+          actionDesc = `updated ${escapeHtml(orderNo)} (${escapeHtml(item.action)}).`;
+        }
+
+        return `
+          <div class="activity-item">
+            <div class="activity-icon-bullet">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+            </div>
+            <div class="activity-body">
+              <div class="activity-text"><strong>${escapeHtml(actor)}</strong> ${actionDesc}</div>
+              <div class="activity-time">${timeAgo}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function formatTimeAgo(date) {
+      const seconds = Math.floor((new Date() - date) / 1000);
+      if (seconds < 60) return 'Just now';
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60) return `${minutes}m ago`;
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `${hours}h ago`;
+      const days = Math.floor(hours / 24);
+      return `${days}d ago`;
+    }
+
+    // Realtime Postgres Changes Subscription
+    function setupRealtimeSubscriptions() {
+      const channel = supabase.channel('dashboard-realtime')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, (payload) => {
+          fetchDashboardData();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'order_stages' }, (payload) => {
+          fetchDashboardData();
+        })
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'order_history' }, (payload) => {
+          fetchDashboardData();
+        })
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications' }, (payload) => {
+          fetchUnreadNotificationsCount();
+          playNotificationChime();
+          showToast(payload.new.title + ': ' + payload.new.body, 'info');
+        })
+        .subscribe((status) => {
+          const dot = document.getElementById('connectionDot');
+          const text = document.getElementById('connectionText');
+          if (status === 'SUBSCRIBED') {
+            dot.className = 'status-dot';
+            text.textContent = 'Connected';
+          } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+            dot.className = 'status-dot reconnecting';
+            text.textContent = 'Reconnecting...';
+          }
+        });
+
+      // Auto re-fetch on window focus / visibility change
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          fetchDashboardData();
+          fetchUnreadNotificationsCount();
+        }
+      });
+
+      // Auto re-fetch on online event
+      window.addEventListener('online', () => {
+        document.getElementById('connectionDot').className = 'status-dot';
+        document.getElementById('connectionText').textContent = 'Connected';
+        fetchDashboardData();
+      });
+
+      window.addEventListener('offline', () => {
+        document.getElementById('connectionDot').className = 'status-dot reconnecting';
+        document.getElementById('connectionText').textContent = 'Offline';
+      });
+    }
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch((err) => {
+          console.warn('SW registration:', err);
+        });
+      });
+    }
+
+    // Initialize Page
+    window.addEventListener('DOMContentLoaded', initAuth);
+  </script>
+</body>
+</html>

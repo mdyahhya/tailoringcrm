@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="14" fill="#12306B"/>
+  <circle cx="32" cy="32" r="25" fill="none" stroke="#FFFFFF" stroke-width="1.75" stroke-dasharray="3 2" opacity="0.4"/>
+  <!-- Elegant Tailoring Monogram "IF" -->
+  <text x="32" y="41" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="28" fill="#FFFFFF" text-anchor="middle" letter-spacing="-1">IF</text>
+  <path d="M42 46 L48 52" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+</svg>

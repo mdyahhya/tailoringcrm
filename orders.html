@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders Board & Pipeline | Iqbal Fashion CRM</title>
+  <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#12306B">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Iqbal CRM">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png">
+  <style>
+    /* ==============================================================================
+       DESIGN SYSTEM: PURE WHITE, BLACK, NAVY ACCENT (#12306B), MUTED STATUSES
+       ============================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    :root {
+      --bg-white: #FFFFFF;
+      --bg-canvas: #F8FAFC;
+      --text-black: #0A0A0A;
+      --text-muted: #64748B;
+      --border-light: #E2E8F0;
+      --navy-primary: #12306B;
+      --navy-hover: #1E3A8A;
+      --navy-light: #EFF6FF;
+      --sidebar-width: 260px;
+      --topbar-height: 64px;
+      --bottom-bar-height: 64px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --success: #16A34A;
+      --success-bg: #F0FDF4;
+      --warning: #D97706;
+      --warning-bg: #FFFBEB;
+      --danger: #DC2626;
+      --danger-bg: #FEF2F2;
+      --info: #2563EB;
+      --info-bg: #EFF6FF;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--text-black);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--bg-white);
+      border-right: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .sidebar-brand {
+      height: var(--topbar-height);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .brand-badge {
+      width: 36px;
+      height: 36px;
+      background-color: var(--navy-primary);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .brand-meta {
+      display: flex;
+      flex-direction: column;
+    }
+    .brand-name {
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -0.01em;
+      color: var(--text-black);
+    }
+    .brand-sub {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .nav-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94A3B8;
+      padding: 8px 12px 4px;
+      margin-top: 8px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 500;
+      color: #334155;
+      text-decoration: none;
+      transition: background-color 0.15s ease, color 0.15s ease;
+      min-height: 44px;
+    }
+    .nav-item svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      stroke-width: 1.75;
+    }
+    .nav-item:hover {
+      background-color: #F1F5F9;
+      color: var(--navy-primary);
+    }
+    .nav-item.active {
+      background-color: var(--navy-primary);
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+    .nav-item.active svg {
+      color: #FFFFFF;
+    }
+    .sidebar-user {
+      padding: 16px;
+      border-top: 1px solid var(--border-light);
+      background-color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .user-name {
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .user-role-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: capitalize;
+      color: var(--navy-primary);
+    }
+    .btn-logout {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 6px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-logout:hover {
+      background-color: #FEE2E2;
+      color: var(--danger);
+    }
+
+    /* ===== MAIN CONTENT & TOPBAR ===== */
+    .app-main {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .topbar {
+      height: var(--topbar-height);
+      background-color: var(--bg-white);
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-black);
+      padding: 8px;
+      cursor: pointer;
+      min-height: 44px;
+      min-width: 44px;
+      align-items: center;
+      justify-content: center;
+    }
+    .page-heading h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text-black);
+    }
+    .page-heading p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      padding: 6px 10px;
+      background-color: var(--bg-canvas);
+      border-radius: 20px;
+      border: 1px solid var(--border-light);
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--success);
+    }
+    .status-dot.reconnecting {
+      background-color: var(--warning);
+      animation: pulse 1s infinite alternate;
+    }
+    @keyframes pulse { from { opacity: 0.4; } to { opacity: 1; } }
+    .btn-topbar {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      color: var(--text-black);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+      min-height: 38px;
+    }
+    .btn-topbar:hover { background-color: #F1F5F9; }
+    .btn-topbar.spinning svg { animation: spin 0.8s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    .notification-bell-btn {
+      position: relative;
+      background: none;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 8px;
+      color: var(--text-black);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      min-height: 38px;
+      min-width: 38px;
+    }
+    .badge-count {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background-color: var(--danger);
+      color: #FFFFFF;
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 1px 5px;
+      min-width: 16px;
+      text-align: center;
+      display: none;
+    }
+
+    /* ===== CONTENT AREA ===== */
+    .content-body {
+      padding: 24px;
+      max-width: 1600px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Filter & Controls Bar */
+    .controls-card {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .controls-row-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .search-input-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 260px;
+      max-width: 440px;
+    }
+    .search-input-wrap svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      padding: 10px 14px 10px 38px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      background-color: #FFFFFF;
+      outline: none;
+      min-height: 42px;
+      transition: border-color 0.15s ease;
+    }
+    .search-input:focus {
+      border-color: var(--navy-primary);
+      box-shadow: 0 0 0 3px rgba(18, 48, 107, 0.1);
+    }
+    .view-toggle-wrap {
+      display: flex;
+      align-items: center;
+      background-color: #F1F5F9;
+      padding: 3px;
+      border-radius: var(--radius-sm);
+    }
+    .btn-view-toggle {
+      border: none;
+      background: none;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 36px;
+    }
+    .btn-view-toggle.active {
+      background-color: #FFFFFF;
+      color: var(--navy-primary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .filters-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .filter-select {
+      padding: 8px 12px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      color: var(--text-black);
+      background-color: #FFFFFF;
+      outline: none;
+      min-height: 38px;
+    }
+    .filter-select:focus {
+      border-color: var(--navy-primary);
+    }
+    .btn-reset-filters {
+      background: none;
+      border: none;
+      color: var(--navy-primary);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 6px 10px;
+    }
+
+    /* ===== KANBAN BOARD VIEW ===== */
+    .kanban-board {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 24px;
+      align-items: flex-start;
+      min-height: 600px;
+    }
+    .kanban-column {
+      flex: 0 0 300px;
+      background-color: #F1F5F9;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      max-height: 82vh;
+    }
+    .kanban-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #FFFFFF;
+      border-top-left-radius: var(--radius-md);
+      border-top-right-radius: var(--radius-md);
+    }
+    .column-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-black);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .column-count-badge {
+      font-size: 11px;
+      font-weight: 700;
+      background-color: #E2E8F0;
+      color: #334155;
+      padding: 2px 7px;
+      border-radius: 10px;
+    }
+    .kanban-cards-container {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    /* Order Card Component */
+    .order-card {
+      background-color: #FFFFFF;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      transition: all 0.15s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+    .order-card:hover {
+      border-color: var(--navy-primary);
+      box-shadow: 0 4px 12px rgba(18, 48, 107, 0.08);
+      transform: translateY(-1px);
+    }
+    .card-top-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .order-badge-no {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy-primary);
+      background-color: var(--navy-light);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .customer-name-heading {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-black);
+      margin-top: 2px;
+    }
+    .card-garment-meta {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .card-stage-worker {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #334155;
+      background-color: #F8FAFC;
+      padding: 6px 8px;
+      border-radius: 4px;
+      border: 1px solid #EEF2F6;
+    }
+    .card-stage-worker svg {
+      width: 14px;
+      height: 14px;
+      color: var(--navy-primary);
+    }
+    .card-footer-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+      border-top: 1px solid #F1F5F9;
+      padding-top: 8px;
+      margin-top: 4px;
+    }
+    .card-date-badge {
+      font-weight: 600;
+    }
+    .card-date-badge.overdue {
+      color: var(--danger);
+      background-color: var(--danger-bg);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+    .btn-quick-next {
+      background-color: #F8FAFC;
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--navy-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      margin-top: 4px;
+      transition: background-color 0.1s ease;
+    }
+    .btn-quick-next:hover {
+      background-color: var(--navy-primary);
+      color: #FFFFFF;
+    }
+
+    /* ===== TABLE LIST VIEW ===== */
+    .table-container {
+      display: none;
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .orders-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+    .orders-table th {
+      background-color: #F8FAFC;
+      padding: 12px 16px;
+      font-weight: 600;
+      color: #475569;
+      border-bottom: 1px solid var(--border-light);
+      white-space: nowrap;
+    }
+    .orders-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-black);
+    }
+    .orders-table tr:hover td {
+      background-color: #F8FAFC;
+    }
+    .table-link-btn {
+      color: var(--navy-primary);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 6px 10px;
+      background-color: #F1F5F9;
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .table-link-btn:hover {
+      background-color: var(--navy-primary);
+      color: #FFFFFF;
+    }
+
+    /* Stage Pill */
+    .stage-pill {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 12px;
+      text-transform: capitalize;
+    }
+    .stage-pill.measurement { background-color: #EFF6FF; color: #1D4ED8; }
+    .stage-pill.washing { background-color: #F0FDF4; color: #15803D; }
+    .stage-pill.cutting { background-color: #FEF3C7; color: #B45309; }
+    .stage-pill.stitching { background-color: #F3E8FF; color: #7E22CE; }
+    .stage-pill.finishing { background-color: #FCE7F3; color: #BE185D; }
+    .stage-pill.ready { background-color: #FFFBEB; color: #D97706; }
+    .stage-pill.delivered { background-color: #DCFCE7; color: #16A34A; }
+
+    /* Empty state inside columns */
+    .column-empty {
+      padding: 24px 12px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    /* Drawer overlay & bottom bar */
+    .drawer-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.4);
+      z-index: 99;
+    }
+    .bottom-bar {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--bottom-bar-height);
+      background-color: #FFFFFF;
+      border-top: 1px solid var(--border-light);
+      z-index: 100;
+      justify-content: space-around;
+      align-items: center;
+    }
+    .bottom-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: #64748B;
+      font-size: 10px;
+      font-weight: 500;
+      gap: 2px;
+      flex: 1;
+      height: 100%;
+    }
+    .bottom-nav-item svg { width: 22px; height: 22px; stroke-width: 1.75; }
+    .bottom-nav-item.active { color: var(--navy-primary); font-weight: 700; }
+    .bottom-nav-fab {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background-color: var(--navy-primary);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(18, 48, 107, 0.3);
+      margin-top: -12px;
+    }
+    .bottom-nav-fab svg { width: 24px; height: 24px; color: #FFFFFF; }
+
+    /* Toast */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .toast-card {
+      pointer-events: auto;
+      background-color: #0A0A0A;
+      color: #FFFFFF;
+      padding: 12px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      animation: slideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      max-width: 360px;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .drawer-overlay.open { display: block; }
+      .app-main { margin-left: 0; padding-bottom: var(--bottom-bar-height); }
+      .menu-toggle { display: flex; }
+      .bottom-bar { display: flex; }
+      .content-body { padding: 16px; }
+      .topbar { padding: 0 16px; }
+      .status-text { display: none; }
+      .kanban-column { flex: 0 0 280px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Overlay -->
+  <div id="drawerOverlay" class="drawer-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-badge">IF</div>
+      <div class="brand-meta">
+        <span class="brand-name">Iqbal Fashion</span>
+        <span class="brand-sub">Tailoring CRM</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Core Pipeline</div>
+      <a href="/index.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="/orders.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 12h6M9 16h6"></path></svg>
+        <span>Orders Board</span>
+      </a>
+      <a href="/new-order.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+        <span>Book New Order</span>
+      </a>
+
+      <div class="nav-label">Management</div>
+      <a href="/customers.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <span>Customers</span>
+      </a>
+      <a href="/employees.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+        <span>Tailor Staff</span>
+      </a>
+      <a href="/history.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <span>Activity Log</span>
+      </a>
+      <a href="/notifications.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <span>Notifications</span>
+      </a>
+
+      <div class="nav-label">System</div>
+      <a href="/settings.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span>Settings & PWA</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-info">
+        <span class="user-name" id="userNameLabel">Loading...</span>
+        <span class="user-role-badge" id="userRoleBadge">Staff</span>
+      </div>
+      <button class="btn-logout" id="logoutBtn" title="Sign Out">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Body -->
+  <div class="app-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <div class="page-heading">
+          <h1>Orders Pipeline</h1>
+          <p id="orderCountSummary">Loading orders...</p>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <div class="status-indicator">
+          <span class="status-dot" id="connectionDot"></span>
+          <span class="status-text" id="connectionText">Connected</span>
+        </div>
+
+        <button class="btn-topbar" id="refreshBtn" onclick="fetchOrders(true)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          <span>Refresh</span>
+        </button>
+
+        <a href="/notifications.html" class="notification-bell-btn" title="View Notifications">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          <span class="badge-count" id="unreadBadge">0</span>
+        </a>
+      </div>
+    </header>
+
+    <main class="content-body">
+      <!-- Search, Views, & Filter Controls -->
+      <section class="controls-card">
+        <div class="controls-row-top">
+          <div class="search-input-wrap">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search customer, phone, order # (IF-000...)" autocomplete="off">
+          </div>
+
+          <div class="view-toggle-wrap">
+            <button class="btn-view-toggle active" id="btnKanbanView" onclick="setViewMode('kanban')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="18" rx="1"></rect><rect x="14" y="3" width="7" height="18" rx="1"></rect></svg>
+              <span>Kanban</span>
+            </button>
+            <button class="btn-view-toggle" id="btnTableView" onclick="setViewMode('table')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+              <span>List Table</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="filters-row">
+          <select id="stageFilter" class="filter-select" onchange="applyFilters()">
+            <option value="">All Pipeline Stages</option>
+            <option value="measurement">Measurement</option>
+            <option value="washing">Washing</option>
+            <option value="cutting">Cutting</option>
+            <option value="stitching">Stitching</option>
+            <option value="finishing">Finishing</option>
+            <option value="ready">Ready for Pickup</option>
+            <option value="delivered">Delivered</option>
+          </select>
+
+          <select id="statusFilter" class="filter-select" onchange="applyFilters()">
+            <option value="">All Statuses</option>
+            <option value="in_progress">In Progress</option>
+            <option value="ready">Ready for Pickup</option>
+            <option value="delivered">Delivered</option>
+          </select>
+
+          <select id="employeeFilter" class="filter-select" onchange="applyFilters()">
+            <option value="">All Assigned Staff</option>
+          </select>
+
+          <button class="btn-reset-filters" onclick="resetFilters()">Reset Filters</button>
+        </div>
+      </section>
+
+      <!-- KANBAN BOARD CONTAINER -->
+      <div id="kanbanBoard" class="kanban-board">
+        <!-- Measurement Column -->
+        <div class="kanban-column" data-stage="measurement">
+          <div class="kanban-header">
+            <span class="column-title">
+              <span>Measurement</span>
+              <span class="column-count-badge" id="countCol-measurement">0</span>
+            </span>
+          </div>
+          <div class="kanban-cards-container" id="cards-measurement"></div>
+        </div>
+
+        <!-- Washing Column -->
+        <div class="kanban-column" data-stage="washing">
+          <div class="kanban-header">
+            <span class="column-title">
+              <span>Washing</span>
+              <span class="column-count-badge" id="countCol-washing">0</span>
+            </span>
+          </div>
+          <div class="kanban-cards-container" id="cards-washing"></div>
+        </div>
+
+        <!-- Cutting Column -->
+        <div class="kanban-column" data-stage="cutting">
+          <div class="kanban-header">
+            <span class="column-title">
+              <span>Cutting</span>
+              <span class="column-count-badge" id="countCol-cutting">0</span>
+            </span>
+          </div>
+          <div class="kanban-cards-container" id="cards-cutting"></div>
+        </div>
+
+        <!-- Stitching Column -->
+        <div class="kanban-column" data-stage="stitching">
+          <div class="kanban-header">
+            <span class="column-title">
+              <span>Stitching</span>
+              <span class="column-count-badge" id="countCol-stitching">0</span>
+            </span>
+          </div>
+          <div class="kanban-cards-container" id="cards-stitching"></div>
+        </div>
+
+        <!-- Finishing Column -->
+        <div class="kanban-column" data-stage="finishing">
+          <div class="kanban-header">
+            <span class="column-title">
+              <span>Finishing</span>
+              <span class="column-count-badge" id="countCol-finishing">0</span>
+            </span>
+          </div>
+          <div class="kanban-cards-container" id="cards-finishing"></div>
+        </div>
+
+        <!-- Ready Column -->
+        <div class="kanban-column" data-stage="ready">
+          <div class="kanban-header">
+            <span class="column-title">
+              <span>Ready for Pickup</span>
+              <span class="column-count-badge" id="countCol-ready">0</span>
+            </span>
+          </div>
+          <div class="kanban-cards-container" id="cards-ready"></div>
+        </div>
+
+        <!-- Delivered Column -->
+        <div class="kanban-column" data-stage="delivered">
+          <div class="kanban-header">
+            <span class="column-title">
+              <span>Delivered</span>
+              <span class="column-count-badge" id="countCol-delivered">0</span>
+            </span>
+          </div>
+          <div class="kanban-cards-container" id="cards-delivered"></div>
+        </div>
+      </div>
+
+      <!-- TABLE LIST CONTAINER -->
+      <div id="tableContainer" class="table-container">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>Order #</th>
+              <th>Customer</th>
+              <th>Phone</th>
+              <th>Garment & Material</th>
+              <th>Current Stage</th>
+              <th>Assigned Staff</th>
+              <th>Target Date</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            <tr>
+              <td colspan="9" style="text-align:center; padding: 32px; color: var(--text-muted);">
+                Loading orders list...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="bottom-bar">
+    <a href="/index.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="/orders.html" class="bottom-nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+      <span>Orders</span>
+    </a>
+    <a href="/new-order.html" class="bottom-nav-item">
+      <div class="bottom-nav-fab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </div>
+      <span>New</span>
+    </a>
+    <a href="/customers.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+      <span>Clients</span>
+    </a>
+    <a href="/notifications.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+      <span>Alerts</span>
+    </a>
+  </nav>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+  <script>
+    /* ===== SHARED: SUPABASE CLIENT CONFIG ===== */
+    const SUPABASE_URL = "https://ajapvxdpxifdhvvszuhp.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqYXB2eGRweGlmZGh2dnN6dWhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU3ODk5NTMsImV4cCI6MjA4MTM2NTk1M30.iC9U-MQC6VYZNXd_RugA6_hxZwrhYRsapffOYDCikio";
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true }
+    });
+
+    let rawOrders = [];
+    let allEmployees = [];
+    let currentViewMode = 'kanban';
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast-card';
+      toast.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span>${escapeHtml(message)}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.2s ease';
+        setTimeout(() => toast.remove(), 200);
+      }, 3500);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('drawerOverlay').classList.toggle('open');
+    }
+
+    function setViewMode(mode) {
+      currentViewMode = mode;
+      const kanbanEl = document.getElementById('kanbanBoard');
+      const tableEl = document.getElementById('tableContainer');
+      const btnKanban = document.getElementById('btnKanbanView');
+      const btnTable = document.getElementById('btnTableView');
+
+      if (mode === 'kanban') {
+        kanbanEl.style.display = 'flex';
+        tableEl.style.display = 'none';
+        btnKanban.classList.add('active');
+        btnTable.classList.remove('active');
+      } else {
+        kanbanEl.style.display = 'none';
+        tableEl.style.display = 'block';
+        btnKanban.classList.remove('active');
+        btnTable.classList.add('active');
+      }
+      applyFilters();
+    }
+
+    async function initAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        window.location.replace('/login.html?redirect=' + encodeURIComponent(window.location.pathname));
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      if (profile && !profile.is_active) {
+        await supabase.auth.signOut();
+        window.location.replace('/login.html');
+        return;
+      }
+
+      const userName = (profile && profile.full_name) || session.user.email.split('@')[0];
+      const userRole = (profile && profile.role) || 'manager';
+      document.getElementById('userNameLabel').textContent = userName;
+      document.getElementById('userRoleBadge').textContent = userRole.toUpperCase();
+
+      document.getElementById('logoutBtn').addEventListener('click', async () => {
+        await supabase.auth.signOut();
+        window.location.replace('/login.html');
+      });
+
+      // Check URL search parameters (e.g. ?stage=cutting)
+      const urlParams = new URLSearchParams(window.location.search);
+      const stageParam = urlParams.get('stage');
+      if (stageParam) {
+        const stageFilter = document.getElementById('stageFilter');
+        if (stageFilter) stageFilter.value = stageParam;
+      }
+
+      await loadStaffOptions();
+      await fetchOrders();
+      setupRealtime();
+    }
+
+    async function loadStaffOptions() {
+      const { data: employees } = await supabase
+        .from('employees')
+        .select('id, name')
+        .order('name');
+
+      allEmployees = employees || [];
+      const empSelect = document.getElementById('employeeFilter');
+      empSelect.innerHTML = '<option value="">All Assigned Staff</option>';
+      for (const emp of allEmployees) {
+        const opt = document.createElement('option');
+        opt.value = emp.name;
+        opt.textContent = emp.name;
+        empSelect.appendChild(opt);
+      }
+    }
+
+    async function fetchOrders(manual = false) {
+      const refreshBtn = document.getElementById('refreshBtn');
+      if (manual && refreshBtn) refreshBtn.classList.add('spinning');
+
+      try {
+        const { data: orders, error } = await supabase
+          .from('orders')
+          .select(`
+            id, order_no, garment_type, cloth_material, quantity, current_stage, status,
+            expected_delivery_date, created_at,
+            customers (id, name, phone),
+            order_stages (stage, status, employee_name_snapshot, estimated_date)
+          `)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        rawOrders = orders || [];
+        applyFilters();
+
+        if (manual) showToast('Orders updated from live database', 'success');
+      } catch (err) {
+        console.error('Fetch orders error:', err);
+        showToast('Error loading orders: ' + err.message, 'error');
+      } finally {
+        if (refreshBtn) refreshBtn.classList.remove('spinning');
+      }
+    }
+
+    // Filter Logic
+    function applyFilters() {
+      const query = document.getElementById('searchInput').value.trim().toLowerCase();
+      const stageFilter = document.getElementById('stageFilter').value;
+      const statusFilter = document.getElementById('statusFilter').value;
+      const empFilter = document.getElementById('employeeFilter').value;
+
+      const filtered = rawOrders.filter(o => {
+        const custName = (o.customers && o.customers.name) ? o.customers.name.toLowerCase() : '';
+        const custPhone = (o.customers && o.customers.phone) ? o.customers.phone.toLowerCase() : '';
+        const orderNo = (o.order_no || '').toLowerCase();
+        const garment = (o.garment_type || '').toLowerCase();
+
+        // Search text check
+        if (query) {
+          const matchSearch = custName.includes(query) || custPhone.includes(query) || orderNo.includes(query) || garment.includes(query);
+          if (!matchSearch) return false;
+        }
+
+        // Stage check
+        if (stageFilter && o.current_stage !== stageFilter) return false;
+
+        // Status check
+        if (statusFilter && o.status !== statusFilter) return false;
+
+        // Employee filter check
+        if (empFilter) {
+          const activeStage = (o.order_stages || []).find(s => s.stage === o.current_stage);
+          const emp = activeStage ? activeStage.employee_name_snapshot : '';
+          if (emp !== empFilter) return false;
+        }
+
+        return true;
+      });
+
+      document.getElementById('orderCountSummary').textContent = `Showing ${filtered.length} of ${rawOrders.length} orders`;
+
+      if (currentViewMode === 'kanban') {
+        renderKanban(filtered);
+      } else {
+        renderTable(filtered);
+      }
+    }
+
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('stageFilter').value = '';
+      document.getElementById('statusFilter').value = '';
+      document.getElementById('employeeFilter').value = '';
+      applyFilters();
+    }
+
+    // Debounced Search Input
+    let searchTimeout = null;
+    document.getElementById('searchInput').addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(applyFilters, 250);
+    });
+
+    // Render Kanban Columns
+    function renderKanban(orders) {
+      const stages = ['measurement', 'washing', 'cutting', 'stitching', 'finishing', 'ready', 'delivered'];
+      const containers = {};
+      const counts = {};
+
+      stages.forEach(stg => {
+        containers[stg] = document.getElementById(`cards-${stg}`);
+        containers[stg].innerHTML = '';
+        counts[stg] = 0;
+      });
+
+      const todayStr = new Date().toISOString().split('T')[0];
+
+      orders.forEach(order => {
+        const stg = order.status === 'delivered' ? 'delivered' : order.current_stage;
+        if (!containers[stg]) return;
+
+        counts[stg]++;
+
+        // Find active stage employee snapshot & target date
+        const stageObj = (order.order_stages || []).find(s => s.stage === stg);
+        const assignedEmp = (stageObj && stageObj.employee_name_snapshot) ? stageObj.employee_name_snapshot : 'Not Assigned';
+        const estDate = (stageObj && stageObj.estimated_date) ? stageObj.estimated_date : null;
+        const targetDate = estDate || order.expected_delivery_date;
+
+        const isOverdue = targetDate && targetDate < todayStr && order.status !== 'delivered';
+
+        const custName = (order.customers && order.customers.name) ? order.customers.name : 'Unknown';
+        const phone = (order.customers && order.customers.phone) ? order.customers.phone : '';
+
+        const card = document.createElement('div');
+        card.className = 'order-card';
+        card.innerHTML = `
+          <div class="card-top-line">
+            <span class="order-badge-no">${escapeHtml(order.order_no)}</span>
+            <span style="font-size:11px; color:#64748B;">Qty: ${order.quantity || 1}</span>
+          </div>
+          <div class="customer-name-heading">${escapeHtml(custName)}</div>
+          <div class="card-garment-meta">${escapeHtml(order.garment_type)}${order.cloth_material ? ' &bull; ' + escapeHtml(order.cloth_material) : ''}</div>
+          
+          <div class="card-stage-worker">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span>${escapeHtml(assignedEmp)}</span>
+          </div>
+
+          <div class="card-footer-meta">
+            <span>${targetDate ? `Due: <strong class="card-date-badge ${isOverdue ? 'overdue' : ''}">${escapeHtml(targetDate)}</strong>` : 'No date'}</span>
+            <span style="color:var(--navy-primary); font-weight:600;">Details &rarr;</span>
+          </div>
+        `;
+
+        card.addEventListener('click', () => {
+          window.location.href = `/order-detail.html?id=${order.id}`;
+        });
+
+        containers[stg].appendChild(card);
+      });
+
+      // Update Column Count Badges and Empty states
+      stages.forEach(stg => {
+        document.getElementById(`countCol-${stg}`).textContent = counts[stg];
+        if (counts[stg] === 0) {
+          containers[stg].innerHTML = `<div class="column-empty">No orders at this step</div>`;
+        }
+      });
+    }
+
+    // Render Table List
+    function renderTable(orders) {
+      const tbody = document.getElementById('ordersTableBody');
+      if (orders.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:32px; color:var(--text-muted);">No matching orders found.</td></tr>`;
+        return;
+      }
+
+      const todayStr = new Date().toISOString().split('T')[0];
+
+      tbody.innerHTML = orders.map(order => {
+        const custName = (order.customers && order.customers.name) ? order.customers.name : 'Unknown';
+        const phone = (order.customers && order.customers.phone) ? order.customers.phone : '-';
+        const stageObj = (order.order_stages || []).find(s => s.stage === order.current_stage);
+        const assignedEmp = (stageObj && stageObj.employee_name_snapshot) ? stageObj.employee_name_snapshot : 'Unassigned';
+        const targetDate = (stageObj && stageObj.estimated_date) || order.expected_delivery_date || '-';
+        const isOverdue = targetDate !== '-' && targetDate < todayStr && order.status !== 'delivered';
+
+        return `
+          <tr>
+            <td><strong style="color:var(--navy-primary);">${escapeHtml(order.order_no)}</strong></td>
+            <td><strong>${escapeHtml(custName)}</strong></td>
+            <td>${escapeHtml(phone)}</td>
+            <td>${escapeHtml(order.garment_type)} <small style="color:var(--text-muted);">(${escapeHtml(order.cloth_material || 'Self fabric')})</small></td>
+            <td><span class="stage-pill ${escapeHtml(order.current_stage)}">${escapeHtml(order.current_stage)}</span></td>
+            <td>${escapeHtml(assignedEmp)}</td>
+            <td><span class="${isOverdue ? 'card-date-badge overdue' : ''}">${escapeHtml(targetDate)}</span></td>
+            <td><strong>${escapeHtml(order.status.replace('_', ' '))}</strong></td>
+            <td>
+              <a href="/order-detail.html?id=${order.id}" class="table-link-btn">
+                <span>View</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </a>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Realtime Postgres Changes
+    function setupRealtime() {
+      supabase.channel('orders-realtime')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => fetchOrders())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'order_stages' }, () => fetchOrders())
+        .subscribe((status) => {
+          const dot = document.getElementById('connectionDot');
+          const text = document.getElementById('connectionText');
+          if (status === 'SUBSCRIBED') {
+            dot.className = 'status-dot';
+            text.textContent = 'Connected';
+          } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+            dot.className = 'status-dot reconnecting';
+            text.textContent = 'Reconnecting...';
+          }
+        });
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(console.warn);
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', initAuth);
+  </script>
+</body>
+</html>

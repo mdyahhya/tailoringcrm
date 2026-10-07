@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings & PWA | Iqbal Fashion CRM</title>
+  <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#12306B">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Iqbal CRM">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png">
+  <style>
+    /* ==============================================================================
+       DESIGN SYSTEM: PURE WHITE, BLACK, NAVY ACCENT (#12306B)
+       ============================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    :root {
+      --bg-white: #FFFFFF;
+      --bg-canvas: #F8FAFC;
+      --text-black: #0A0A0A;
+      --text-muted: #64748B;
+      --border-light: #E2E8F0;
+      --navy-primary: #12306B;
+      --navy-hover: #1E3A8A;
+      --navy-light: #EFF6FF;
+      --sidebar-width: 260px;
+      --topbar-height: 64px;
+      --bottom-bar-height: 64px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --success: #16A34A;
+      --success-bg: #F0FDF4;
+      --warning: #D97706;
+      --warning-bg: #FFFBEB;
+      --danger: #DC2626;
+      --danger-bg: #FEF2F2;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--text-black);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--bg-white);
+      border-right: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .sidebar-brand {
+      height: var(--topbar-height);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .brand-badge {
+      width: 36px;
+      height: 36px;
+      background-color: var(--navy-primary);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .brand-meta { display: flex; flex-direction: column; }
+    .brand-name { font-weight: 700; font-size: 15px; letter-spacing: -0.01em; color: var(--text-black); }
+    .brand-sub { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .sidebar-nav { flex: 1; overflow-y: auto; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
+    .nav-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #94A3B8; padding: 8px 12px 4px; margin-top: 8px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; color: #334155; text-decoration: none; min-height: 44px; }
+    .nav-item svg { width: 20px; height: 20px; flex-shrink: 0; stroke-width: 1.75; }
+    .nav-item:hover { background-color: #F1F5F9; color: var(--navy-primary); }
+    .nav-item.active { background-color: var(--navy-primary); color: #FFFFFF; font-weight: 600; }
+    .sidebar-user { padding: 16px; border-top: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
+    .user-info { display: flex; flex-direction: column; overflow: hidden; }
+    .user-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-role-badge { display: inline-block; font-size: 11px; font-weight: 600; text-transform: capitalize; color: var(--navy-primary); }
+    .btn-logout { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 6px; }
+
+    /* ===== MAIN CONTENT & TOPBAR ===== */
+    .app-main { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; min-width: 0; }
+    .topbar {
+      height: var(--topbar-height);
+      background-color: var(--bg-white);
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 16px; }
+    .menu-toggle { display: none; background: none; border: none; color: var(--text-black); padding: 8px; cursor: pointer; min-height: 44px; min-width: 44px; align-items: center; justify-content: center; }
+    .page-heading h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; color: var(--text-black); }
+    .page-heading p { font-size: 12px; color: var(--text-muted); }
+
+    .content-body {
+      padding: 24px;
+      max-width: 1000px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Section Cards */
+    .settings-section-card {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .section-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 12px;
+    }
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy-primary);
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #334155;
+    }
+    .form-group input, .form-group select {
+      padding: 10px 12px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      outline: none;
+      min-height: 42px;
+    }
+    .btn-save-sm {
+      background-color: var(--navy-primary);
+      color: #FFFFFF;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      align-self: flex-start;
+      min-height: 42px;
+    }
+    .btn-save-sm:hover { background-color: var(--navy-hover); }
+
+    /* PWA Install Area */
+    .pwa-install-banner {
+      background-color: #F8FAFC;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .pwa-status-badge {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+    .btn-install-app {
+      background-color: var(--navy-primary);
+      color: #FFFFFF;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+    }
+    .btn-install-app:hover { background-color: var(--navy-hover); }
+
+    /* Push Notification Box */
+    .push-panel {
+      background-color: #F8FAFC;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .push-actions-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-push-action {
+      background-color: #FFFFFF;
+      border: 1px solid var(--border-light);
+      color: var(--navy-primary);
+      border-radius: var(--radius-sm);
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 40px;
+    }
+    .btn-push-action:hover {
+      background-color: var(--navy-light);
+    }
+
+    /* User Management Table for Admin */
+    .admin-users-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+      margin-top: 10px;
+    }
+    .admin-users-table th {
+      background: #F8FAFC;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-light);
+      color: #475569;
+    }
+    .admin-users-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    /* Modal System */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1002;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: #FFFFFF;
+      border-radius: var(--radius-md);
+      max-width: 500px;
+      width: 100%;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-title { font-size: 18px; font-weight: 700; color: var(--text-black); }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px; }
+
+    /* iOS Step by Step Instructions in Modal */
+    .ios-step-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 12px;
+      background: #F8FAFC;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+    }
+    .ios-step-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--navy-primary);
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .ios-step-text {
+      font-size: 13px;
+      color: #1E293B;
+      line-height: 1.4;
+    }
+
+    /* Mobile bottom bar & toast */
+    .drawer-overlay { display: none; position: fixed; inset: 0; background-color: rgba(0,0,0,0.4); z-index: 99; }
+    .bottom-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: var(--bottom-bar-height); background-color: #FFFFFF; border-top: 1px solid var(--border-light); z-index: 100; justify-content: space-around; align-items: center; }
+    .bottom-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #64748B; font-size: 10px; font-weight: 500; gap: 2px; flex: 1; height: 100%; }
+    .bottom-nav-item svg { width: 22px; height: 22px; stroke-width: 1.75; }
+    .bottom-nav-item.active { color: var(--navy-primary); font-weight: 700; }
+    .bottom-nav-fab { width: 44px; height: 44px; border-radius: 50%; background-color: var(--navy-primary); color: #FFFFFF; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(18, 48, 107, 0.3); margin-top: -12px; }
+    .bottom-nav-fab svg { width: 24px; height: 24px; color: #FFFFFF; }
+
+    .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+    .toast-card { pointer-events: auto; background-color: #0A0A0A; color: #FFFFFF; padding: 12px 18px; border-radius: var(--radius-sm); font-size: 13px; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .drawer-overlay.open { display: block; }
+      .app-main { margin-left: 0; padding-bottom: var(--bottom-bar-height); }
+      .menu-toggle { display: flex; }
+      .bottom-bar { display: flex; }
+      .content-body { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="drawerOverlay" class="drawer-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-badge">IF</div>
+      <div class="brand-meta">
+        <span class="brand-name">Iqbal Fashion</span>
+        <span class="brand-sub">Tailoring CRM</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Core Pipeline</div>
+      <a href="/index.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="/orders.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 12h6M9 16h6"></path></svg>
+        <span>Orders Board</span>
+      </a>
+      <a href="/new-order.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+        <span>Book New Order</span>
+      </a>
+
+      <div class="nav-label">Management</div>
+      <a href="/customers.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <span>Customers</span>
+      </a>
+      <a href="/employees.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+        <span>Tailor Staff</span>
+      </a>
+      <a href="/history.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <span>Activity Log</span>
+      </a>
+      <a href="/notifications.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <span>Notifications</span>
+      </a>
+
+      <div class="nav-label">System</div>
+      <a href="/settings.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span>Settings & PWA</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-info">
+        <span class="user-name" id="userNameLabel">Loading...</span>
+        <span class="user-role-badge" id="userRoleBadge">Staff</span>
+      </div>
+      <button class="btn-logout" id="logoutBtn" title="Sign Out">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main View -->
+  <div class="app-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <div class="page-heading">
+          <h1>CRM Settings & Installation</h1>
+          <p>PWA install, push notifications, and shop preferences</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="content-body">
+      <!-- 1. PWA INSTALL APP CARD -->
+      <section class="settings-section-card">
+        <div class="section-title-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span class="section-title">Install App (PWA)</span>
+        </div>
+
+        <div class="pwa-install-banner">
+          <div>
+            <div style="font-size:15px; font-weight:700; color:var(--text-black);" id="installStatusTitle">Install Iqbal Fashion CRM</div>
+            <p style="font-size:13px; color:var(--text-muted); margin-top:2px;" id="installStatusDesc">
+              Install this app on your desktop, Android phone, or iPhone for instant access and offline caching.
+            </p>
+          </div>
+          <button class="btn-install-app" id="btnInstallApp" onclick="handleInstallClick()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span id="installBtnText">Install App</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- 2. PUSH NOTIFICATIONS CONFIGURATION -->
+      <section class="settings-section-card">
+        <div class="section-title-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          <span class="section-title">Background Web Push Notifications</span>
+        </div>
+
+        <div class="push-panel">
+          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+            <div>
+              <div style="font-size:14px; font-weight:600;">Browser Notification Permission</div>
+              <div style="font-size:12px; color:var(--text-muted);" id="pushPermissionStatusText">Checking permission...</div>
+            </div>
+            <div class="push-actions-row">
+              <button class="btn-install-app" id="btnAllowPush" onclick="requestPushSubscription()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                <span>Allow Notifications</span>
+              </button>
+              <button class="btn-push-action" onclick="sendTestNotification()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span>Send Test Notification</span>
+              </button>
+            </div>
+          </div>
+
+          <div style="font-size:12px; color:#475569; border-top:1px solid var(--border-light); padding-top:10px;">
+            <strong>iOS Note:</strong> On iPhone/iPad, Web Push requires saving the PWA to your Home Screen (iOS 16.4+). Push notifications arrive even when the app is completely closed.
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. PROFILE & PASSWORD UPDATE -->
+      <section class="settings-section-card">
+        <div class="section-title-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <span class="section-title">My Profile & Security</span>
+        </div>
+
+        <form id="profileForm" onsubmit="handleUpdateProfile(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="profileFullName">Full Name</label>
+              <input type="text" id="profileFullName" required>
+            </div>
+            <div class="form-group">
+              <label for="profileEmail">Email Address (Read-only)</label>
+              <input type="email" id="profileEmail" disabled style="background:#F1F5F9;">
+            </div>
+            <div class="form-group">
+              <label for="newPasswordInput">New Password (Leave blank to keep current)</label>
+              <input type="password" id="newPasswordInput" placeholder="Min. 6 characters">
+            </div>
+          </div>
+          <div style="margin-top:16px;">
+            <button type="submit" class="btn-save-sm">Save Profile Changes</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- 4. ADMIN USER MANAGEMENT (ADMIN ONLY) -->
+      <section class="settings-section-card" id="adminUserSection" style="display:none;">
+        <div class="section-title-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          <span class="section-title">Staff Login Accounts (Admin Only)</span>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <p style="font-size:13px; color:var(--text-muted);">Manage CRM staff logins and administrative roles.</p>
+          <button class="btn-save-sm" onclick="openCreateUserModal()">+ Add Staff Login</button>
+        </div>
+
+        <table class="admin-users-table">
+          <thead>
+            <tr>
+              <th>Staff Name</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="adminUsersTbody">
+            <tr><td colspan="4" style="text-align:center; padding:16px; color:var(--text-muted);">Loading users...</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 5. ABOUT SYSTEM INFO -->
+      <section class="settings-section-card">
+        <div class="section-title-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          <span class="section-title">About Iqbal Fashion CRM</span>
+        </div>
+        <div style="font-size:13px; color:#475569; display:flex; flex-direction:column; gap:8px;">
+          <div><strong>Application:</strong> Iqbal Fashion Tailoring Order Tracking CRM</div>
+          <div><strong>Version:</strong> v1.0.0 (Production PWA)</div>
+          <div><strong>Hosting:</strong> Vercel (Edge & Serverless Node.js Runtime)</div>
+          <div><strong>Database:</strong> Supabase PostgreSQL (Postgres 15+ with Realtime Replication)</div>
+          <div style="margin-top:8px;">
+            <button class="btn-push-action" onclick="clearPwaCaches()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+              <span>Clear App Cache & Reload</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- iOS PWA INSTALL STEP-BY-STEP MODAL -->
+  <div class="modal-backdrop" id="iosModal">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 class="modal-title">Install on iPhone / iPad</h3>
+        <button onclick="closeIosModal()" style="background:none; border:none; cursor:pointer; padding:4px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <p style="font-size:13px; color:var(--text-muted);">
+        Apple iOS requires adding apps directly through Safari. Follow these 4 easy steps:
+      </p>
+
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div class="ios-step-card">
+          <div class="ios-step-badge">1</div>
+          <div class="ios-step-text">
+            Open this website in <strong>Safari</strong> browser (if you are in Chrome or another app, copy the URL to Safari).
+          </div>
+        </div>
+
+        <div class="ios-step-card">
+          <div class="ios-step-badge">2</div>
+          <div class="ios-step-text">
+            Tap the <strong>Share</strong> button at the bottom of the Safari screen
+            <!-- Share icon SVG -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle; margin-left:4px;"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>.
+          </div>
+        </div>
+
+        <div class="ios-step-card">
+          <div class="ios-step-badge">3</div>
+          <div class="ios-step-text">
+            Scroll down the options list and tap <strong>Add to Home Screen</strong>
+            <!-- Plus square icon SVG -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle; margin-left:4px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>.
+          </div>
+        </div>
+
+        <div class="ios-step-card">
+          <div class="ios-step-badge">4</div>
+          <div class="ios-step-text">
+            Tap <strong>Add</strong> in the top right corner. The Iqbal Fashion CRM icon will now be on your Home Screen!
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-save-sm" onclick="closeIosModal()">Got It</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Staff Login Modal (Admin Only) -->
+  <div class="modal-backdrop" id="createUserModal">
+    <div class="modal-box">
+      <h3 class="modal-title">Create New Staff Login</h3>
+      <div class="modal-form-group">
+        <label for="newStaffName">Full Name *</label>
+        <input type="text" id="newStaffName" placeholder="e.g. Farhan Master" required>
+      </div>
+      <div class="modal-form-group">
+        <label for="newStaffEmail">Email Address *</label>
+        <input type="email" id="newStaffEmail" placeholder="staff@iqbalfashion.com" required>
+      </div>
+      <div class="modal-form-group">
+        <label for="newStaffPassword">Initial Password *</label>
+        <input type="password" id="newStaffPassword" placeholder="Minimum 6 characters" required>
+      </div>
+      <div class="modal-form-group">
+        <label for="newStaffRole">System Role *</label>
+        <select id="newStaffRole">
+          <option value="manager">Manager (Can track and advance orders)</option>
+          <option value="admin">Administrator (Full settings & user management)</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-push-action" onclick="closeCreateUserModal()">Cancel</button>
+        <button class="btn-save-sm" onclick="submitCreateUser()">Create User</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="bottom-bar">
+    <a href="/index.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="/orders.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+      <span>Orders</span>
+    </a>
+    <a href="/new-order.html" class="bottom-nav-item">
+      <div class="bottom-nav-fab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </div>
+      <span>New</span>
+    </a>
+    <a href="/customers.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+      <span>Clients</span>
+    </a>
+    <a href="/notifications.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+      <span>Alerts</span>
+    </a>
+  </nav>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+  <script>
+    /* ===== SHARED: SUPABASE CLIENT CONFIG ===== */
+    const SUPABASE_URL = "https://ajapvxdpxifdhvvszuhp.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqYXB2eGRweGlmZGh2dnN6dWhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU3ODk5NTMsImV4cCI6MjA4MTM2NTk1M30.iC9U-MQC6VYZNXd_RugA6_hxZwrhYRsapffOYDCikio";
+    const VAPID_PUBLIC_KEY = "BIHD9xC9bGzRyYITKivlmj0ePMBYgihxBp2n6r6alspYH-Y1hsvkGncwE3p_luJTOGew2zDNwzlGykR_jLO4CbA";
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true }
+    });
+
+    let currentUser = null;
+    let currentProfile = null;
+    let deferredInstallPrompt = null;
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast-card';
+      toast.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span>${escapeHtml(message)}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.2s ease';
+        setTimeout(() => toast.remove(), 200);
+      }, 3500);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('drawerOverlay').classList.toggle('open');
+    }
+
+    // Helper to convert base64 to Uint8Array for VAPID key
+    function urlB64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - base64String.length % 4) % 4);
+      const base64 = (base64String + padding)
+        .replace(/\-/g, '+')
+        .replace(/_/g, '/');
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+      }
+      return outputArray;
+    }
+
+    async function initAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        window.location.replace('/login.html?redirect=' + encodeURIComponent(window.location.pathname));
+        return;
+      }
+      currentUser = session.user;
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', currentUser.id)
+        .single();
+
+      if (profile && !profile.is_active) {
+        await supabase.auth.signOut();
+        window.location.replace('/login.html');
+        return;
+      }
+
+      currentProfile = profile;
+      document.getElementById('userNameLabel').textContent = (profile && profile.full_name) || currentUser.email.split('@')[0];
+      document.getElementById('userRoleBadge').textContent = ((profile && profile.role) || 'manager').toUpperCase();
+
+      document.getElementById('profileFullName').value = (profile && profile.full_name) || '';
+      document.getElementById('profileEmail').value = currentUser.email;
+
+      document.getElementById('logoutBtn').addEventListener('click', async () => {
+        await supabase.auth.signOut();
+        window.location.replace('/login.html');
+      });
+
+      // Show Admin Section if admin
+      if (profile && profile.role === 'admin') {
+        document.getElementById('adminUserSection').style.display = 'block';
+        fetchAdminUsers();
+      }
+
+      checkPwaInstallState();
+      checkPushPermissionState();
+    }
+
+    // PWA Install State & Event Listeners
+    function checkPwaInstallState() {
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+      const installBtn = document.getElementById('btnInstallApp');
+      const title = document.getElementById('installStatusTitle');
+      const desc = document.getElementById('installStatusDesc');
+
+      if (isStandalone) {
+        title.textContent = 'Iqbal Fashion CRM is Installed';
+        desc.textContent = 'Running in standalone application mode.';
+        installBtn.disabled = true;
+        installBtn.style.opacity = '0.6';
+        document.getElementById('installBtnText').textContent = 'Already Installed';
+      }
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+    });
+
+    function isIos() {
+      const userAgent = window.navigator.userAgent.toLowerCase();
+      return /iphone|ipad|ipod/.test(userAgent);
+    }
+
+    function isSafari() {
+      const userAgent = window.navigator.userAgent.toLowerCase();
+      return userAgent.includes('safari') && !userAgent.includes('crios') && !userAgent.includes('fxios');
+    }
+
+    function handleInstallClick() {
+      if (isIos()) {
+        openIosModal();
+        return;
+      }
+
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then((choice) => {
+          if (choice.outcome === 'accepted') {
+            showToast('App installation accepted!', 'success');
+          }
+          deferredInstallPrompt = null;
+        });
+      } else {
+        showToast('To install, use the browser menu ("Install" or "Add to Home Screen").', 'info');
+      }
+    }
+
+    function openIosModal() { document.getElementById('iosModal').classList.add('open'); }
+    function closeIosModal() { document.getElementById('iosModal').classList.remove('open'); }
+
+    // Push Notifications Logic
+    function checkPushPermissionState() {
+      const statusText = document.getElementById('pushPermissionStatusText');
+      if (!('Notification' in window)) {
+        statusText.textContent = 'Web Push is not supported in this browser.';
+        return;
+      }
+
+      if (Notification.permission === 'granted') {
+        statusText.innerHTML = '<span style="color:var(--success); font-weight:700;">Granted &bull; Notifications are active</span>';
+        document.getElementById('btnAllowPush').style.display = 'none';
+      } else if (Notification.permission === 'denied') {
+        statusText.innerHTML = '<span style="color:var(--danger); font-weight:700;">Denied &bull; To enable, reset site permissions in your browser settings</span>';
+      } else {
+        statusText.textContent = 'Not yet requested. Click "Allow Notifications" below.';
+      }
+    }
+
+    async function requestPushSubscription() {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        showToast('Push notifications not supported on this device/browser', 'error');
+        return;
+      }
+
+      try {
+        const permission = await Notification.requestPermission();
+        checkPushPermissionState();
+
+        if (permission !== 'granted') {
+          showToast('Notification permission was not granted.', 'warning');
+          return;
+        }
+
+        const registration = await navigator.serviceWorker.ready;
+        let subscription = await registration.pushManager.getSubscription();
+
+        if (!subscription) {
+          subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlB64ToUint8Array(VAPID_PUBLIC_KEY)
+          });
+        }
+
+        // Store subscription in Supabase
+        const subJson = subscription.toJSON();
+        const { error } = await supabase
+          .from('push_subscriptions')
+          .upsert({
+            user_id: currentUser.id,
+            endpoint: subscription.endpoint,
+            p256dh: subJson.keys.p256dh,
+            auth: subJson.keys.auth,
+            platform: navigator.platform || 'Unknown',
+            user_agent: navigator.userAgent
+          }, { onConflict: 'endpoint' });
+
+        if (error) throw error;
+
+        showToast('Push notifications successfully enabled!', 'success');
+        checkPushPermissionState();
+
+      } catch (err) {
+        console.error('Push registration error:', err);
+        showToast('Failed to subscribe: ' + err.message, 'error');
+      }
+    }
+
+    async function sendTestNotification() {
+      showToast('Sending test push notification...', 'info');
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session ? session.access_token : '';
+
+        const res = await fetch('/api/send-push', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            title: 'Iqbal Fashion CRM Test',
+            body: 'This is a test notification from Iqbal Fashion tailoring system.',
+            stage: 'test',
+            user_id: currentUser.id
+          })
+        });
+
+        const json = await res.json();
+        if (res.ok) {
+          showToast(`Test dispatched! Sent to ${json.sentCount || 1} device(s).`, 'success');
+        } else {
+          showToast(`Server message: ${json.error || json.message}`, 'warning');
+        }
+      } catch (err) {
+        showToast('Error sending test: ' + err.message, 'error');
+      }
+    }
+
+    // Profile & Password Update
+    async function handleUpdateProfile(e) {
+      e.preventDefault();
+      const fullName = document.getElementById('profileFullName').value.trim();
+      const newPassword = document.getElementById('newPasswordInput').value;
+
+      try {
+        if (fullName) {
+          await supabase
+            .from('profiles')
+            .update({ full_name: fullName })
+            .eq('id', currentUser.id);
+        }
+
+        if (newPassword) {
+          if (newPassword.length < 6) {
+            showToast('Password must be at least 6 characters', 'error');
+            return;
+          }
+          const { error: passErr } = await supabase.auth.updateUser({ password: newPassword });
+          if (passErr) throw passErr;
+          document.getElementById('newPasswordInput').value = '';
+        }
+
+        showToast('Profile updated successfully', 'success');
+      } catch (err) {
+        showToast('Error updating profile: ' + err.message, 'error');
+      }
+    }
+
+    // Admin Users Management
+    async function fetchAdminUsers() {
+      try {
+        const { data: users, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .order('full_name');
+
+        if (error) throw error;
+        const tbody = document.getElementById('adminUsersTbody');
+        tbody.innerHTML = (users || []).map(u => `
+          <tr>
+            <td><strong>${escapeHtml(u.full_name)}</strong></td>
+            <td style="text-transform:capitalize;">${escapeHtml(u.role)}</td>
+            <td><span style="color:${u.is_active ? 'var(--success)' : 'var(--danger)'}; font-weight:700;">${u.is_active ? 'Active' : 'Inactive'}</span></td>
+            <td>
+              ${u.id !== currentUser.id ? `
+                <button onclick="toggleUserActive('${u.id}', ${!u.is_active})" style="background:none; border:none; color:var(--navy-primary); font-size:12px; cursor:pointer;">
+                  ${u.is_active ? 'Deactivate' : 'Activate'}
+                </button>
+              ` : '<span style="color:var(--text-muted); font-size:12px;">You</span>'}
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error('Fetch users error:', err);
+      }
+    }
+
+    async function toggleUserActive(id, newStatus) {
+      try {
+        const { error } = await supabase
+          .from('profiles')
+          .update({ is_active: newStatus })
+          .eq('id', id);
+        if (error) throw error;
+        showToast('User status updated', 'success');
+        fetchAdminUsers();
+      } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+      }
+    }
+
+    function openCreateUserModal() { document.getElementById('createUserModal').classList.add('open'); }
+    function closeCreateUserModal() { document.getElementById('createUserModal').classList.remove('open'); }
+
+    async function submitCreateUser() {
+      const name = document.getElementById('newStaffName').value.trim();
+      const email = document.getElementById('newStaffEmail').value.trim();
+      const password = document.getElementById('newStaffPassword').value;
+      const role = document.getElementById('newStaffRole').value;
+
+      if (!name || !email || !password) {
+        showToast('All fields are required', 'error');
+        return;
+      }
+
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session ? session.access_token : '';
+
+        const res = await fetch('/api/create-user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ email, password, full_name: name, role })
+        });
+
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || 'Failed to create user');
+
+        closeCreateUserModal();
+        showToast(`Staff login created for ${name}!`, 'success');
+        fetchAdminUsers();
+      } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+      }
+    }
+
+    async function clearPwaCaches() {
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }
+      showToast('Cache cleared. Reloading...', 'info');
+      setTimeout(() => window.location.reload(true), 600);
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(console.warn);
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', initAuth);
+  </script>
+</body>
+</html>

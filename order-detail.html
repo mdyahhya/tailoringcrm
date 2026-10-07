@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Details | Iqbal Fashion CRM</title>
+  <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#12306B">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Iqbal CRM">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png">
+  <style>
+    /* ==============================================================================
+       DESIGN SYSTEM: PURE WHITE, BLACK, NAVY ACCENT (#12306B), MUTED STATUSES
+       ============================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    :root {
+      --bg-white: #FFFFFF;
+      --bg-canvas: #F8FAFC;
+      --text-black: #0A0A0A;
+      --text-muted: #64748B;
+      --border-light: #E2E8F0;
+      --navy-primary: #12306B;
+      --navy-hover: #1E3A8A;
+      --navy-light: #EFF6FF;
+      --sidebar-width: 260px;
+      --topbar-height: 64px;
+      --bottom-bar-height: 64px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --success: #16A34A;
+      --success-bg: #F0FDF4;
+      --warning: #D97706;
+      --warning-bg: #FFFBEB;
+      --danger: #DC2626;
+      --danger-bg: #FEF2F2;
+      --info: #2563EB;
+      --info-bg: #EFF6FF;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--text-black);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--bg-white);
+      border-right: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .sidebar-brand {
+      height: var(--topbar-height);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .brand-badge {
+      width: 36px;
+      height: 36px;
+      background-color: var(--navy-primary);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .brand-meta { display: flex; flex-direction: column; }
+    .brand-name { font-weight: 700; font-size: 15px; letter-spacing: -0.01em; color: var(--text-black); }
+    .brand-sub { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .sidebar-nav { flex: 1; overflow-y: auto; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
+    .nav-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #94A3B8; padding: 8px 12px 4px; margin-top: 8px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; color: #334155; text-decoration: none; min-height: 44px; }
+    .nav-item svg { width: 20px; height: 20px; flex-shrink: 0; stroke-width: 1.75; }
+    .nav-item:hover { background-color: #F1F5F9; color: var(--navy-primary); }
+    .nav-item.active { background-color: var(--navy-primary); color: #FFFFFF; font-weight: 600; }
+    .sidebar-user { padding: 16px; border-top: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
+    .user-info { display: flex; flex-direction: column; overflow: hidden; }
+    .user-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-role-badge { display: inline-block; font-size: 11px; font-weight: 600; text-transform: capitalize; color: var(--navy-primary); }
+    .btn-logout { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 6px; }
+
+    /* ===== MAIN CONTENT & TOPBAR ===== */
+    .app-main { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; min-width: 0; }
+    .topbar {
+      height: var(--topbar-height);
+      background-color: var(--bg-white);
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 16px; }
+    .menu-toggle { display: none; background: none; border: none; color: var(--text-black); padding: 8px; cursor: pointer; min-height: 44px; min-width: 44px; align-items: center; justify-content: center; }
+    .page-heading h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; color: var(--text-black); }
+    .page-heading p { font-size: 12px; color: var(--text-muted); }
+    .topbar-actions { display: flex; align-items: center; gap: 12px; }
+
+    .btn-topbar {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      color: var(--text-black);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      min-height: 38px;
+    }
+    .btn-topbar:hover { background-color: #F1F5F9; }
+
+    .content-body {
+      padding: 24px;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Order Header Banner */
+    .order-header-card {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .order-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .order-no-tag {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--navy-primary);
+    }
+    .btn-print-slip {
+      background-color: #F1F5F9;
+      color: var(--navy-primary);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 40px;
+    }
+    .btn-print-slip:hover {
+      background-color: var(--navy-primary);
+      color: #FFFFFF;
+    }
+
+    /* Details Grid */
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      background-color: #F8FAFC;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin-top: 16px;
+    }
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .detail-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .detail-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-black);
+    }
+
+    /* Status Pills */
+    .status-badge {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .status-in_progress { background-color: var(--info-bg); color: var(--info); }
+    .status-ready { background-color: var(--warning-bg); color: var(--warning); }
+    .status-delivered { background-color: var(--success-bg); color: var(--success); }
+
+    /* ===== PIPELINE STEPPER ===== */
+    .stepper-card {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 28px 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .stepper-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .stepper-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+    .step-node {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      position: relative;
+      padding-bottom: 28px;
+    }
+    .step-node:last-child {
+      padding-bottom: 0;
+    }
+    .step-track-line {
+      position: absolute;
+      top: 36px;
+      left: 17px;
+      bottom: 0;
+      width: 2px;
+      background-color: var(--border-light);
+      z-index: 1;
+    }
+    .step-node.done .step-track-line {
+      background-color: var(--success);
+    }
+    .step-icon-bubble {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: #FFFFFF;
+      border: 2px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      flex-shrink: 0;
+      color: var(--text-muted);
+    }
+    .step-node.done .step-icon-bubble {
+      background-color: var(--success);
+      border-color: var(--success);
+      color: #FFFFFF;
+    }
+    .step-node.in_progress .step-icon-bubble {
+      background-color: var(--navy-primary);
+      border-color: var(--navy-primary);
+      color: #FFFFFF;
+      box-shadow: 0 0 0 4px rgba(18, 48, 107, 0.15);
+    }
+    .step-node.skipped .step-icon-bubble {
+      background-color: #F1F5F9;
+      border-color: #CBD5E1;
+      color: #94A3B8;
+    }
+    .step-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+    .step-header-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .step-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-black);
+    }
+    .step-state-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+      text-transform: capitalize;
+    }
+    .step-assigned-staff {
+      font-size: 13px;
+      color: #334155;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .step-timestamps {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ===== STAGE ACTION AREA ===== */
+    .action-panel-card {
+      background-color: #F8FAFC;
+      border: 1px solid var(--navy-primary);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 4px 16px rgba(18, 48, 107, 0.05);
+    }
+    .action-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .action-panel-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .action-form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+    }
+    .form-group-act {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+    }
+    .form-group-act label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #334155;
+    }
+    .form-group-act input, .form-group-act select {
+      padding: 10px 12px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      background: #FFFFFF;
+      min-height: 42px;
+    }
+    .btn-action-primary {
+      background-color: var(--navy-primary);
+      color: #FFFFFF;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 42px;
+      transition: background-color 0.15s ease;
+    }
+    .btn-action-primary:hover { background-color: var(--navy-hover); }
+
+    .btn-action-secondary {
+      background-color: #FFFFFF;
+      color: #334155;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 42px;
+    }
+    .btn-action-secondary:hover { background-color: #F1F5F9; }
+
+    .btn-action-success {
+      background-color: var(--success);
+      color: #FFFFFF;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 42px;
+    }
+    .btn-action-success:hover { background-color: #15803D; }
+
+    /* Quick Date Chips */
+    .chips-row { display: flex; gap: 6px; margin-top: 4px; }
+    .date-chip { background-color: #FFFFFF; border: 1px solid var(--border-light); border-radius: 4px; padding: 3px 8px; font-size: 11px; font-weight: 600; cursor: pointer; color: #475569; }
+    .date-chip:hover { background-color: var(--navy-primary); color: #FFFFFF; }
+
+    /* Combobox dropdown */
+    .combobox-container { position: relative; width: 100%; }
+    .combobox-dropdown { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #FFFFFF; border: 1px solid var(--border-light); border-radius: var(--radius-sm); box-shadow: 0 8px 24px rgba(0,0,0,0.1); max-height: 200px; overflow-y: auto; z-index: 200; margin-top: 4px; }
+    .combobox-item { padding: 8px 12px; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #F1F5F9; }
+    .combobox-item:hover { background-color: var(--navy-light); color: var(--navy-primary); }
+
+    /* History Timeline Card */
+    .history-card {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .history-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .history-entry {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #F1F5F9;
+      font-size: 13px;
+    }
+    .history-bullet {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background-color: var(--navy-light);
+      color: var(--navy-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* Modal System */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: #FFFFFF;
+      border-radius: var(--radius-md);
+      max-width: 480px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .modal-title { font-size: 17px; font-weight: 700; color: var(--text-black); }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+
+    /* Toast */
+    .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+    .toast-card { pointer-events: auto; background-color: #0A0A0A; color: #FFFFFF; padding: 12px 18px; border-radius: var(--radius-sm); font-size: 13px; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+
+    /* Mobile Bottom Nav */
+    .drawer-overlay { display: none; position: fixed; inset: 0; background-color: rgba(0,0,0,0.4); z-index: 99; }
+    .bottom-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: var(--bottom-bar-height); background-color: #FFFFFF; border-top: 1px solid var(--border-light); z-index: 100; justify-content: space-around; align-items: center; }
+    .bottom-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #64748B; font-size: 10px; font-weight: 500; gap: 2px; flex: 1; height: 100%; }
+    .bottom-nav-item svg { width: 22px; height: 22px; stroke-width: 1.75; }
+    .bottom-nav-item.active { color: var(--navy-primary); font-weight: 700; }
+    .bottom-nav-fab { width: 44px; height: 44px; border-radius: 50%; background-color: var(--navy-primary); color: #FFFFFF; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(18, 48, 107, 0.3); margin-top: -12px; }
+    .bottom-nav-fab svg { width: 24px; height: 24px; color: #FFFFFF; }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .drawer-overlay.open { display: block; }
+      .app-main { margin-left: 0; padding-bottom: var(--bottom-bar-height); }
+      .menu-toggle { display: flex; }
+      .bottom-bar { display: flex; }
+      .content-body { padding: 16px; }
+    }
+
+    /* ==============================================================================
+       PRINT STYLESHEET FOR ORDER SLIP
+       ============================================================================== */
+    @media print {
+      body { background-color: #FFFFFF; color: #000000; }
+      .sidebar, .topbar, .bottom-bar, .action-panel-card, .btn-print-slip, .history-card, .menu-toggle, .toast-container {
+        display: none !important;
+      }
+      .app-main { margin-left: 0; }
+      .content-body { padding: 0; max-width: 100%; }
+      .order-header-card, .stepper-card {
+        border: 1px solid #000000;
+        box-shadow: none;
+        padding: 16px;
+        margin-bottom: 20px;
+      }
+      .step-icon-bubble { border-color: #000000 !important; color: #000000 !important; background: transparent !important; }
+      .step-track-line { background-color: #000000 !important; }
+      .print-header { display: block !important; text-align: center; margin-bottom: 24px; border-bottom: 2px solid #000000; padding-bottom: 12px; }
+      .print-header h1 { font-size: 24px; font-weight: 700; text-transform: uppercase; }
+      .print-header p { font-size: 12px; }
+    }
+    .print-header { display: none; }
+  </style>
+</head>
+<body>
+
+  <div id="drawerOverlay" class="drawer-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-badge">IF</div>
+      <div class="brand-meta">
+        <span class="brand-name">Iqbal Fashion</span>
+        <span class="brand-sub">Tailoring CRM</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Core Pipeline</div>
+      <a href="/index.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="/orders.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 12h6M9 16h6"></path></svg>
+        <span>Orders Board</span>
+      </a>
+      <a href="/new-order.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+        <span>Book New Order</span>
+      </a>
+
+      <div class="nav-label">Management</div>
+      <a href="/customers.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+        <span>Customers</span>
+      </a>
+      <a href="/employees.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+        <span>Tailor Staff</span>
+      </a>
+      <a href="/history.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <span>Activity Log</span>
+      </a>
+      <a href="/notifications.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <span>Notifications</span>
+      </a>
+
+      <div class="nav-label">System</div>
+      <a href="/settings.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span>Settings & PWA</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-info">
+        <span class="user-name" id="userNameLabel">Loading...</span>
+        <span class="user-role-badge" id="userRoleBadge">Staff</span>
+      </div>
+      <button class="btn-logout" id="logoutBtn" title="Sign Out">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main View -->
+  <div class="app-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <a href="/orders.html" style="text-decoration:none; color:var(--navy-primary); font-size:13px; font-weight:600; display:flex; align-items:center; gap:4px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <span>Back to Orders</span>
+        </a>
+      </div>
+
+      <div class="topbar-actions">
+        <button class="btn-print-slip" onclick="window.print()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+          <span>Print Slip</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="content-body">
+      <!-- Print Only Header -->
+      <div class="print-header">
+        <h1>IQBAL FASHION</h1>
+        <p>Bespoke Tailoring & Fabrics &bull; Order Tracking Receipt</p>
+      </div>
+
+      <!-- Order Header Card -->
+      <section class="order-header-card" id="orderHeaderCard">
+        <div class="order-title-group">
+          <span class="order-no-tag" id="orderNoHeading">Loading Order...</span>
+          <span class="status-badge" id="orderStatusBadge">...</span>
+        </div>
+
+        <div class="details-grid" style="width: 100%;">
+          <div class="detail-item">
+            <span class="detail-label">Customer</span>
+            <span class="detail-value" id="valCustomerName">-</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Customer Phone</span>
+            <span class="detail-value" id="valCustomerPhone">-</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Garment Type</span>
+            <span class="detail-value" id="valGarmentType">-</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Quantity</span>
+            <span class="detail-value" id="valQuantity">1</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Fabric / Material</span>
+            <span class="detail-value" id="valClothMaterial">-</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Expected Delivery</span>
+            <span class="detail-value" id="valExpectedDate">-</span>
+          </div>
+          <div class="detail-item" style="grid-column: 1 / -1;">
+            <span class="detail-label">Fitting / Order Notes</span>
+            <span class="detail-value" id="valNotes" style="font-weight: normal; color: #334155;">None</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ACTIVE STAGE ACTION AREA -->
+      <section class="action-panel-card" id="actionPanelCard">
+        <div class="action-panel-header">
+          <div class="action-panel-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span id="actionPanelHeading">Next Pipeline Step</span>
+          </div>
+        </div>
+        <div id="actionPanelBody">
+          <!-- Dynamic action controls injected here -->
+        </div>
+      </section>
+
+      <!-- VISUAL PIPELINE STEPPER -->
+      <section class="stepper-card">
+        <h2 class="stepper-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          <span>Complete Tailoring Pipeline</span>
+        </h2>
+
+        <div class="stepper-container" id="stepperContainer">
+          <!-- 7 Steps injected here -->
+        </div>
+      </section>
+
+      <!-- AUDIT HISTORY LOG -->
+      <section class="history-card">
+        <h2 class="stepper-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <span>Order Activity History Log</span>
+        </h2>
+        <div class="history-timeline" id="orderHistoryTimeline">
+          <!-- Audit items injected here -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Washing Assignment Modal -->
+  <div class="modal-backdrop" id="washingModal">
+    <div class="modal-box">
+      <h3 class="modal-title">Washing Step Assignment</h3>
+      <p style="font-size:13px; color:var(--text-muted);">
+        Washing is optional. Select or type a staff member to wash this cloth, or skip washing directly.
+      </p>
+      <div class="form-group-act">
+        <label for="washerInput">Washer Name</label>
+        <div class="combobox-container">
+          <input type="text" id="washerInput" placeholder="Select or type staff name...">
+          <div class="combobox-dropdown" id="washerDropdown"></div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-action-secondary" onclick="closeWashingModal()">Cancel</button>
+        <button class="btn-action-secondary" onclick="handleSkipWashing()">Skip Washing</button>
+        <button class="btn-action-primary" onclick="handleAssignWashing()">Assign & Start</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reassign Employee Modal -->
+  <div class="modal-backdrop" id="reassignModal">
+    <div class="modal-box">
+      <h3 class="modal-title" id="reassignModalTitle">Reassign Staff</h3>
+      <div class="form-group-act">
+        <label for="reassignStaffInput">New Assigned Staff</label>
+        <div class="combobox-container">
+          <input type="text" id="reassignStaffInput" placeholder="Select or type staff member...">
+          <div class="combobox-dropdown" id="reassignDropdown"></div>
+        </div>
+      </div>
+      <div class="form-group-act">
+        <label for="reassignNotesInput">Reason / Notes</label>
+        <input type="text" id="reassignNotesInput" placeholder="Optional notes for history log">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-action-secondary" onclick="closeReassignModal()">Cancel</button>
+        <button class="btn-action-primary" onclick="confirmReassign()">Confirm Reassignment</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delivered Confirmation Modal -->
+  <div class="modal-backdrop" id="deliveredModal">
+    <div class="modal-box">
+      <h3 class="modal-title">Confirm Garment Delivery</h3>
+      <p style="font-size:13px; color:var(--text-muted);">
+        Only Admins and Managers can mark an order delivered. This records that the customer received their completed garment.
+      </p>
+      <div class="form-group-act">
+        <label for="deliveredNotes">Delivery Notes (Optional)</label>
+        <input type="text" id="deliveredNotes" placeholder="e.g. Handed to customer, final payment received">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-action-secondary" onclick="closeDeliveredModal()">Cancel</button>
+        <button class="btn-action-success" onclick="confirmDelivered()">Confirm Delivered</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-bar">
+    <a href="/index.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="/orders.html" class="bottom-nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+      <span>Orders</span>
+    </a>
+    <a href="/new-order.html" class="bottom-nav-item">
+      <div class="bottom-nav-fab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </div>
+      <span>New</span>
+    </a>
+    <a href="/customers.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+      <span>Clients</span>
+    </a>
+    <a href="/notifications.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+      <span>Alerts</span>
+    </a>
+  </nav>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+  <script>
+    /* ===== SHARED: SUPABASE CLIENT CONFIG ===== */
+    const SUPABASE_URL = "https://ajapvxdpxifdhvvszuhp.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqYXB2eGRweGlmZGh2dnN6dWhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU3ODk5NTMsImV4cCI6MjA4MTM2NTk1M30.iC9U-MQC6VYZNXd_RugA6_hxZwrhYRsapffOYDCikio";
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true }
+    });
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('id');
+
+    let currentOrder = null;
+    let orderStages = [];
+    let orderHistory = [];
+    let currentProfile = null;
+    let allEmployees = [];
+    let reassignTargetStage = null;
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast-card';
+      toast.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span>${escapeHtml(message)}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.2s ease';
+        setTimeout(() => toast.remove(), 200);
+      }, 3500);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('drawerOverlay').classList.toggle('open');
+    }
+
+    async function initAuth() {
+      if (!orderId) {
+        alert('No Order ID specified in URL.');
+        window.location.replace('/orders.html');
+        return;
+      }
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        window.location.replace('/login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search));
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      if (profile && !profile.is_active) {
+        await supabase.auth.signOut();
+        window.location.replace('/login.html');
+        return;
+      }
+
+      currentProfile = profile;
+      document.getElementById('userNameLabel').textContent = (profile && profile.full_name) || session.user.email.split('@')[0];
+      document.getElementById('userRoleBadge').textContent = ((profile && profile.role) || 'manager').toUpperCase();
+
+      document.getElementById('logoutBtn').addEventListener('click', async () => {
+        await supabase.auth.signOut();
+        window.location.replace('/login.html');
+      });
+
+      await loadEmployees();
+      await fetchOrderDetail();
+      setupRealtime();
+    }
+
+    async function loadEmployees() {
+      const { data: emps } = await supabase
+        .from('employees')
+        .select('id, name, phone, roles')
+        .eq('is_active', true)
+        .order('name');
+      allEmployees = emps || [];
+    }
+
+    async function fetchOrderDetail() {
+      try {
+        const { data: order, error: orderErr } = await supabase
+          .from('orders')
+          .select(`
+            *,
+            customers (id, name, phone, notes)
+          `)
+          .eq('id', orderId)
+          .single();
+
+        if (orderErr) throw orderErr;
+        currentOrder = order;
+
+        const { data: stages, error: stgErr } = await supabase
+          .from('order_stages')
+          .select('*')
+          .eq('order_id', orderId);
+
+        if (stgErr) throw stgErr;
+        orderStages = stages || [];
+
+        const { data: history, error: histErr } = await supabase
+          .from('order_history')
+          .select('*')
+          .eq('order_id', orderId)
+          .order('created_at', { ascending: false });
+
+        if (histErr) throw histErr;
+        orderHistory = history || [];
+
+        renderHeader();
+        renderStepper();
+        renderActionArea();
+        renderHistory();
+
+      } catch (err) {
+        console.error('Fetch order detail error:', err);
+        showToast('Error loading order: ' + err.message, 'error');
+      }
+    }
+
+    function renderHeader() {
+      const o = currentOrder;
+      const cust = o.customers || {};
+
+      document.getElementById('orderNoHeading').textContent = `${o.order_no} - ${o.garment_type}`;
+      const badge = document.getElementById('orderStatusBadge');
+      badge.className = `status-badge status-${o.status}`;
+      badge.textContent = o.status.replace('_', ' ');
+
+      document.getElementById('valCustomerName').innerHTML = `<a href="/customers.html?id=${cust.id}" style="color:var(--navy-primary); text-decoration:none;">${escapeHtml(cust.name || 'Unknown')}</a>`;
+      document.getElementById('valCustomerPhone').textContent = cust.phone || 'No phone provided';
+      document.getElementById('valGarmentType').textContent = o.garment_type;
+      document.getElementById('valQuantity').textContent = o.quantity || 1;
+      document.getElementById('valClothMaterial').textContent = o.cloth_material || 'Standard fabric';
+      document.getElementById('valExpectedDate').textContent = o.expected_delivery_date || 'None set';
+      document.getElementById('valNotes').textContent = o.notes || 'No special instructions recorded.';
+    }
+
+    function renderStepper() {
+      const container = document.getElementById('stepperContainer');
+      const pipelineOrder = ['measurement', 'washing', 'cutting', 'stitching', 'finishing', 'ready', 'delivered'];
+      const stagesMap = {};
+      orderStages.forEach(s => { stagesMap[s.stage] = s; });
+
+      container.innerHTML = pipelineOrder.map((stageKey, idx) => {
+        const s = stagesMap[stageKey] || { status: 'pending' };
+        const isDone = s.status === 'done';
+        const isSkipped = s.status === 'skipped';
+        const isInProgress = s.status === 'in_progress';
+        const isLast = idx === pipelineOrder.length - 1;
+
+        let nodeClass = '';
+        if (isDone) nodeClass = 'done';
+        else if (isSkipped) nodeClass = 'skipped';
+        else if (isInProgress) nodeClass = 'in_progress';
+
+        let iconSvg = '';
+        if (isDone) {
+          iconSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+        } else if (isSkipped) {
+          iconSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
+        } else if (isInProgress) {
+          iconSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+        } else {
+          iconSvg = `<span style="font-size:12px; font-weight:700;">${idx + 1}</span>`;
+        }
+
+        const employee = s.employee_name_snapshot;
+        const estDate = s.estimated_date;
+        const timeStarted = s.started_at ? new Date(s.started_at).toLocaleDateString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : null;
+        const timeDone = s.completed_at ? new Date(s.completed_at).toLocaleDateString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : null;
+
+        return `
+          <div class="step-node ${nodeClass}">
+            ${!isLast ? '<div class="step-track-line"></div>' : ''}
+            <div class="step-icon-bubble">${iconSvg}</div>
+            <div class="step-content">
+              <div class="step-header-line">
+                <span class="step-name">${idx + 1}. ${stageKey.toUpperCase()}</span>
+                <span class="step-state-tag" style="background:${isInProgress ? 'var(--navy-light)' : '#F1F5F9'}; color:${isInProgress ? 'var(--navy-primary)' : '#475569'};">
+                  ${s.status.replace('_', ' ')}
+                </span>
+              </div>
+              <div class="step-assigned-staff">
+                ${employee ? `<span>Handled by: <strong>${escapeHtml(employee)}</strong></span>` : '<span style="color:#94A3B8;">Staff unassigned</span>'}
+                ${(isInProgress || isDone) && stageKey !== 'ready' && stageKey !== 'delivered' ? `
+                  <button onclick="openReassignModal('${stageKey}')" style="background:none; border:none; color:var(--navy-primary); font-size:11px; font-weight:600; cursor:pointer; text-decoration:underline;">Reassign</button>
+                ` : ''}
+              </div>
+              <div class="step-timestamps">
+                ${estDate ? `Target completion: <strong>${estDate}</strong> &bull; ` : ''}
+                ${timeStarted ? `Started: ${timeStarted}` : ''}
+                ${timeDone ? ` &bull; Completed: ${timeDone}` : ''}
+                ${s.notes ? ` &bull; <em>"${escapeHtml(s.notes)}"</em>` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderActionArea() {
+      const panel = document.getElementById('actionPanelBody');
+      const heading = document.getElementById('actionPanelHeading');
+      const o = currentOrder;
+      const currentStage = o.current_stage;
+      const stagesMap = {};
+      orderStages.forEach(s => { stagesMap[s.stage] = s; });
+      const currentStageObj = stagesMap[currentStage] || {};
+
+      if (o.status === 'delivered') {
+        heading.textContent = 'Order Delivered & Completed';
+        panel.innerHTML = `
+          <div style="font-size:14px; color:var(--success); font-weight:600; display:flex; align-items:center; gap:8px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>This garment has been delivered to the customer. All pipeline steps completed.</span>
+          </div>
+        `;
+        return;
+      }
+
+      // Step 2: Washing is optional
+      if (currentStage === 'washing') {
+        heading.textContent = 'Current Step: Washing (Optional)';
+        if (currentStageObj.status === 'in_progress') {
+          panel.innerHTML = `
+            <div style="font-size:14px; margin-bottom:12px;">
+              Currently being washed by <strong>${escapeHtml(currentStageObj.employee_name_snapshot || 'staff')}</strong>.
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn-action-primary" onclick="completeCurrentStage('washing')">Mark Washing Done & Go to Cutting</button>
+              <button class="btn-action-secondary" onclick="openReassignModal('washing')">Reassign Washer</button>
+            </div>
+          `;
+        } else {
+          panel.innerHTML = `
+            <p style="font-size:14px; color:#475569; margin-bottom:12px;">
+              Washing is optional. Choose whether this cloth material requires pre-washing before cutting.
+            </p>
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+              <button class="btn-action-primary" onclick="openWashingModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                <span>Add Washing Step</span>
+              </button>
+              <button class="btn-action-secondary" onclick="handleSkipWashing()">
+                <span>Skip Washing &rarr; Move to Cutting</span>
+              </button>
+            </div>
+          `;
+        }
+        return;
+      }
+
+      // Step 3, 4, 5: Cutting, Stitching, Finishing
+      if (['cutting', 'stitching', 'finishing'].includes(currentStage)) {
+        heading.textContent = `Current Step: ${currentStage.toUpperCase()}`;
+
+        if (currentStageObj.status === 'in_progress') {
+          panel.innerHTML = `
+            <div style="font-size:14px; margin-bottom:12px;">
+              Currently in progress with <strong>${escapeHtml(currentStageObj.employee_name_snapshot || 'staff')}</strong>.
+              ${currentStageObj.estimated_date ? ` Target completion: <strong>${currentStageObj.estimated_date}</strong>` : ''}
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn-action-success" onclick="completeCurrentStage('${currentStage}')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Mark ${currentStage.toUpperCase()} as Done</span>
+              </button>
+              <button class="btn-action-secondary" onclick="openReassignModal('${currentStage}')">Reassign Staff</button>
+            </div>
+          `;
+        } else {
+          // Unassigned / Pending start
+          panel.innerHTML = `
+            <p style="font-size:13px; color:#475569;">Assign who will handle <strong>${currentStage}</strong> for this garment and set an estimated completion date.</p>
+            <div class="action-form-grid">
+              <div class="form-group-act">
+                <label>Assigned Staff Member *</label>
+                <div class="combobox-container">
+                  <input type="text" id="actionEmpInput" placeholder="Type or select staff name...">
+                  <div class="combobox-dropdown" id="actionEmpDropdown"></div>
+                </div>
+              </div>
+              <div class="form-group-act">
+                <label>Estimated Completion Date</label>
+                <input type="date" id="actionEstDateInput">
+                <div class="chips-row">
+                  <span class="date-chip" onclick="setActionEstDate(0)">Today</span>
+                  <span class="date-chip" onclick="setActionEstDate(1)">Tomorrow</span>
+                  <span class="date-chip" onclick="setActionEstDate(2)">+2 Days</span>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:16px;">
+              <button class="btn-action-primary" onclick="startCurrentStage('${currentStage}')">
+                <span>Start ${currentStage.toUpperCase()}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+          `;
+          setupActionCombobox(currentStage);
+        }
+        return;
+      }
+
+      // Step 6: Ready for Delivery
+      if (currentStage === 'ready') {
+        heading.textContent = 'Current Step: Ready for Delivery';
+        if (o.status === 'ready') {
+          panel.innerHTML = `
+            <div style="font-size:14px; margin-bottom:12px; color:var(--warning); font-weight:600;">
+              Garment is finished and waiting for customer pickup!
+            </div>
+            <div>
+              <button class="btn-action-success" onclick="openDeliveredModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"></path></svg>
+                <span>Mark as Delivered (Customer Pickup)</span>
+              </button>
+            </div>
+          `;
+        } else {
+          panel.innerHTML = `
+            <p style="font-size:13px; color:#475569; margin-bottom:12px;">Finishing is complete. Click below to mark this order as Ready for Pickup.</p>
+            <button class="btn-action-primary" onclick="completeCurrentStage('ready')">
+              <span>Mark Order Ready for Pickup</span>
+            </button>
+          `;
+        }
+      }
+    }
+
+    function setActionEstDate(days) {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      const input = document.getElementById('actionEstDateInput');
+      if (input) input.value = d.toISOString().split('T')[0];
+    }
+
+    function setupActionCombobox(stage) {
+      const input = document.getElementById('actionEmpInput');
+      const dropdown = document.getElementById('actionEmpDropdown');
+      if (!input || !dropdown) return;
+
+      function render(filter) {
+        const query = (filter || '').trim().toLowerCase();
+        const matches = allEmployees.filter(e => e.name.toLowerCase().includes(query));
+
+        let html = '';
+        if (query && !allEmployees.some(e => e.name.toLowerCase() === query)) {
+          html += `
+            <div class="combobox-item" data-val="${escapeHtml(filter.trim())}" style="background:#FEF9C3; color:#854D0E;">
+              <span>+ Add new staff: "${escapeHtml(filter.trim())}"</span>
+            </div>
+          `;
+        }
+
+        matches.forEach(e => {
+          const hasRole = e.roles && e.roles.includes(stage);
+          html += `
+            <div class="combobox-item" data-val="${escapeHtml(e.name)}">
+              <span>${escapeHtml(e.name)}</span>
+              ${hasRole ? `<small style="color:var(--navy-primary); font-weight:600;">${stage}</small>` : ''}
+            </div>
+          `;
+        });
+
+        dropdown.innerHTML = html;
+        dropdown.style.display = 'block';
+
+        dropdown.querySelectorAll('.combobox-item').forEach(el => {
+          el.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            input.value = el.getAttribute('data-val');
+            dropdown.style.display = 'none';
+          });
+        });
+      }
+
+      input.addEventListener('focus', () => render(input.value));
+      input.addEventListener('input', () => render(input.value));
+      input.addEventListener('blur', () => { setTimeout(() => { dropdown.style.display = 'none'; }, 200); });
+    }
+
+    // Stage RPC Actions
+    async function startCurrentStage(stage) {
+      const empName = document.getElementById('actionEmpInput').value.trim();
+      const estDate = document.getElementById('actionEstDateInput').value || null;
+
+      if (!empName) {
+        showToast('Please select or type an assigned staff member.', 'error');
+        return;
+      }
+
+      try {
+        const { error } = await supabase.rpc('update_order_stage', {
+          p_order_id: orderId,
+          p_stage: stage,
+          p_action: 'assign_and_start',
+          p_employee_name: empName,
+          p_estimated_date: estDate
+        });
+        if (error) throw error;
+        showToast(`Started ${stage} with ${empName}`, 'success');
+        fetchOrderDetail();
+      } catch (err) {
+        showToast('Error starting stage: ' + err.message, 'error');
+      }
+    }
+
+    async function completeCurrentStage(stage) {
+      try {
+        const { error } = await supabase.rpc('update_order_stage', {
+          p_order_id: orderId,
+          p_stage: stage,
+          p_action: 'complete'
+        });
+        if (error) throw error;
+        showToast(`Completed ${stage}!`, 'success');
+        fetchOrderDetail();
+      } catch (err) {
+        showToast('Error completing stage: ' + err.message, 'error');
+      }
+    }
+
+    // Washing Modal Handlers
+    function openWashingModal() {
+      const modal = document.getElementById('washingModal');
+      const input = document.getElementById('washerInput');
+      const dropdown = document.getElementById('washerDropdown');
+      input.value = '';
+      modal.classList.add('open');
+
+      function render(filter) {
+        const query = (filter || '').trim().toLowerCase();
+        const matches = allEmployees.filter(e => e.name.toLowerCase().includes(query));
+        let html = '';
+        if (query && !allEmployees.some(e => e.name.toLowerCase() === query)) {
+          html += `<div class="combobox-item" data-val="${escapeHtml(filter.trim())}">+ Add new: "${escapeHtml(filter.trim())}"</div>`;
+        }
+        matches.forEach(e => {
+          html += `<div class="combobox-item" data-val="${escapeHtml(e.name)}"><span>${escapeHtml(e.name)}</span></div>`;
+        });
+        dropdown.innerHTML = html;
+        dropdown.style.display = 'block';
+        dropdown.querySelectorAll('.combobox-item').forEach(el => {
+          el.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            input.value = el.getAttribute('data-val');
+            dropdown.style.display = 'none';
+          });
+        });
+      }
+      input.onfocus = () => render(input.value);
+      input.oninput = () => render(input.value);
+      input.onblur = () => { setTimeout(() => { dropdown.style.display = 'none'; }, 200); };
+    }
+    function closeWashingModal() { document.getElementById('washingModal').classList.remove('open'); }
+
+    async function handleAssignWashing() {
+      const washer = document.getElementById('washerInput').value.trim();
+      if (!washer) {
+        showToast('Please select or type a washer.', 'error');
+        return;
+      }
+      closeWashingModal();
+      try {
+        const { error } = await supabase.rpc('update_order_stage', {
+          p_order_id: orderId,
+          p_stage: 'washing',
+          p_action: 'assign_and_start',
+          p_employee_name: washer
+        });
+        if (error) throw error;
+        showToast(`Washing assigned to ${washer}`, 'success');
+        fetchOrderDetail();
+      } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+      }
+    }
+
+    async function handleSkipWashing() {
+      closeWashingModal();
+      try {
+        const { error } = await supabase.rpc('update_order_stage', {
+          p_order_id: orderId,
+          p_stage: 'washing',
+          p_action: 'skip'
+        });
+        if (error) throw error;
+        showToast('Washing skipped. Ready for cutting!', 'success');
+        fetchOrderDetail();
+      } catch (err) {
+        showToast('Error skipping washing: ' + err.message, 'error');
+      }
+    }
+
+    // Reassign Modal
+    function openReassignModal(stage) {
+      reassignTargetStage = stage;
+      document.getElementById('reassignModalTitle').textContent = `Reassign Staff for ${stage.toUpperCase()}`;
+      document.getElementById('reassignStaffInput').value = '';
+      document.getElementById('reassignNotesInput').value = '';
+      document.getElementById('reassignModal').classList.add('open');
+
+      const input = document.getElementById('reassignStaffInput');
+      const dropdown = document.getElementById('reassignDropdown');
+      function render(filter) {
+        const query = (filter || '').trim().toLowerCase();
+        const matches = allEmployees.filter(e => e.name.toLowerCase().includes(query));
+        let html = '';
+        if (query && !allEmployees.some(e => e.name.toLowerCase() === query)) {
+          html += `<div class="combobox-item" data-val="${escapeHtml(filter.trim())}">+ Add new: "${escapeHtml(filter.trim())}"</div>`;
+        }
+        matches.forEach(e => {
+          html += `<div class="combobox-item" data-val="${escapeHtml(e.name)}"><span>${escapeHtml(e.name)}</span></div>`;
+        });
+        dropdown.innerHTML = html;
+        dropdown.style.display = 'block';
+        dropdown.querySelectorAll('.combobox-item').forEach(el => {
+          el.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            input.value = el.getAttribute('data-val');
+            dropdown.style.display = 'none';
+          });
+        });
+      }
+      input.onfocus = () => render(input.value);
+      input.oninput = () => render(input.value);
+      input.onblur = () => { setTimeout(() => { dropdown.style.display = 'none'; }, 200); };
+    }
+    function closeReassignModal() { document.getElementById('reassignModal').classList.remove('open'); }
+
+    async function confirmReassign() {
+      const staffName = document.getElementById('reassignStaffInput').value.trim();
+      const notes = document.getElementById('reassignNotesInput').value.trim();
+      if (!staffName) {
+        showToast('Please specify a staff name.', 'error');
+        return;
+      }
+      closeReassignModal();
+      try {
+        const { error } = await supabase.rpc('update_order_stage', {
+          p_order_id: orderId,
+          p_stage: reassignTargetStage,
+          p_action: 'reassign',
+          p_employee_name: staffName,
+          p_notes: notes
+        });
+        if (error) throw error;
+        showToast(`Reassigned ${reassignTargetStage} to ${staffName}`, 'success');
+        fetchOrderDetail();
+      } catch (err) {
+        showToast('Error reassigning: ' + err.message, 'error');
+      }
+    }
+
+    // Delivered Modal
+    function openDeliveredModal() {
+      if (currentProfile && !['admin', 'manager'].includes(currentProfile.role)) {
+        showToast('Permission denied: Only Admin or Manager can mark Delivered.', 'error');
+        return;
+      }
+      document.getElementById('deliveredModal').classList.add('open');
+    }
+    function closeDeliveredModal() { document.getElementById('deliveredModal').classList.remove('open'); }
+
+    async function confirmDelivered() {
+      const notes = document.getElementById('deliveredNotes').value.trim();
+      closeDeliveredModal();
+      try {
+        const { error } = await supabase.rpc('update_order_stage', {
+          p_order_id: orderId,
+          p_stage: 'delivered',
+          p_action: 'complete',
+          p_notes: notes
+        });
+        if (error) throw error;
+        showToast('Order marked as Delivered!', 'success');
+        fetchOrderDetail();
+      } catch (err) {
+        showToast('Error marking delivered: ' + err.message, 'error');
+      }
+    }
+
+    // History Timeline Render
+    function renderHistory() {
+      const timeline = document.getElementById('orderHistoryTimeline');
+      if (orderHistory.length === 0) {
+        timeline.innerHTML = `<p style="font-size:13px; color:var(--text-muted);">No history recorded yet.</p>`;
+        return;
+      }
+
+      timeline.innerHTML = orderHistory.map(item => {
+        const timeStr = new Date(item.created_at).toLocaleDateString([], {
+          month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+        const actor = item.actor_name || 'Staff';
+        return `
+          <div class="history-entry">
+            <div class="history-bullet">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle></svg>
+            </div>
+            <div>
+              <div><strong>${escapeHtml(actor)}</strong> &bull; <span style="text-transform:capitalize; font-weight:600; color:var(--navy-primary);">${escapeHtml(item.action)}</span> on <strong>${escapeHtml(item.stage || 'order')}</strong></div>
+              ${item.employee_name ? `<div style="font-size:12px; color:#475569;">Staff: ${escapeHtml(item.employee_name)}</div>` : ''}
+              <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">${timeStr}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Realtime Subscriptions for this Order
+    function setupRealtime() {
+      supabase.channel(`order-${orderId}`)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'orders', filter: `id=eq.${orderId}` }, () => fetchOrderDetail())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'order_stages', filter: `order_id=eq.${orderId}` }, () => fetchOrderDetail())
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'order_history', filter: `order_id=eq.${orderId}` }, () => fetchOrderDetail())
+        .subscribe();
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(console.warn);
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', initAuth);
+  </script>
+</body>
+</html>

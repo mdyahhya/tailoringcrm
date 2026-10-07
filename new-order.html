@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book New Order | Iqbal Fashion CRM</title>
+  <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#12306B">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Iqbal CRM">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png">
+  <style>
+    /* ==============================================================================
+       DESIGN SYSTEM: PURE WHITE, BLACK, NAVY ACCENT (#12306B), MUTED STATUSES
+       ============================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    :root {
+      --bg-white: #FFFFFF;
+      --bg-canvas: #F8FAFC;
+      --text-black: #0A0A0A;
+      --text-muted: #64748B;
+      --border-light: #E2E8F0;
+      --navy-primary: #12306B;
+      --navy-hover: #1E3A8A;
+      --navy-light: #EFF6FF;
+      --sidebar-width: 260px;
+      --topbar-height: 64px;
+      --bottom-bar-height: 64px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --success: #16A34A;
+      --success-bg: #F0FDF4;
+      --warning: #D97706;
+      --warning-bg: #FFFBEB;
+      --danger: #DC2626;
+      --danger-bg: #FEF2F2;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--text-black);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--bg-white);
+      border-right: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .sidebar-brand {
+      height: var(--topbar-height);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .brand-badge {
+      width: 36px;
+      height: 36px;
+      background-color: var(--navy-primary);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .brand-meta { display: flex; flex-direction: column; }
+    .brand-name { font-weight: 700; font-size: 15px; letter-spacing: -0.01em; color: var(--text-black); }
+    .brand-sub { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .sidebar-nav { flex: 1; overflow-y: auto; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
+    .nav-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #94A3B8; padding: 8px 12px 4px; margin-top: 8px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; color: #334155; text-decoration: none; min-height: 44px; }
+    .nav-item svg { width: 20px; height: 20px; flex-shrink: 0; stroke-width: 1.75; }
+    .nav-item:hover { background-color: #F1F5F9; color: var(--navy-primary); }
+    .nav-item.active { background-color: var(--navy-primary); color: #FFFFFF; font-weight: 600; }
+    .sidebar-user { padding: 16px; border-top: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
+    .user-info { display: flex; flex-direction: column; overflow: hidden; }
+    .user-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-role-badge { display: inline-block; font-size: 11px; font-weight: 600; text-transform: capitalize; color: var(--navy-primary); }
+    .btn-logout { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 6px; }
+
+    /* ===== MAIN CONTENT & TOPBAR ===== */
+    .app-main { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; min-width: 0; }
+    .topbar {
+      height: var(--topbar-height);
+      background-color: var(--bg-white);
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 16px; }
+    .menu-toggle { display: none; background: none; border: none; color: var(--text-black); padding: 8px; cursor: pointer; min-height: 44px; min-width: 44px; align-items: center; justify-content: center; }
+    .page-heading h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; color: var(--text-black); }
+    .page-heading p { font-size: 12px; color: var(--text-muted); }
+    .topbar-actions { display: flex; align-items: center; gap: 12px; }
+
+    .content-body {
+      padding: 24px;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Form Container */
+    .form-card {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 32px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    }
+    .form-section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-light);
+      margin-bottom: 20px;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .form-col-full { grid-column: 1 / -1; }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+    }
+    .form-group label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1E293B;
+    }
+    .form-group label .required {
+      color: var(--danger);
+      margin-left: 2px;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      padding: 10px 14px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      background-color: #FFFFFF;
+      color: var(--text-black);
+      outline: none;
+      min-height: 44px;
+      font-family: inherit;
+      transition: border-color 0.15s ease;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: var(--navy-primary);
+      box-shadow: 0 0 0 3px rgba(18, 48, 107, 0.1);
+    }
+    .form-group textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+    .field-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Combobox Styles */
+    .combobox-container {
+      position: relative;
+      width: 100%;
+    }
+    .combobox-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #FFFFFF;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      max-height: 220px;
+      overflow-y: auto;
+      z-index: 200;
+      margin-top: 4px;
+    }
+    .combobox-item {
+      padding: 10px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #F1F5F9;
+    }
+    .combobox-item:last-child { border-bottom: none; }
+    .combobox-item:hover, .combobox-item.active {
+      background-color: var(--navy-light);
+      color: var(--navy-primary);
+    }
+    .combobox-item-new {
+      background-color: #FEF9C3;
+      color: #854D0E;
+      font-weight: 600;
+    }
+    .combobox-item-new:hover {
+      background-color: #FEF08A;
+    }
+
+    /* Date Quick Chips */
+    .chips-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+    .date-chip {
+      background-color: #F1F5F9;
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.1s ease;
+    }
+    .date-chip:hover {
+      background-color: var(--navy-primary);
+      color: #FFFFFF;
+      border-color: var(--navy-primary);
+    }
+
+    /* Step 1 Measurement Accent Panel */
+    .measurement-box {
+      background-color: #F8FAFC;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .measurement-badge-info {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--navy-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Action Buttons */
+    .form-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 14px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-light);
+    }
+    .btn-cancel {
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+      background-color: #FFFFFF;
+      font-size: 14px;
+      font-weight: 600;
+      color: #475569;
+      text-decoration: none;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+    .btn-submit-order {
+      background-color: var(--navy-primary);
+      color: #FFFFFF;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      transition: background-color 0.15s ease;
+    }
+    .btn-submit-order:hover {
+      background-color: var(--navy-hover);
+    }
+    .btn-submit-order:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Mobile bottom bar & toast */
+    .drawer-overlay { display: none; position: fixed; inset: 0; background-color: rgba(0,0,0,0.4); z-index: 99; }
+    .bottom-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: var(--bottom-bar-height); background-color: #FFFFFF; border-top: 1px solid var(--border-light); z-index: 100; justify-content: space-around; align-items: center; }
+    .bottom-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #64748B; font-size: 10px; font-weight: 500; gap: 2px; flex: 1; height: 100%; }
+    .bottom-nav-item svg { width: 22px; height: 22px; stroke-width: 1.75; }
+    .bottom-nav-item.active { color: var(--navy-primary); font-weight: 700; }
+    .bottom-nav-fab { width: 44px; height: 44px; border-radius: 50%; background-color: var(--navy-primary); color: #FFFFFF; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(18, 48, 107, 0.3); margin-top: -12px; }
+    .bottom-nav-fab svg { width: 24px; height: 24px; color: #FFFFFF; }
+
+    .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+    .toast-card { pointer-events: auto; background-color: #0A0A0A; color: #FFFFFF; padding: 12px 18px; border-radius: var(--radius-sm); font-size: 13px; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .drawer-overlay.open { display: block; }
+      .app-main { margin-left: 0; padding-bottom: var(--bottom-bar-height); }
+      .menu-toggle { display: flex; }
+      .bottom-bar { display: flex; }
+      .content-body { padding: 16px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="drawerOverlay" class="drawer-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-badge">IF</div>
+      <div class="brand-meta">
+        <span class="brand-name">Iqbal Fashion</span>
+        <span class="brand-sub">Tailoring CRM</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Core Pipeline</div>
+      <a href="/index.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="/orders.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 12h6M9 16h6"></path></svg>
+        <span>Orders Board</span>
+      </a>
+      <a href="/new-order.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+        <span>Book New Order</span>
+      </a>
+
+      <div class="nav-label">Management</div>
+      <a href="/customers.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <span>Customers</span>
+      </a>
+      <a href="/employees.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+        <span>Tailor Staff</span>
+      </a>
+      <a href="/history.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <span>Activity Log</span>
+      </a>
+      <a href="/notifications.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <span>Notifications</span>
+      </a>
+
+      <div class="nav-label">System</div>
+      <a href="/settings.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span>Settings & PWA</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-info">
+        <span class="user-name" id="userNameLabel">Loading...</span>
+        <span class="user-role-badge" id="userRoleBadge">Staff</span>
+      </div>
+      <button class="btn-logout" id="logoutBtn" title="Sign Out">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="app-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <div class="page-heading">
+          <h1>Book New Order</h1>
+          <p>Register customer garment & step 1 measurement</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="content-body">
+      <div class="form-card">
+        <form id="newOrderForm" autocomplete="off">
+
+          <!-- 1. Customer Section -->
+          <h2 class="form-section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span>Customer Information</span>
+          </h2>
+
+          <div class="form-grid">
+            <!-- Customer Combobox -->
+            <div class="form-group">
+              <label for="customerComboboxInput">Customer Name <span class="required">*</span></label>
+              <div class="combobox-container">
+                <input type="text" id="customerComboboxInput" placeholder="Type or select customer name..." required>
+                <div class="combobox-dropdown" id="customerDropdown"></div>
+              </div>
+              <span class="field-hint">Existing names appear; typing a new name auto-saves it</span>
+            </div>
+
+            <div class="form-group">
+              <label for="customerPhoneInput">Phone Number (Optional)</label>
+              <input type="tel" id="customerPhoneInput" placeholder="e.g. +91 98200 00000">
+              <span class="field-hint">Auto-fills if selecting an existing customer</span>
+            </div>
+          </div>
+
+          <!-- 2. Garment Details Section -->
+          <h2 class="form-section-title" style="margin-top: 28px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"></path></svg>
+            <span>Garment & Cloth Details</span>
+          </h2>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="garmentTypeSelect">Garment Type <span class="required">*</span></label>
+              <select id="garmentTypeSelect" required>
+                <option value="Shirt">Shirt</option>
+                <option value="Pant">Pant</option>
+                <option value="Suit (2-Piece)">Suit (2-Piece)</option>
+                <option value="Suit (3-Piece)">Suit (3-Piece)</option>
+                <option value="Kurta">Kurta</option>
+                <option value="Pyjama">Pyjama</option>
+                <option value="Sherwani">Sherwani</option>
+                <option value="Safari Suit">Safari Suit</option>
+                <option value="Waistcoat / Sadri">Waistcoat / Sadri</option>
+                <option value="Blouse">Blouse</option>
+                <option value="Pathani Suit">Pathani Suit</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="quantityInput">Quantity</label>
+              <input type="number" id="quantityInput" min="1" value="1" required>
+            </div>
+
+            <div class="form-group form-col-full">
+              <label for="clothMaterialInput">Cloth Material / Fabric Description</label>
+              <input type="text" id="clothMaterialInput" placeholder="e.g. Italian Cotton, Raymond Wool, Customer Self Fabric">
+            </div>
+
+            <div class="form-group form-col-full">
+              <label for="expectedDeliveryDateInput">Expected Delivery Date (Optional)</label>
+              <input type="date" id="expectedDeliveryDateInput">
+              <div class="chips-row">
+                <span class="date-chip" onclick="setQuickDeliveryDate(3)">+3 Days</span>
+                <span class="date-chip" onclick="setQuickDeliveryDate(5)">+5 Days</span>
+                <span class="date-chip" onclick="setQuickDeliveryDate(7)">+7 Days (1 Week)</span>
+                <span class="date-chip" onclick="setQuickDeliveryDate(14)">+14 Days (2 Weeks)</span>
+              </div>
+            </div>
+
+            <div class="form-group form-col-full">
+              <label for="orderNotesInput">Order Notes & Fitting Instructions</label>
+              <textarea id="orderNotesInput" placeholder="Collar style, cuff type, special pocket requirements, etc."></textarea>
+            </div>
+          </div>
+
+          <!-- 3. Pipeline Step 1: Measurement -->
+          <h2 class="form-section-title" style="margin-top: 28px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 6H3"></path><path d="M21 12H3"></path><path d="M21 18H3"></path></svg>
+            <span>Step 1: Measurement (Required)</span>
+          </h2>
+
+          <div class="measurement-box">
+            <div class="measurement-badge-info">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+              <span>This records who took the customer's physical measurements upon booking.</span>
+            </div>
+
+            <div class="form-grid">
+              <!-- Measurer Combobox -->
+              <div class="form-group">
+                <label for="measurerComboboxInput">Measured By <span class="required">*</span></label>
+                <div class="combobox-container">
+                  <input type="text" id="measurerComboboxInput" placeholder="Type or select measurer name..." required>
+                  <div class="combobox-dropdown" id="measurerDropdown"></div>
+                </div>
+                <span class="field-hint">Filtered by staff with measurement role; new names auto-saved</span>
+              </div>
+
+              <div class="form-group">
+                <label for="measurerPhoneInput">Measurer Phone (Optional)</label>
+                <input type="tel" id="measurerPhoneInput" placeholder="Optional staff phone">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <a href="/orders.html" class="btn-cancel">Cancel</a>
+            <button type="submit" class="btn-submit-order" id="btnSubmit">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"></path></svg>
+              <span id="btnSubmitText">Save & Generate Order</span>
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-bar">
+    <a href="/index.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="/orders.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+      <span>Orders</span>
+    </a>
+    <a href="/new-order.html" class="bottom-nav-item active">
+      <div class="bottom-nav-fab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </div>
+      <span>New</span>
+    </a>
+    <a href="/customers.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+      <span>Clients</span>
+    </a>
+    <a href="/notifications.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+      <span>Alerts</span>
+    </a>
+  </nav>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+  <script>
+    /* ===== SHARED: SUPABASE CLIENT CONFIG ===== */
+    const SUPABASE_URL = "https://ajapvxdpxifdhvvszuhp.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqYXB2eGRweGlmZGh2dnN6dWhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU3ODk5NTMsImV4cCI6MjA4MTM2NTk1M30.iC9U-MQC6VYZNXd_RugA6_hxZwrhYRsapffOYDCikio";
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true }
+    });
+
+    let existingCustomers = [];
+    let existingEmployees = [];
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast-card';
+      toast.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span>${escapeHtml(message)}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.2s ease';
+        setTimeout(() => toast.remove(), 200);
+      }, 3500);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('drawerOverlay').classList.toggle('open');
+    }
+
+    function setQuickDeliveryDate(days) {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      document.getElementById('expectedDeliveryDateInput').value = d.toISOString().split('T')[0];
+    }
+
+    async function initAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        window.location.replace('/login.html?redirect=' + encodeURIComponent(window.location.pathname));
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      if (profile && !profile.is_active) {
+        await supabase.auth.signOut();
+        window.location.replace('/login.html');
+        return;
+      }
+
+      const userName = (profile && profile.full_name) || session.user.email.split('@')[0];
+      const userRole = (profile && profile.role) || 'manager';
+      document.getElementById('userNameLabel').textContent = userName;
+      document.getElementById('userRoleBadge').textContent = userRole.toUpperCase();
+
+      document.getElementById('logoutBtn').addEventListener('click', async () => {
+        await supabase.auth.signOut();
+        window.location.replace('/login.html');
+      });
+
+      // Default expected date to +5 days
+      setQuickDeliveryDate(5);
+
+      await loadLookupData();
+      initComboboxes();
+    }
+
+    async function loadLookupData() {
+      const [{ data: customers }, { data: employees }] = await Promise.all([
+        supabase.from('customers').select('id, name, phone').order('name'),
+        supabase.from('employees').select('id, name, phone, roles').eq('is_active', true).order('name')
+      ]);
+
+      existingCustomers = customers || [];
+      existingEmployees = employees || [];
+    }
+
+    // Combobox Implementation
+    function initComboboxes() {
+      // 1. Customer Combobox
+      const custInput = document.getElementById('customerComboboxInput');
+      const custDropdown = document.getElementById('customerDropdown');
+      const custPhone = document.getElementById('customerPhoneInput');
+
+      function renderCustomerOptions(filterText) {
+        const query = (filterText || '').trim().toLowerCase();
+        const matches = existingCustomers.filter(c => c.name.toLowerCase().includes(query));
+
+        let html = '';
+        if (query && !existingCustomers.some(c => c.name.toLowerCase() === query)) {
+          html += `
+            <div class="combobox-item combobox-item-new" data-action="new" data-val="${escapeHtml(filterText.trim())}">
+              <span>+ Add new customer: "${escapeHtml(filterText.trim())}"</span>
+              <small>(will be saved)</small>
+            </div>
+          `;
+        }
+
+        matches.forEach(c => {
+          html += `
+            <div class="combobox-item" data-action="select" data-id="${c.id}" data-name="${escapeHtml(c.name)}" data-phone="${escapeHtml(c.phone || '')}">
+              <span>${escapeHtml(c.name)}</span>
+              ${c.phone ? `<small style="color:var(--text-muted);">${escapeHtml(c.phone)}</small>` : ''}
+            </div>
+          `;
+        });
+
+        if (!html) {
+          html = `<div style="padding:12px; font-size:12px; color:var(--text-muted); text-align:center;">Type any new customer name to add</div>`;
+        }
+
+        custDropdown.innerHTML = html;
+        custDropdown.style.display = 'block';
+
+        custDropdown.querySelectorAll('.combobox-item').forEach(el => {
+          el.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            const action = el.getAttribute('data-action');
+            if (action === 'new') {
+              custInput.value = el.getAttribute('data-val');
+            } else {
+              custInput.value = el.getAttribute('data-name');
+              const phone = el.getAttribute('data-phone');
+              if (phone) custPhone.value = phone;
+            }
+            custDropdown.style.display = 'none';
+          });
+        });
+      }
+
+      custInput.addEventListener('focus', () => renderCustomerOptions(custInput.value));
+      custInput.addEventListener('input', () => renderCustomerOptions(custInput.value));
+      custInput.addEventListener('blur', () => {
+        setTimeout(() => { custDropdown.style.display = 'none'; }, 200);
+      });
+
+      // 2. Measurer Combobox
+      const measurerInput = document.getElementById('measurerComboboxInput');
+      const measurerDropdown = document.getElementById('measurerDropdown');
+      const measurerPhone = document.getElementById('measurerPhoneInput');
+
+      function renderMeasurerOptions(filterText) {
+        const query = (filterText || '').trim().toLowerCase();
+        // Priority to employees with measurement role, but show all matching
+        const matches = existingEmployees.filter(e => e.name.toLowerCase().includes(query));
+
+        let html = '';
+        if (query && !existingEmployees.some(e => e.name.toLowerCase() === query)) {
+          html += `
+            <div class="combobox-item combobox-item-new" data-action="new" data-val="${escapeHtml(filterText.trim())}">
+              <span>+ Add new staff: "${escapeHtml(filterText.trim())}"</span>
+              <small>(will be saved with measurement role)</small>
+            </div>
+          `;
+        }
+
+        matches.forEach(e => {
+          const isMeasurer = e.roles && e.roles.includes('measurement');
+          html += `
+            <div class="combobox-item" data-action="select" data-id="${e.id}" data-name="${escapeHtml(e.name)}" data-phone="${escapeHtml(e.phone || '')}">
+              <span>${escapeHtml(e.name)}</span>
+              <small style="color:${isMeasurer ? 'var(--navy-primary)' : 'var(--text-muted)'};">${isMeasurer ? 'Measurer' : 'Staff'}</small>
+            </div>
+          `;
+        });
+
+        measurerDropdown.innerHTML = html;
+        measurerDropdown.style.display = 'block';
+
+        measurerDropdown.querySelectorAll('.combobox-item').forEach(el => {
+          el.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            const action = el.getAttribute('data-action');
+            if (action === 'new') {
+              measurerInput.value = el.getAttribute('data-val');
+            } else {
+              measurerInput.value = el.getAttribute('data-name');
+              const phone = el.getAttribute('data-phone');
+              if (phone) measurerPhone.value = phone;
+            }
+            measurerDropdown.style.display = 'none';
+          });
+        });
+      }
+
+      measurerInput.addEventListener('focus', () => renderMeasurerOptions(measurerInput.value));
+      measurerInput.addEventListener('input', () => renderMeasurerOptions(measurerInput.value));
+      measurerInput.addEventListener('blur', () => {
+        setTimeout(() => { measurerDropdown.style.display = 'none'; }, 200);
+      });
+    }
+
+    // Form Submission: Atomic RPC Call
+    const form = document.getElementById('newOrderForm');
+    const submitBtn = document.getElementById('btnSubmit');
+    const submitText = document.getElementById('btnSubmitText');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const customerName = document.getElementById('customerComboboxInput').value.trim();
+      const customerPhone = document.getElementById('customerPhoneInput').value.trim();
+      const garmentType = document.getElementById('garmentTypeSelect').value;
+      const quantity = parseInt(document.getElementById('quantityInput').value, 10) || 1;
+      const clothMaterial = document.getElementById('clothMaterialInput').value.trim();
+      const expectedDate = document.getElementById('expectedDeliveryDateInput').value || null;
+      const notes = document.getElementById('orderNotesInput').value.trim();
+      const measurerName = document.getElementById('measurerComboboxInput').value.trim();
+      const measurerPhone = document.getElementById('measurerPhoneInput').value.trim();
+
+      if (!customerName) {
+        showToast('Please provide a customer name.', 'error');
+        return;
+      }
+      if (!measurerName) {
+        showToast('Please specify who measured the garment.', 'error');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitText.textContent = 'Generating Order...';
+
+      try {
+        const { data, error } = await supabase.rpc('create_order_with_stages', {
+          p_customer_name: customerName,
+          p_customer_phone: customerPhone,
+          p_garment_type: garmentType,
+          p_cloth_material: clothMaterial,
+          p_quantity: quantity,
+          p_notes: notes,
+          p_expected_delivery_date: expectedDate,
+          p_measurer_name: measurerName,
+          p_measurer_phone: measurerPhone
+        });
+
+        if (error) throw error;
+
+        showToast(`Order ${data.order_no} created successfully!`, 'success');
+        setTimeout(() => {
+          window.location.replace(`/order-detail.html?id=${data.order_id}`);
+        }, 800);
+
+      } catch (err) {
+        console.error('Order creation error:', err);
+        showToast('Failed to create order: ' + err.message, 'error');
+        submitBtn.disabled = false;
+        submitText.textContent = 'Save & Generate Order';
+      }
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(console.warn);
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', initAuth);
+  </script>
+</body>
+</html>

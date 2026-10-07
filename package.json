@@ -1,0 +1,18 @@
+{
+  "name": "iqbal-fashion-tailoring-crm",
+  "version": "1.0.0",
+  "description": "Production Tailoring Order Tracking CRM for Iqbal Fashion",
+  "main": "api/send-push.js",
+  "private": true,
+  "scripts": {
+    "start": "npx serve -s .",
+    "test": "echo \"Ready for deployment\""
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "web-push": "^3.6.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

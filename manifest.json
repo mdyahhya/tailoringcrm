@@ -1,0 +1,61 @@
+{
+  "name": "Iqbal Fashion CRM",
+  "short_name": "Iqbal CRM",
+  "description": "Tailoring Order Tracking CRM for Iqbal Fashion",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#FFFFFF",
+  "theme_color": "#12306B",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/apple-touch-icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New Order",
+      "short_name": "New Order",
+      "description": "Book a new tailoring order",
+      "url": "/new-order.html",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Orders Board",
+      "short_name": "Orders",
+      "description": "View active pipeline orders",
+      "url": "/orders.html",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View shop overview metrics",
+      "url": "/index.html",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "categories": ["business", "productivity"]
+}

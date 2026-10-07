@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tailor Staff Management | Iqbal Fashion CRM</title>
+  <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#12306B">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Iqbal CRM">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png">
+  <style>
+    /* ==============================================================================
+       DESIGN SYSTEM: PURE WHITE, BLACK, NAVY ACCENT (#12306B)
+       ============================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    :root {
+      --bg-white: #FFFFFF;
+      --bg-canvas: #F8FAFC;
+      --text-black: #0A0A0A;
+      --text-muted: #64748B;
+      --border-light: #E2E8F0;
+      --navy-primary: #12306B;
+      --navy-hover: #1E3A8A;
+      --navy-light: #EFF6FF;
+      --sidebar-width: 260px;
+      --topbar-height: 64px;
+      --bottom-bar-height: 64px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --success: #16A34A;
+      --success-bg: #F0FDF4;
+      --warning: #D97706;
+      --danger: #DC2626;
+      --danger-bg: #FEF2F2;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--text-black);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--bg-white);
+      border-right: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .sidebar-brand {
+      height: var(--topbar-height);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .brand-badge {
+      width: 36px;
+      height: 36px;
+      background-color: var(--navy-primary);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .brand-meta { display: flex; flex-direction: column; }
+    .brand-name { font-weight: 700; font-size: 15px; letter-spacing: -0.01em; color: var(--text-black); }
+    .brand-sub { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .sidebar-nav { flex: 1; overflow-y: auto; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
+    .nav-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #94A3B8; padding: 8px 12px 4px; margin-top: 8px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; color: #334155; text-decoration: none; min-height: 44px; }
+    .nav-item svg { width: 20px; height: 20px; flex-shrink: 0; stroke-width: 1.75; }
+    .nav-item:hover { background-color: #F1F5F9; color: var(--navy-primary); }
+    .nav-item.active { background-color: var(--navy-primary); color: #FFFFFF; font-weight: 600; }
+    .sidebar-user { padding: 16px; border-top: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
+    .user-info { display: flex; flex-direction: column; overflow: hidden; }
+    .user-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-role-badge { display: inline-block; font-size: 11px; font-weight: 600; text-transform: capitalize; color: var(--navy-primary); }
+    .btn-logout { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 6px; }
+
+    /* ===== MAIN CONTENT & TOPBAR ===== */
+    .app-main { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; min-width: 0; }
+    .topbar {
+      height: var(--topbar-height);
+      background-color: var(--bg-white);
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 16px; }
+    .menu-toggle { display: none; background: none; border: none; color: var(--text-black); padding: 8px; cursor: pointer; min-height: 44px; min-width: 44px; align-items: center; justify-content: center; }
+    .page-heading h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; color: var(--text-black); }
+    .page-heading p { font-size: 12px; color: var(--text-muted); }
+
+    .content-body {
+      padding: 24px;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Controls Bar */
+    .controls-card {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .controls-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .role-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .role-tab-btn {
+      padding: 8px 14px;
+      background: #F1F5F9;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
+      text-transform: capitalize;
+    }
+    .role-tab-btn.active {
+      background: var(--navy-primary);
+      color: #FFFFFF;
+      border-color: var(--navy-primary);
+    }
+    .btn-add-staff {
+      background-color: var(--navy-primary);
+      color: #FFFFFF;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+    }
+    .btn-add-staff:hover { background-color: var(--navy-hover); }
+
+    /* Staff Cards Grid */
+    .staff-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .staff-card {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .staff-card:hover {
+      border-color: var(--navy-primary);
+      transform: translateY(-2px);
+    }
+    .staff-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .staff-name-h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-black);
+    }
+    .staff-phone {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .active-status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--success);
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+    .active-status-dot.inactive {
+      background-color: #94A3B8;
+    }
+
+    /* Roles Pills */
+    .roles-container {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .role-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background-color: var(--navy-light);
+      color: var(--navy-primary);
+      text-transform: capitalize;
+    }
+
+    /* Workload Metrics */
+    .workload-metrics-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #F8FAFC;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 12px;
+    }
+    .metric-workload {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .metric-workload-val {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy-primary);
+    }
+
+    .staff-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid #F1F5F9;
+      padding-top: 12px;
+    }
+    .btn-edit-staff {
+      background: none;
+      border: none;
+      color: var(--navy-primary);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-toggle-active {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* Modal Form */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1002;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: #FFFFFF;
+      border-radius: var(--radius-md);
+      max-width: 480px;
+      width: 100%;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .modal-form-group { display: flex; flex-direction: column; gap: 6px; }
+    .modal-form-group label { font-size: 12px; font-weight: 600; color: #1E293B; }
+    .modal-form-group input { padding: 10px 12px; border: 1px solid var(--border-light); border-radius: var(--radius-sm); font-size: 13px; outline: none; }
+    .roles-checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      background: #F8FAFC;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+    }
+    .role-check-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      text-transform: capitalize;
+    }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+
+    /* Mobile bottom bar & toast */
+    .drawer-overlay { display: none; position: fixed; inset: 0; background-color: rgba(0,0,0,0.4); z-index: 99; }
+    .bottom-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: var(--bottom-bar-height); background-color: #FFFFFF; border-top: 1px solid var(--border-light); z-index: 100; justify-content: space-around; align-items: center; }
+    .bottom-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #64748B; font-size: 10px; font-weight: 500; gap: 2px; flex: 1; height: 100%; }
+    .bottom-nav-item svg { width: 22px; height: 22px; stroke-width: 1.75; }
+    .bottom-nav-item.active { color: var(--navy-primary); font-weight: 700; }
+    .bottom-nav-fab { width: 44px; height: 44px; border-radius: 50%; background-color: var(--navy-primary); color: #FFFFFF; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(18, 48, 107, 0.3); margin-top: -12px; }
+    .bottom-nav-fab svg { width: 24px; height: 24px; color: #FFFFFF; }
+
+    .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+    .toast-card { pointer-events: auto; background-color: #0A0A0A; color: #FFFFFF; padding: 12px 18px; border-radius: var(--radius-sm); font-size: 13px; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .drawer-overlay.open { display: block; }
+      .app-main { margin-left: 0; padding-bottom: var(--bottom-bar-height); }
+      .menu-toggle { display: flex; }
+      .bottom-bar { display: flex; }
+      .content-body { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="drawerOverlay" class="drawer-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-badge">IF</div>
+      <div class="brand-meta">
+        <span class="brand-name">Iqbal Fashion</span>
+        <span class="brand-sub">Tailoring CRM</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Core Pipeline</div>
+      <a href="/index.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="/orders.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 12h6M9 16h6"></path></svg>
+        <span>Orders Board</span>
+      </a>
+      <a href="/new-order.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+        <span>Book New Order</span>
+      </a>
+
+      <div class="nav-label">Management</div>
+      <a href="/customers.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <span>Customers</span>
+      </a>
+      <a href="/employees.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+        <span>Tailor Staff</span>
+      </a>
+      <a href="/history.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <span>Activity Log</span>
+      </a>
+      <a href="/notifications.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <span>Notifications</span>
+      </a>
+
+      <div class="nav-label">System</div>
+      <a href="/settings.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span>Settings & PWA</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-info">
+        <span class="user-name" id="userNameLabel">Loading...</span>
+        <span class="user-role-badge" id="userRoleBadge">Staff</span>
+      </div>
+      <button class="btn-logout" id="logoutBtn" title="Sign Out">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main View -->
+  <div class="app-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <div class="page-heading">
+          <h1>Tailor Staff & Workload</h1>
+          <p id="staffSummaryLabel">Loading staff list...</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="content-body">
+      <!-- Controls & Role Tabs -->
+      <section class="controls-card">
+        <div class="controls-top">
+          <div class="role-tabs" id="roleTabs">
+            <button class="role-tab-btn active" data-role="all" onclick="filterByRole('all')">All Roles</button>
+            <button class="role-tab-btn" data-role="measurement" onclick="filterByRole('measurement')">Measurement</button>
+            <button class="role-tab-btn" data-role="washing" onclick="filterByRole('washing')">Washing</button>
+            <button class="role-tab-btn" data-role="cutting" onclick="filterByRole('cutting')">Cutting</button>
+            <button class="role-tab-btn" data-role="stitching" onclick="filterByRole('stitching')">Stitching</button>
+            <button class="role-tab-btn" data-role="finishing" onclick="filterByRole('finishing')">Finishing</button>
+          </div>
+          <button class="btn-add-staff" onclick="openAddStaffModal()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Add New Staff</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Staff Grid -->
+      <section class="staff-grid" id="staffGrid">
+        <div style="grid-column:1/-1; text-align:center; padding:32px; color:var(--text-muted);">Loading staff members...</div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Add/Edit Staff Modal -->
+  <div class="modal-backdrop" id="staffModal">
+    <div class="modal-box">
+      <h3 class="modal-title" id="modalStaffTitle">Add Tailor Staff Member</h3>
+      <div class="modal-form-group">
+        <label for="inputStaffName">Staff Full Name *</label>
+        <input type="text" id="inputStaffName" placeholder="e.g. Rashid Tailor" required>
+      </div>
+      <div class="modal-form-group">
+        <label for="inputStaffPhone">Phone Number (Optional)</label>
+        <input type="tel" id="inputStaffPhone" placeholder="e.g. +91 98201 11223">
+      </div>
+      <div class="modal-form-group">
+        <label>Roles (Can select multiple) *</label>
+        <div class="roles-checkbox-grid">
+          <label class="role-check-label"><input type="checkbox" name="roleCheck" value="measurement"> Measurement</label>
+          <label class="role-check-label"><input type="checkbox" name="roleCheck" value="washing"> Washing</label>
+          <label class="role-check-label"><input type="checkbox" name="roleCheck" value="cutting"> Cutting</label>
+          <label class="role-check-label"><input type="checkbox" name="roleCheck" value="stitching"> Stitching</label>
+          <label class="role-check-label"><input type="checkbox" name="roleCheck" value="finishing"> Finishing</label>
+          <label class="role-check-label"><input type="checkbox" name="roleCheck" value="other"> Other</label>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="role-tab-btn" onclick="closeStaffModal()">Cancel</button>
+        <button class="btn-add-staff" onclick="saveStaff()">Save Staff</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="bottom-bar">
+    <a href="/index.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="/orders.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+      <span>Orders</span>
+    </a>
+    <a href="/new-order.html" class="bottom-nav-item">
+      <div class="bottom-nav-fab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </div>
+      <span>New</span>
+    </a>
+    <a href="/customers.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+      <span>Clients</span>
+    </a>
+    <a href="/notifications.html" class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+      <span>Alerts</span>
+    </a>
+  </nav>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+  <script>
+    /* ===== SHARED: SUPABASE CLIENT CONFIG ===== */
+    const SUPABASE_URL = "https://ajapvxdpxifdhvvszuhp.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqYXB2eGRweGlmZGh2dnN6dWhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU3ODk5NTMsImV4cCI6MjA4MTM2NTk1M30.iC9U-MQC6VYZNXd_RugA6_hxZwrhYRsapffOYDCikio";
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true }
+    });
+
+    let rawEmployees = [];
+    let stageStats = {};
+    let currentRoleFilter = 'all';
+    let editingStaffId = null;
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast-card';
+      toast.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span>${escapeHtml(message)}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.2s ease';
+        setTimeout(() => toast.remove(), 200);
+      }, 3500);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('drawerOverlay').classList.toggle('open');
+    }
+
+    async function initAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        window.location.replace('/login.html?redirect=' + encodeURIComponent(window.location.pathname));
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      if (profile && !profile.is_active) {
+        await supabase.auth.signOut();
+        window.location.replace('/login.html');
+        return;
+      }
+
+      document.getElementById('userNameLabel').textContent = (profile && profile.full_name) || session.user.email.split('@')[0];
+      document.getElementById('userRoleBadge').textContent = ((profile && profile.role) || 'manager').toUpperCase();
+
+      document.getElementById('logoutBtn').addEventListener('click', async () => {
+        await supabase.auth.signOut();
+        window.location.replace('/login.html');
+      });
+
+      await fetchStaffData();
+    }
+
+    async function fetchStaffData() {
+      try {
+        const [{ data: employees, error: empErr }, { data: stages, error: stgErr }] = await Promise.all([
+          supabase.from('employees').select('*').order('name'),
+          supabase.from('order_stages').select('employee_id, status')
+        ]);
+
+        if (empErr) throw empErr;
+        if (stgErr) throw stgErr;
+
+        rawEmployees = employees || [];
+
+        // Calculate workload stats per employee
+        stageStats = {};
+        (stages || []).forEach(stg => {
+          if (!stg.employee_id) return;
+          if (!stageStats[stg.employee_id]) {
+            stageStats[stg.employee_id] = { inProgress: 0, done: 0 };
+          }
+          if (stg.status === 'in_progress') stageStats[stg.employee_id].inProgress++;
+          if (stg.status === 'done') stageStats[stg.employee_id].done++;
+        });
+
+        document.getElementById('staffSummaryLabel').textContent = `Total ${rawEmployees.length} staff members registered`;
+        renderGrid();
+
+      } catch (err) {
+        console.error('Fetch staff error:', err);
+        showToast('Error loading staff: ' + err.message, 'error');
+      }
+    }
+
+    function filterByRole(role) {
+      currentRoleFilter = role;
+      document.querySelectorAll('.role-tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-role') === role);
+      });
+      renderGrid();
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById('staffGrid');
+      const filtered = rawEmployees.filter(e => {
+        if (currentRoleFilter === 'all') return true;
+        return e.roles && e.roles.includes(currentRoleFilter);
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:32px; color:var(--text-muted);">No staff members found for role "${currentRoleFilter}".</div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(e => {
+        const stats = stageStats[e.id] || { inProgress: 0, done: 0 };
+        const rolesList = (e.roles || []).map(r => `<span class="role-badge">${escapeHtml(r)}</span>`).join('');
+
+        return `
+          <div class="staff-card">
+            <div class="staff-card-header">
+              <div>
+                <div class="staff-name-h3">${escapeHtml(e.name)}</div>
+                <div class="staff-phone">${escapeHtml(e.phone || 'No phone set')}</div>
+              </div>
+              <span class="active-status-dot ${e.is_active ? '' : 'inactive'}" title="${e.is_active ? 'Active' : 'Inactive'}"></span>
+            </div>
+
+            <div class="roles-container">
+              ${rolesList || '<span class="role-badge">General</span>'}
+            </div>
+
+            <div class="workload-metrics-bar">
+              <div class="metric-workload">
+                <span class="metric-workload-val">${stats.inProgress}</span>
+                <span style="color:var(--text-muted);">In Progress</span>
+              </div>
+              <div class="metric-workload">
+                <span class="metric-workload-val" style="color:var(--success);">${stats.done}</span>
+                <span style="color:var(--text-muted);">Completed</span>
+              </div>
+            </div>
+
+            <div class="staff-card-footer">
+              <button class="btn-edit-staff" onclick="openEditStaffModal('${e.id}')">Edit Details</button>
+              <button class="btn-toggle-active" onclick="toggleActiveStaff('${e.id}', ${!e.is_active})">
+                ${e.is_active ? 'Deactivate' : 'Activate'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Modal Add / Edit
+    function openAddStaffModal() {
+      editingStaffId = null;
+      document.getElementById('modalStaffTitle').textContent = 'Add Tailor Staff Member';
+      document.getElementById('inputStaffName').value = '';
+      document.getElementById('inputStaffPhone').value = '';
+      document.querySelectorAll('input[name="roleCheck"]').forEach(cb => cb.checked = false);
+      document.getElementById('staffModal').classList.add('open');
+    }
+
+    function openEditStaffModal(id) {
+      const e = rawEmployees.find(item => item.id === id);
+      if (!e) return;
+      editingStaffId = id;
+      document.getElementById('modalStaffTitle').textContent = 'Edit Tailor Staff Member';
+      document.getElementById('inputStaffName').value = e.name;
+      document.getElementById('inputStaffPhone').value = e.phone || '';
+      const roles = e.roles || [];
+      document.querySelectorAll('input[name="roleCheck"]').forEach(cb => {
+        cb.checked = roles.includes(cb.value);
+      });
+      document.getElementById('staffModal').classList.add('open');
+    }
+
+    function closeStaffModal() {
+      document.getElementById('staffModal').classList.remove('open');
+    }
+
+    async function saveStaff() {
+      const name = document.getElementById('inputStaffName').value.trim();
+      const phone = document.getElementById('inputStaffPhone').value.trim();
+      const selectedRoles = [];
+      document.querySelectorAll('input[name="roleCheck"]:checked').forEach(cb => {
+        selectedRoles.push(cb.value);
+      });
+
+      if (!name) {
+        showToast('Staff name is required', 'error');
+        return;
+      }
+      if (selectedRoles.length === 0) {
+        showToast('Please select at least one role', 'error');
+        return;
+      }
+
+      closeStaffModal();
+
+      try {
+        if (editingStaffId) {
+          const { error } = await supabase
+            .from('employees')
+            .update({ name, phone: phone || null, roles: selectedRoles })
+            .eq('id', editingStaffId);
+          if (error) throw error;
+          showToast('Staff updated', 'success');
+        } else {
+          const { error } = await supabase
+            .from('employees')
+            .insert({ name, phone: phone || null, roles: selectedRoles, is_active: true });
+          if (error) throw error;
+          showToast('Staff member added', 'success');
+        }
+        await fetchStaffData();
+      } catch (err) {
+        showToast('Error saving: ' + err.message, 'error');
+      }
+    }
+
+    async function toggleActiveStaff(id, newStatus) {
+      try {
+        const { error } = await supabase
+          .from('employees')
+          .update({ is_active: newStatus })
+          .eq('id', id);
+        if (error) throw error;
+        showToast(`Staff marked as ${newStatus ? 'Active' : 'Inactive'}`, 'success');
+        await fetchStaffData();
+      } catch (err) {
+        showToast('Error updating status: ' + err.message, 'error');
+      }
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(console.warn);
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', initAuth);
+  </script>
+</body>
+</html>
