@@ -254,7 +254,7 @@
               <polyline points="22,6 12,13 2,6"></polyline>
             </svg>
           </div>
-          <input type="email" id="email" name="email" placeholder="staff@iqbalfashion.com" required autofocus>
+          <input type="text" id="email" name="email" inputmode="email" placeholder="admin@iqbal or email" required autofocus>
         </div>
       </div>
 
@@ -369,14 +369,35 @@
       btnSpinner.style.display = 'inline-block';
       btnText.textContent = 'Signing In...';
 
-      const email = document.getElementById('email').value.trim();
+      const rawInput = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
 
+      // Automatically support "admin@iqbal" or standard email
+      let primaryEmail = rawInput;
+      if (!primaryEmail.includes('@')) {
+        primaryEmail = primaryEmail + '@iqbal.com';
+      } else if (!primaryEmail.includes('.')) {
+        primaryEmail = primaryEmail + '.com';
+      }
+
       try {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: email,
+        let authResult = await supabase.auth.signInWithPassword({
+          email: primaryEmail,
           password: password
         });
+
+        // Fallback to raw input if normalization didn't match
+        if (authResult.error && rawInput !== primaryEmail) {
+          const fallbackResult = await supabase.auth.signInWithPassword({
+            email: rawInput,
+            password: password
+          });
+          if (!fallbackResult.error) {
+            authResult = fallbackResult;
+          }
+        }
+
+        const { data, error } = authResult;
 
         if (error) {
           showError(error.message || 'Failed to authenticate. Please check email and password.');
