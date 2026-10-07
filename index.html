@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="mr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard | Iqbal Fashion Tailoring CRM</title>
+  <title>चालू ऑर्डर्स | Iqbal Fashion Tailoring CRM</title>
   <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#12306B">
@@ -12,26 +12,18 @@
   <meta name="apple-mobile-web-app-title" content="Iqbal CRM">
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png">
   <style>
-    /* ==============================================================================
-       DESIGN SYSTEM: PURE WHITE, BLACK, NAVY ACCENT (#12306B), MUTED STATUSES
-       ============================================================================== */
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --bg-white: #FFFFFF;
       --bg-canvas: #F8FAFC;
-      --text-black: #0A0A0A;
+      --text-black: #0F172A;
       --text-muted: #64748B;
       --border-light: #E2E8F0;
       --navy-primary: #12306B;
       --navy-hover: #1E3A8A;
       --navy-light: #EFF6FF;
-      --sidebar-width: 260px;
+      --sidebar-width: 250px;
       --topbar-height: 64px;
-      --bottom-bar-height: 64px;
       --radius-sm: 6px;
       --radius-md: 10px;
       --radius-lg: 14px;
@@ -54,7 +46,7 @@
       line-height: 1.5;
     }
 
-    /* ===== SIDEBAR STYLING ===== */
+    /* ===== SIDEBAR ===== */
     .sidebar {
       width: var(--sidebar-width);
       background-color: var(--bg-white);
@@ -62,1104 +54,777 @@
       display: flex;
       flex-direction: column;
       position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 0;
+      top: 0; bottom: 0; left: 0;
       z-index: 100;
-      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 0.25s ease;
     }
     .sidebar-brand {
       height: var(--topbar-height);
-      padding: 0 20px;
+      padding: 0 18px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       border-bottom: 1px solid var(--border-light);
     }
     .brand-badge {
-      width: 36px;
-      height: 36px;
+      width: 36px; height: 36px;
       background-color: var(--navy-primary);
       border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #FFFFFF;
-      font-weight: 700;
-      font-size: 15px;
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: #FFFFFF; font-weight: 700; font-size: 15px; flex-shrink: 0;
     }
-    .brand-meta {
-      display: flex;
-      flex-direction: column;
-    }
-    .brand-name {
-      font-weight: 700;
-      font-size: 15px;
-      letter-spacing: -0.01em;
-      color: var(--text-black);
-    }
-    .brand-sub {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .sidebar-nav {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .nav-label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #94A3B8;
-      padding: 8px 12px 4px;
-      margin-top: 8px;
-    }
+    .brand-name { font-weight: 700; font-size: 15px; color: var(--text-black); }
+    .brand-sub { font-size: 11px; color: var(--text-muted); }
+    .sidebar-nav { padding: 14px 10px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
     .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 12px;
-      border-radius: var(--radius-sm);
-      font-size: 14px;
-      font-weight: 500;
-      color: #334155;
-      text-decoration: none;
-      transition: background-color 0.15s ease, color 0.15s ease;
-      min-height: 44px;
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: var(--radius-sm);
+      color: #334155; font-size: 13px; font-weight: 600;
+      text-decoration: none; transition: all 0.15s ease;
     }
-    .nav-item svg {
-      width: 20px;
-      height: 20px;
-      flex-shrink: 0;
-      stroke-width: 1.75;
-    }
-    .nav-item:hover {
-      background-color: #F1F5F9;
-      color: var(--navy-primary);
-    }
-    .nav-item.active {
-      background-color: var(--navy-primary);
-      color: #FFFFFF;
-      font-weight: 600;
-    }
-    .nav-item.active svg {
-      color: #FFFFFF;
-    }
-    .sidebar-user {
-      padding: 16px;
-      border-top: 1px solid var(--border-light);
-      background-color: #FFFFFF;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .user-info {
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    .user-name {
-      font-size: 13px;
-      font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .user-role-badge {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: capitalize;
-      color: var(--navy-primary);
-    }
-    .btn-logout {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      padding: 6px;
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .btn-logout:hover {
-      background-color: #FEE2E2;
-      color: var(--danger);
-    }
+    .nav-item:hover { background-color: var(--navy-light); color: var(--navy-primary); }
+    .nav-item.active { background-color: var(--navy-primary); color: #FFFFFF; }
+    .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .sidebar-footer { padding: 14px; border-top: 1px solid var(--border-light); font-size: 12px; }
 
-    /* ===== MAIN CONTENT & TOPBAR ===== */
-    .app-main {
-      flex: 1;
+    /* ===== MAIN CONTENT ===== */
+    .main-wrapper {
       margin-left: var(--sidebar-width);
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
+      flex: 1; min-width: 0;
+      display: flex; flex-direction: column;
+      min-height: 100vh;
     }
     .topbar {
       height: var(--topbar-height);
       background-color: var(--bg-white);
       border-bottom: 1px solid var(--border-light);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 24px;
-      position: sticky;
-      top: 0;
-      z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; position: sticky; top: 0; z-index: 90;
     }
-    .topbar-left {
-      display: flex;
-      align-items: center;
-      gap: 16px;
+    .topbar-left { display: flex; align-items: center; gap: 14px; }
+    .menu-toggle-btn {
+      display: none; background: none; border: none; cursor: pointer;
+      color: var(--text-black); padding: 6px; border-radius: var(--radius-sm);
     }
-    .menu-toggle {
-      display: none;
-      background: none;
-      border: none;
-      color: var(--text-black);
-      padding: 8px;
-      cursor: pointer;
-      min-height: 44px;
-      min-width: 44px;
-      align-items: center;
-      justify-content: center;
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+    /* Language Switcher */
+    .lang-switcher {
+      display: flex; align-items: center;
+      background-color: #F1F5F9; border-radius: 20px; padding: 2px;
+      border: 1px solid var(--border-light);
     }
-    .page-heading h1 {
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      color: var(--text-black);
+    .lang-btn {
+      background: none; border: none; cursor: pointer;
+      padding: 4px 10px; font-size: 11px; font-weight: 700;
+      border-radius: 16px; color: var(--text-muted); transition: all 0.15s ease;
     }
-    .page-heading p {
-      font-size: 12px;
-      color: var(--text-muted);
+    .lang-btn.active {
+      background-color: var(--navy-primary); color: #FFFFFF;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+
+    /* Connection & Refresh */
     .status-indicator {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-muted);
-      padding: 6px 10px;
-      background-color: var(--bg-canvas);
-      border-radius: 20px;
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 600; color: var(--text-muted);
+      padding: 4px 8px; border-radius: 20px; background-color: #F8FAFC;
       border: 1px solid var(--border-light);
     }
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background-color: var(--success);
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background-color: var(--success); }
+    .status-dot.offline { background-color: var(--danger); }
+    .btn-icon {
+      background: none; border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm); width: 34px; height: 34px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--text-black); position: relative;
     }
-    .status-dot.reconnecting {
-      background-color: var(--warning);
-      animation: pulse 1s infinite alternate;
-    }
-    @keyframes pulse {
-      from { opacity: 0.4; }
-      to { opacity: 1; }
-    }
-    .btn-topbar {
-      background-color: var(--bg-white);
-      border: 1px solid var(--border-light);
-      color: var(--text-black);
-      padding: 8px 14px;
-      border-radius: var(--radius-sm);
-      font-size: 13px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      transition: background-color 0.15s ease;
-      min-height: 38px;
-    }
-    .btn-topbar:hover {
-      background-color: #F1F5F9;
-    }
-    .btn-topbar.spinning svg {
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-    .notification-bell-btn {
-      position: relative;
-      background: none;
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-sm);
-      padding: 8px;
-      color: var(--text-black);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      min-height: 38px;
-      min-width: 38px;
-    }
-    .badge-count {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      background-color: var(--danger);
-      color: #FFFFFF;
-      font-size: 10px;
-      font-weight: 700;
-      border-radius: 10px;
-      padding: 1px 5px;
-      min-width: 16px;
-      text-align: center;
-      display: none;
+    .btn-icon:hover { background-color: var(--navy-light); color: var(--navy-primary); }
+    .btn-icon.spinning svg { animation: spin 0.8s linear infinite; }
+    .notif-badge {
+      position: absolute; top: -4px; right: -4px;
+      background-color: var(--danger); color: #FFFFFF;
+      font-size: 10px; font-weight: 700; padding: 1px 5px;
+      border-radius: 10px; border: 2px solid #FFFFFF;
     }
 
-    /* ===== CONTENT AREA ===== */
-    .content-body {
-      padding: 24px;
-      max-width: 1400px;
-      width: 100%;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
+    /* Content Area */
+    .content-container { padding: 24px; flex: 1; max-width: 1400px; margin: 0 auto; width: 100%; }
 
-    /* Header Action Bar */
-    .dashboard-header-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 16px;
+    /* Hero Quick Actions */
+    .hero-action-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; margin-bottom: 20px; flex-wrap: wrap;
     }
-    .greeting-title {
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-    .greeting-sub {
-      font-size: 14px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-    .btn-primary-action {
-      background-color: var(--navy-primary);
-      color: #FFFFFF;
-      padding: 10px 18px;
-      border-radius: var(--radius-sm);
-      font-size: 14px;
-      font-weight: 600;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: background-color 0.15s ease;
-      min-height: 44px;
-    }
-    .btn-primary-action:hover {
-      background-color: var(--navy-hover);
-    }
-
-    /* Metric Cards Grid */
-    .metrics-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-    }
-    .metric-card {
-      background-color: var(--bg-white);
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-md);
-      padding: 20px;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-    }
-    .metric-info {
-      display: flex;
-      flex-direction: column;
-    }
-    .metric-label {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-    .metric-value {
-      font-size: 28px;
-      font-weight: 700;
-      margin-top: 6px;
-      color: var(--text-black);
-    }
-    .metric-sub {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-    .metric-icon-wrap {
-      width: 44px;
-      height: 44px;
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .metric-icon-wrap.navy { background-color: #EFF6FF; color: var(--navy-primary); }
-    .metric-icon-wrap.amber { background-color: var(--warning-bg); color: var(--warning); }
-    .metric-icon-wrap.green { background-color: var(--success-bg); color: var(--success); }
-    .metric-icon-wrap.red { background-color: var(--danger-bg); color: var(--danger); }
-
-    /* Pipeline Stage Stepper Overview */
-    .pipeline-section {
-      background-color: var(--bg-white);
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-md);
-      padding: 24px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-    }
-    .section-title-wrap {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-    .section-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text-black);
-    }
-    .section-action-link {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--navy-primary);
-      text-decoration: none;
-    }
-    .pipeline-stepper {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 12px;
-      position: relative;
-    }
-    .stage-step-card {
-      background-color: #F8FAFC;
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-sm);
-      padding: 14px 12px;
-      text-align: center;
-      text-decoration: none;
-      color: var(--text-black);
+    .btn-book-giant {
+      display: inline-flex; align-items: center; gap: 10px;
+      background-color: var(--navy-primary); color: #FFFFFF;
+      text-decoration: none; font-size: 16px; font-weight: 700;
+      padding: 12px 24px; border-radius: var(--radius-md);
+      box-shadow: 0 4px 14px rgba(18, 48, 107, 0.2);
       transition: all 0.15s ease;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      position: relative;
     }
-    .stage-step-card:hover {
-      border-color: var(--navy-primary);
-      background-color: #FFFFFF;
+    .btn-book-giant:hover {
+      background-color: var(--navy-hover);
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      box-shadow: 0 6px 18px rgba(18, 48, 107, 0.28);
     }
-    .step-badge {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background-color: #E2E8F0;
-      color: #334155;
-      font-size: 12px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .btn-book-giant svg { width: 22px; height: 22px; }
+
+    /* Live Search Input */
+    .search-bar-wrap {
+      flex: 1; min-width: 280px; position: relative;
     }
-    .step-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: #1E293B;
+    .search-input {
+      width: 100%; padding: 12px 14px 12px 42px;
+      border: 1px solid var(--border-light); border-radius: var(--radius-md);
+      background-color: #FFFFFF; font-size: 14px; color: var(--text-black);
+      outline: none; transition: border-color 0.15s ease;
     }
-    .step-count {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--navy-primary);
+    .search-input:focus { border-color: var(--navy-primary); box-shadow: 0 0 0 3px rgba(18, 48, 107, 0.08); }
+    .search-icon-svg { position: absolute; left: 14px; top: 13px; color: var(--text-muted); width: 18px; height: 18px; }
+
+    /* Stage Filter Tabs (Horizontal Scrollable) */
+    .stage-tabs-container {
+      display: flex; align-items: center; gap: 8px;
+      overflow-x: auto; padding-bottom: 8px; margin-bottom: 22px;
+      scrollbar-width: thin;
     }
-    .step-count-label {
-      font-size: 11px;
-      color: var(--text-muted);
+    .stage-tab-btn {
+      background-color: #FFFFFF; border: 1px solid var(--border-light);
+      border-radius: 24px; padding: 8px 16px; font-size: 13px; font-weight: 600;
+      color: #334155; cursor: pointer; white-space: nowrap;
+      display: flex; align-items: center; gap: 8px;
+      transition: all 0.15s ease;
+    }
+    .stage-tab-btn:hover { border-color: var(--navy-primary); color: var(--navy-primary); }
+    .stage-tab-btn.active {
+      background-color: var(--navy-primary); color: #FFFFFF;
+      border-color: var(--navy-primary);
+    }
+    .stage-count-pill {
+      background-color: rgba(0,0,0,0.06); padding: 2px 7px;
+      border-radius: 12px; font-size: 11px; font-weight: 700;
+    }
+    .stage-tab-btn.active .stage-count-pill {
+      background-color: rgba(255,255,255,0.25); color: #FFFFFF;
     }
 
-    /* Attention & Feed Two-Column Grid */
-    .two-column-grid {
+    /* Orders Grid */
+    .orders-grid {
       display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: 24px;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 18px;
     }
-    @media (max-width: 1024px) {
-      .two-column-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-    .card-panel {
+    .order-card-tile {
       background-color: var(--bg-white);
       border: 1px solid var(--border-light);
       border-radius: var(--radius-md);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      padding: 16px; display: flex; flex-direction: column; gap: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      transition: all 0.15s ease; position: relative;
     }
-    .card-panel-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border-light);
-      margin-bottom: 16px;
+    .order-card-tile:hover {
+      border-color: #94A3B8;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+      transform: translateY(-2px);
     }
-    .panel-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text-black);
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .card-top {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
     }
-    .panel-count-pill {
-      font-size: 11px;
-      font-weight: 700;
-      background-color: var(--danger-bg);
-      color: var(--danger);
-      padding: 2px 8px;
-      border-radius: 12px;
+    .order-id-badge {
+      font-size: 13px; font-weight: 800; color: var(--navy-primary);
+      background-color: var(--navy-light); padding: 3px 8px;
+      border-radius: 4px; display: inline-block;
+    }
+    .garment-tag {
+      font-size: 12px; font-weight: 700; color: #1E293B;
+      background-color: #F1F5F9; padding: 3px 8px; border-radius: 4px;
+    }
+    .date-badge {
+      font-size: 12px; font-weight: 600; color: #475569;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .date-badge.overdue {
+      color: var(--danger); font-weight: 700;
+      background-color: var(--danger-bg); padding: 2px 6px; border-radius: 4px;
     }
 
-    /* List items inside panels */
-    .attention-list, .activity-feed {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      overflow-y: auto;
-      max-height: 420px;
+    /* Customer Info Block */
+    .customer-block {
+      cursor: pointer;
     }
-    .attention-item {
-      border: 1px solid var(--border-light);
-      border-left: 4px solid var(--danger);
-      border-radius: var(--radius-sm);
-      padding: 12px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      background-color: #FFFFFF;
-      transition: background-color 0.1s ease;
+    .cust-name {
+      font-size: 16px; font-weight: 700; color: var(--text-black);
+      margin-bottom: 2px;
     }
-    .attention-item.ready-item {
-      border-left-color: var(--warning);
+    .cloth-desc {
+      font-size: 13px; color: var(--text-muted);
     }
-    .attention-item:hover {
-      background-color: #F8FAFC;
+    .notes-box {
+      background-color: #FFFBEB; border: 1px solid #FDE68A;
+      color: #92400E; font-size: 12px; padding: 6px 8px;
+      border-radius: 4px; margin-top: 6px;
     }
-    .attention-info {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      min-width: 0;
+
+    /* Action Links (Call & WhatsApp) */
+    .quick-contact-row {
+      display: flex; align-items: center; gap: 8px; margin-top: 4px;
     }
-    .attention-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-black);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .btn-contact-pill {
+      font-size: 11px; font-weight: 600; text-decoration: none;
+      padding: 3px 8px; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px;
     }
-    .attention-meta {
-      font-size: 12px;
-      color: var(--text-muted);
+    .btn-call { background-color: #EFF6FF; color: var(--info); border: 1px solid #BFDBFE; }
+    .btn-whatsapp { background-color: #F0FDF4; color: var(--success); border: 1px solid #BBF7D0; }
+
+    /* Visual 6-Step Indicator */
+    .visual-stepper-track {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 4px; background-color: #F8FAFC; padding: 8px 10px;
+      border-radius: 6px; border: 1px solid var(--border-light);
     }
-    .attention-chip {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 2px 6px;
-      border-radius: 4px;
-      display: inline-block;
-      margin-top: 4px;
+    .stepper-dot {
+      display: flex; flex-direction: column; align-items: center; gap: 3px; flex: 1;
     }
-    .chip-overdue {
-      background-color: var(--danger-bg);
-      color: var(--danger);
+    .dot-node {
+      width: 10px; height: 10px; border-radius: 50%; background-color: #CBD5E1;
+      transition: all 0.2s ease;
     }
-    .chip-ready {
-      background-color: var(--warning-bg);
-      color: var(--warning);
-    }
-    .btn-view-order {
-      background-color: #F1F5F9;
-      color: var(--navy-primary);
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-sm);
-      padding: 6px 12px;
-      font-size: 12px;
-      font-weight: 600;
-      text-decoration: none;
-      white-space: nowrap;
-      flex-shrink: 0;
-      min-height: 36px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .btn-view-order:hover {
+    .dot-node.completed { background-color: var(--success); }
+    .dot-node.active {
       background-color: var(--navy-primary);
-      color: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(18, 48, 107, 0.2);
+      transform: scale(1.2);
+    }
+    .dot-label { font-size: 9px; font-weight: 700; color: var(--text-muted); text-align: center; }
+    .dot-node.active + .dot-label { color: var(--navy-primary); }
+
+    /* OUTSIDE 1-CLICK STAGE ADVANCEMENT CONTROL */
+    .stage-action-box {
+      background-color: #F1F5F9; border-radius: 6px; padding: 10px;
+      display: flex; flex-direction: column; gap: 8px; border: 1px solid #E2E8F0;
+    }
+    .stage-selector-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .stage-select-direct {
+      padding: 6px 10px; font-size: 13px; font-weight: 700;
+      color: var(--navy-primary); background-color: #FFFFFF;
+      border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+      outline: none; cursor: pointer; flex: 1;
+    }
+    .btn-advance-1click {
+      background-color: var(--navy-primary); color: #FFFFFF;
+      border: none; border-radius: var(--radius-sm);
+      padding: 8px 12px; font-size: 13px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: background-color 0.15s ease;
+    }
+    .btn-advance-1click:hover { background-color: var(--navy-hover); }
+
+    /* Empty State */
+    .empty-placeholder {
+      grid-column: 1 / -1; background-color: #FFFFFF;
+      border: 2px dashed var(--border-light); border-radius: var(--radius-md);
+      padding: 48px 24px; text-align: center; color: var(--text-muted);
     }
 
-    /* Activity Feed Items */
-    .activity-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid #F1F5F9;
-    }
-    .activity-item:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-    .activity-icon-bullet {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background-color: var(--navy-light);
-      color: var(--navy-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-    .activity-body {
-      flex: 1;
-      min-width: 0;
-      font-size: 13px;
-    }
-    .activity-text {
-      color: #1E293B;
-      line-height: 1.4;
-    }
-    .activity-text strong {
-      color: var(--navy-primary);
-    }
-    .activity-time {
-      font-size: 11px;
-      color: #94A3B8;
-      margin-top: 2px;
+    /* Toast Notification */
+    .toast-popup {
+      position: fixed; bottom: 24px; right: 24px;
+      background-color: #1E293B; color: #FFFFFF;
+      padding: 12px 20px; border-radius: 8px; font-size: 13px; font-weight: 600;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      z-index: 1000; display: none; align-items: center; gap: 8px;
     }
 
-    /* Empty States */
-    .empty-state {
-      padding: 32px 16px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: var(--text-muted);
-    }
-    .empty-state svg {
-      width: 40px;
-      height: 40px;
-      margin-bottom: 8px;
-      stroke-width: 1.5;
-      color: #94A3B8;
-    }
-    .empty-state p {
-      font-size: 13px;
-    }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    /* ===== MOBILE BOTTOM BAR ===== */
-    .bottom-bar {
-      display: none;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: var(--bottom-bar-height);
-      background-color: #FFFFFF;
-      border-top: 1px solid var(--border-light);
-      z-index: 100;
-      justify-content: space-around;
-      align-items: center;
-    }
-    .bottom-nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      color: #64748B;
-      font-size: 10px;
-      font-weight: 500;
-      gap: 2px;
-      flex: 1;
-      height: 100%;
-    }
-    .bottom-nav-item svg {
-      width: 22px;
-      height: 22px;
-      stroke-width: 1.75;
-    }
-    .bottom-nav-item.active {
-      color: var(--navy-primary);
-      font-weight: 700;
-    }
-    .bottom-nav-fab {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background-color: var(--navy-primary);
-      color: #FFFFFF;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 10px rgba(18, 48, 107, 0.3);
-      margin-top: -12px;
-    }
-    .bottom-nav-fab svg {
-      width: 24px;
-      height: 24px;
-      color: #FFFFFF;
-    }
-
-    /* Drawer overlay for mobile */
-    .drawer-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background-color: rgba(0, 0, 0, 0.4);
-      z-index: 99;
-    }
-
-    /* Toast Notification Element */
-    .toast-container {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      pointer-events: none;
-    }
-    .toast-card {
-      pointer-events: auto;
-      background-color: #0A0A0A;
-      color: #FFFFFF;
-      padding: 12px 18px;
-      border-radius: var(--radius-sm);
-      font-size: 13px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-      animation: slideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      max-width: 360px;
-    }
-    @keyframes slideIn {
-      from { transform: translateY(10px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    /* Responsive Breakpoints */
     @media (max-width: 768px) {
-      .sidebar {
-        transform: translateX(-100%);
-      }
-      .sidebar.open {
-        transform: translateX(0);
-      }
-      .drawer-overlay.open {
-        display: block;
-      }
-      .app-main {
-        margin-left: 0;
-        padding-bottom: var(--bottom-bar-height);
-      }
-      .menu-toggle {
-        display: flex;
-      }
-      .bottom-bar {
-        display: flex;
-      }
-      .content-body {
-        padding: 16px;
-        gap: 16px;
-      }
-      .metrics-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .topbar {
-        padding: 0 16px;
-      }
-      .status-text {
-        display: none;
-      }
-    }
-    @media (max-width: 480px) {
-      .metrics-grid {
-        grid-template-columns: 1fr;
-      }
-      .pipeline-stepper {
-        grid-template-columns: repeat(2, 1fr);
-      }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-wrapper { margin-left: 0; }
+      .menu-toggle-btn { display: flex; }
+      .orders-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Drawer Overlay for Mobile -->
-  <div id="drawerOverlay" class="drawer-overlay" onclick="toggleSidebar()"></div>
-
-  <!-- Left Sidebar (Desktop & Mobile Drawer) -->
-  <aside id="sidebar" class="sidebar">
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
       <div class="brand-badge">IF</div>
       <div class="brand-meta">
-        <span class="brand-name">Iqbal Fashion</span>
-        <span class="brand-sub">Tailoring CRM</span>
+        <span class="brand-name" data-i18n="app_title">Iqbal Fashion</span>
+        <span class="brand-sub" data-i18n="app_subtitle">Tailoring Order CRM</span>
       </div>
     </div>
 
     <nav class="sidebar-nav">
-      <div class="nav-label">Core Pipeline</div>
       <a href="/index.html" class="nav-item active">
-        <!-- Grid SVG -->
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-        <span>Dashboard</span>
-      </a>
-      <a href="/orders.html" class="nav-item">
-        <!-- Clipboard List SVG -->
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 12h6M9 16h6"></path></svg>
-        <span>Orders Board</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        <span data-i18n="nav_orders">Orders in Progress</span>
       </a>
       <a href="/new-order.html" class="nav-item">
-        <!-- Plus Circle SVG -->
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-        <span>Book New Order</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+        <span data-i18n="nav_new_order">+ Book New Order</span>
       </a>
-
-      <div class="nav-label">Management</div>
+      <a href="/reports.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        <span data-i18n="nav_reports">Reports & Stats</span>
+      </a>
       <a href="/customers.html" class="nav-item">
-        <!-- Users SVG -->
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-        <span>Customers</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <span data-i18n="nav_customers">Customers</span>
       </a>
       <a href="/employees.html" class="nav-item">
-        <!-- User Check SVG -->
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
-        <span>Tailor Staff</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>
+        <span data-i18n="nav_staff">Tailor Staff</span>
       </a>
       <a href="/history.html" class="nav-item">
-        <!-- Clock Activity SVG -->
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-        <span>Activity Log</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+        <span data-i18n="nav_history">Activity Log</span>
       </a>
       <a href="/notifications.html" class="nav-item">
-        <!-- Bell SVG -->
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-        <span>Notifications</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <span data-i18n="nav_notifications">Notifications</span>
       </a>
-
-      <div class="nav-label">System</div>
       <a href="/settings.html" class="nav-item">
-        <!-- Settings Gear SVG -->
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        <span>Settings & PWA</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span data-i18n="nav_settings">Settings</span>
       </a>
     </nav>
 
-    <div class="sidebar-user">
-      <div class="user-info">
-        <span class="user-name" id="userNameLabel">Loading...</span>
-        <span class="user-role-badge" id="userRoleBadge">Staff</span>
-      </div>
-      <button class="btn-logout" id="logoutBtn" title="Sign Out">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+    <div class="sidebar-footer">
+      <button id="logoutBtn" style="background:none; border:none; cursor:pointer; color:var(--danger); font-size:13px; font-weight:700; display:flex; align-items:center; gap:8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        <span data-i18n="nav_logout">Sign Out</span>
       </button>
     </div>
   </aside>
 
-  <!-- App Main Content Container -->
-  <div class="app-main">
-    <!-- Topbar -->
+  <!-- MAIN WRAPPER -->
+  <main class="main-wrapper">
+    <!-- TOPBAR -->
     <header class="topbar">
       <div class="topbar-left">
-        <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">
+        <button class="menu-toggle-btn" id="menuToggleBtn" onclick="toggleSidebar()">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
         </button>
-        <div class="page-heading">
-          <h1>Shop Dashboard</h1>
-          <p id="lastUpdatedLabel">Updated just now</p>
-        </div>
+        <span style="font-weight:700; font-size:16px;" data-i18n="page_current_orders">Orders in Progress</span>
       </div>
 
-      <div class="topbar-actions">
-        <!-- Live Connection Indicator -->
+      <div class="topbar-right">
+        <!-- Multilingual Switcher -->
+        <div id="langSwitcherContainer"></div>
+
+        <!-- Connection Indicator -->
         <div class="status-indicator">
-          <span class="status-dot" id="connectionDot"></span>
-          <span class="status-text" id="connectionText">Connected</span>
+          <div class="status-dot" id="connectionDot"></div>
+          <span id="connectionText" data-i18n="connected">Connected</span>
         </div>
 
         <!-- Refresh Button -->
-        <button class="btn-topbar" id="refreshBtn" onclick="fetchDashboardData(true)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-          <span>Refresh</span>
+        <button class="btn-icon" id="refreshBtn" title="Refresh Live Orders" onclick="fetchLiveOrders(true)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
         </button>
 
         <!-- Notification Bell -->
-        <a href="/notifications.html" class="notification-bell-btn" title="View Notifications">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-          <span class="badge-count" id="unreadBadge">0</span>
+        <a href="/notifications.html" class="btn-icon" title="Notifications">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          <span class="notif-badge" id="unreadBadge" style="display:none;">0</span>
         </a>
       </div>
     </header>
 
-    <!-- Main Dashboard Body -->
-    <main class="content-body">
-      <!-- Greeting and Quick Book Action -->
-      <div class="dashboard-header-bar">
-        <div>
-          <h2 class="greeting-title" id="greetingHeader">Welcome back</h2>
-          <p class="greeting-sub">Track active garments through measurement, cutting, stitching, and finishing.</p>
-        </div>
-        <a href="/new-order.html" class="btn-primary-action">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          <span>Book New Order</span>
+    <!-- CONTENT -->
+    <div class="content-container">
+      
+      <!-- HERO ACTION ROW -->
+      <div class="hero-action-bar">
+        <!-- GIANT BOOK ORDER BUTTON -->
+        <a href="/new-order.html" class="btn-book-giant" id="btnBookOrderGiant">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+          <span data-i18n="btn_book_order">+ Book New Order</span>
         </a>
-      </div>
 
-      <!-- Metrics Cards Grid -->
-      <section class="metrics-grid">
-        <div class="metric-card">
-          <div class="metric-info">
-            <span class="metric-label">In Pipeline</span>
-            <span class="metric-value" id="valInPipeline">0</span>
-            <span class="metric-sub">Active tailoring work</span>
-          </div>
-          <div class="metric-icon-wrap navy">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-          </div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-info">
-            <span class="metric-label">Ready for Pickup</span>
-            <span class="metric-value" id="valReady">0</span>
-            <span class="metric-sub">Finished garments</span>
-          </div>
-          <div class="metric-icon-wrap amber">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-          </div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-info">
-            <span class="metric-label">Delivered Today</span>
-            <span class="metric-value" id="valDeliveredToday">0</span>
-            <span class="metric-sub">Handed to customers</span>
-          </div>
-          <div class="metric-icon-wrap green">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"></path></svg>
-          </div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-info">
-            <span class="metric-label">Needs Attention</span>
-            <span class="metric-value" id="valAttention">0</span>
-            <span class="metric-sub">Overdue or pending pickup</span>
-          </div>
-          <div class="metric-icon-wrap red">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-          </div>
-        </div>
-      </section>
-
-      <!-- Pipeline Overview Stepper -->
-      <section class="pipeline-section">
-        <div class="section-title-wrap">
-          <h3 class="section-title">Tailoring Pipeline Overview</h3>
-          <a href="/orders.html" class="section-action-link">View Orders Board &rarr;</a>
-        </div>
-        <div class="pipeline-stepper" id="pipelineStepper">
-          <!-- Stage Cards populated dynamically -->
-          <a href="/orders.html?stage=measurement" class="stage-step-card">
-            <div class="step-badge">1</div>
-            <span class="step-title">Measurement</span>
-            <span class="step-count" id="countMeasurement">0</span>
-            <span class="step-count-label">garments</span>
-          </a>
-          <a href="/orders.html?stage=washing" class="stage-step-card">
-            <div class="step-badge">2</div>
-            <span class="step-title">Washing</span>
-            <span class="step-count" id="countWashing">0</span>
-            <span class="step-count-label">garments</span>
-          </a>
-          <a href="/orders.html?stage=cutting" class="stage-step-card">
-            <div class="step-badge">3</div>
-            <span class="step-title">Cutting</span>
-            <span class="step-count" id="countCutting">0</span>
-            <span class="step-count-label">garments</span>
-          </a>
-          <a href="/orders.html?stage=stitching" class="stage-step-card">
-            <div class="step-badge">4</div>
-            <span class="step-title">Stitching</span>
-            <span class="step-count" id="countStitching">0</span>
-            <span class="step-count-label">garments</span>
-          </a>
-          <a href="/orders.html?stage=finishing" class="stage-step-card">
-            <div class="step-badge">5</div>
-            <span class="step-title">Finishing</span>
-            <span class="step-count" id="countFinishing">0</span>
-            <span class="step-count-label">garments</span>
-          </a>
-          <a href="/orders.html?stage=ready" class="stage-step-card">
-            <div class="step-badge">6</div>
-            <span class="step-title">Ready</span>
-            <span class="step-count" id="countReady">0</span>
-            <span class="step-count-label">garments</span>
-          </a>
-          <a href="/orders.html?stage=delivered" class="stage-step-card">
-            <div class="step-badge">7</div>
-            <span class="step-title">Delivered</span>
-            <span class="step-count" id="countDelivered">0</span>
-            <span class="step-count-label">completed</span>
-          </a>
-        </div>
-      </section>
-
-      <!-- Two-Column Grid: Needs Attention & Live Activity Feed -->
-      <div class="two-column-grid">
-        <!-- Needs Attention Panel -->
-        <div class="card-panel">
-          <div class="card-panel-header">
-            <div class="panel-title">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" color="var(--danger)"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-              <span>Needs Attention</span>
-            </div>
-            <span class="panel-count-pill" id="attentionPill">0 orders</span>
-          </div>
-
-          <div class="attention-list" id="attentionList">
-            <div class="empty-state">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-              <p>Everything is on schedule! No overdue orders.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Live Activity Feed Panel -->
-        <div class="card-panel">
-          <div class="card-panel-header">
-            <div class="panel-title">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" color="var(--navy-primary)"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-              <span>Recent Activity Feed</span>
-            </div>
-            <a href="/history.html" class="section-action-link">View All</a>
-          </div>
-
-          <div class="activity-feed" id="activityFeed">
-            <div class="empty-state">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
-              <p>No activity recorded yet.</p>
-            </div>
-          </div>
+        <!-- FAST SEARCH INPUT -->
+        <div class="search-bar-wrap">
+          <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="orderSearchInput" class="search-input" data-i18n-placeholder="search_placeholder" placeholder="Search customer, mobile, order #, cloth material..." oninput="handleSearch(this.value)">
         </div>
       </div>
-    </main>
-  </div>
 
-  <!-- Mobile Bottom Action Bar -->
-  <nav class="bottom-bar">
-    <a href="/index.html" class="bottom-nav-item active">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-      <span>Dashboard</span>
-    </a>
-    <a href="/orders.html" class="bottom-nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-      <span>Orders</span>
-    </a>
-    <a href="/new-order.html" class="bottom-nav-item">
-      <div class="bottom-nav-fab">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      <!-- STAGE TABS FILTER PILLS -->
+      <div class="stage-tabs-container" id="stageTabsContainer">
+        <!-- Rendered dynamically -->
       </div>
-      <span>New</span>
-    </a>
-    <a href="/customers.html" class="bottom-nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
-      <span>Clients</span>
-    </a>
-    <a href="/notifications.html" class="bottom-nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-      <span>Alerts</span>
-    </a>
-  </nav>
 
-  <!-- Toast Notification Container -->
-  <div class="toast-container" id="toastContainer"></div>
+      <!-- ACTIVE ORDERS GRID -->
+      <div class="orders-grid" id="ordersGrid">
+        <div class="empty-placeholder">
+          <p data-i18n="refreshing">Loading orders...</p>
+        </div>
+      </div>
 
-  <!-- Supabase Client CDN -->
+    </div>
+  </main>
+
+  <!-- TOAST POPUP -->
+  <div id="toastPopup" class="toast-popup"></div>
+
+  <!-- SUPABASE & TRANSLATION SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+  <script src="/scripts/i18n.js"></script>
   <script>
-    /* ===== SHARED: SUPABASE CLIENT CONFIG ===== */
     const SUPABASE_URL = "https://ajapvxdpxifdhvvszuhp.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqYXB2eGRweGlmZGh2dnN6dWhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU3ODk5NTMsImV4cCI6MjA4MTM2NTk1M30.iC9U-MQC6VYZNXd_RugA6_hxZwrhYRsapffOYDCikio";
-    const VAPID_PUBLIC_KEY = "BIHD9xC9bGzRyYITKivlmj0ePMBYgihxBp2n6r6alspYH-Y1hsvkGncwE3p_luJTOGew2zDNwzlGykR_jLO4CbA";
 
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: { persistSession: true, autoRefreshToken: true }
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
     });
 
+    let rawOrders = [];
+    let activeFilter = 'all';
+    let searchQuery = '';
     let currentUser = null;
-    let currentProfile = null;
 
-    // Toast Helper
+    // Toast helper
     function showToast(message, type = 'info') {
-      const container = document.getElementById('toastContainer');
-      const toast = document.createElement('div');
-      toast.className = 'toast-card';
-      toast.innerHTML = `
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-        <span>${escapeHtml(message)}</span>
-      `;
-      container.appendChild(toast);
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(10px)';
-        toast.style.transition = 'all 0.2s ease';
-        setTimeout(() => toast.remove(), 200);
-      }, 3500);
+      const toast = document.getElementById('toastPopup');
+      toast.textContent = message;
+      toast.style.display = 'flex';
+      setTimeout(() => { toast.style.display = 'none'; }, 3200);
     }
 
+    // Toggle Mobile Sidebar
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+
+    // Auth verification
+    async function initAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        window.location.replace('/login.html?redirect=' + encodeURIComponent(window.location.pathname));
+        return;
+      }
+      currentUser = session.user;
+      fetchLiveOrders();
+      setupRealtime();
+    }
+
+    // Fetch orders from Supabase
+    async function fetchLiveOrders(manual = false) {
+      const refreshBtn = document.getElementById('refreshBtn');
+      if (manual && refreshBtn) refreshBtn.classList.add('spinning');
+
+      try {
+        const { data: orders, error } = await supabase
+          .from('orders')
+          .select(`
+            id, order_no, garment_type, cloth_material, quantity, notes,
+            current_stage, status, expected_delivery_date, created_at,
+            customers (id, name, phone),
+            order_stages (stage, status, employee_name_snapshot, estimated_date)
+          `)
+          .not('status', 'eq', 'cancelled')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        rawOrders = orders || [];
+        renderStageTabs();
+        renderFilteredOrders();
+
+        if (manual) showToast(t('refreshing'), 'success');
+      } catch (err) {
+        console.error('Error fetching orders:', err);
+        showToast('Error loading orders: ' + err.message, 'error');
+      } finally {
+        if (refreshBtn) refreshBtn.classList.remove('spinning');
+      }
+    }
+
+    // Render Stage Tabs with Live Counts
+    function renderStageTabs() {
+      const container = document.getElementById('stageTabsContainer');
+      const counts = { all: 0, measurement: 0, washing: 0, cutting: 0, stitching: 0, finishing: 0, ready: 0, delivered: 0 };
+
+      rawOrders.forEach(o => {
+        counts.all++;
+        if (o.status === 'delivered') {
+          counts.delivered++;
+        } else if (counts[o.current_stage] !== undefined) {
+          counts[o.current_stage]++;
+        }
+      });
+
+      const tabs = [
+        { key: 'all', label: t('stage_all'), count: counts.all },
+        { key: 'measurement', label: t('stage_measurement'), count: counts.measurement },
+        { key: 'washing', label: t('stage_washing'), count: counts.washing },
+        { key: 'cutting', label: t('stage_cutting'), count: counts.cutting },
+        { key: 'stitching', label: t('stage_stitching'), count: counts.stitching },
+        { key: 'finishing', label: t('stage_finishing'), count: counts.finishing },
+        { key: 'ready', label: t('stage_ready'), count: counts.ready },
+        { key: 'delivered', label: t('stage_delivered'), count: counts.delivered }
+      ];
+
+      container.innerHTML = tabs.map(tab => `
+        <button class="stage-tab-btn ${activeFilter === tab.key ? 'active' : ''}" onclick="setFilter('${tab.key}')">
+          <span>${escapeHtml(tab.label)}</span>
+          <span class="stage-count-pill">${tab.count}</span>
+        </button>
+      `).join('');
+    }
+
+    function setFilter(stageKey) {
+      activeFilter = stageKey;
+      renderStageTabs();
+      renderFilteredOrders();
+    }
+
+    function handleSearch(val) {
+      searchQuery = val.toLowerCase().trim();
+      renderFilteredOrders();
+    }
+
+    // Render Filtered Order Cards
+    function renderFilteredOrders() {
+      const grid = document.getElementById('ordersGrid');
+      const todayStr = new Date().toISOString().split('T')[0];
+
+      let list = rawOrders.filter(o => {
+        // Tab filter
+        if (activeFilter === 'delivered') {
+          if (o.status !== 'delivered') return false;
+        } else if (activeFilter !== 'all') {
+          if (o.current_stage !== activeFilter || o.status === 'delivered') return false;
+        } else {
+          // 'all' shows in-progress & ready first
+        }
+
+        // Search filter
+        if (searchQuery) {
+          const custName = (o.customers && o.customers.name) ? o.customers.name.toLowerCase() : '';
+          const phone = (o.customers && o.customers.phone) ? o.customers.phone.toLowerCase() : '';
+          const orderNo = o.order_no.toLowerCase();
+          const garment = (o.garment_type || '').toLowerCase();
+          const cloth = (o.cloth_material || '').toLowerCase();
+
+          return custName.includes(searchQuery) || phone.includes(searchQuery) ||
+                 orderNo.includes(searchQuery) || garment.includes(searchQuery) ||
+                 cloth.includes(searchQuery);
+        }
+        return true;
+      });
+
+      if (list.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-placeholder">
+            <p>${t('no_orders_found')}</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = list.map(order => {
+        const custName = (order.customers && order.customers.name) ? order.customers.name : 'Walk-in Customer';
+        const phone = (order.customers && order.customers.phone) ? order.customers.phone : '';
+        const isDelivered = order.status === 'delivered';
+        const currentStage = order.current_stage || 'measurement';
+        const nextStage = getNextStage(currentStage);
+
+        // Overdue calculation
+        const isOverdue = order.expected_delivery_date && order.expected_delivery_date < todayStr && !isDelivered;
+        const isDueToday = order.expected_delivery_date === todayStr && !isDelivered;
+
+        let dateLabel = order.expected_delivery_date || 'No Date';
+        let dateClass = 'date-badge';
+        if (isOverdue) {
+          dateLabel = `${order.expected_delivery_date} (${t('overdue_badge')})`;
+          dateClass = 'date-badge overdue';
+        } else if (isDueToday) {
+          dateLabel = `${order.expected_delivery_date} (${t('due_today')})`;
+        }
+
+        // Current worker snapshot
+        const activeStageObj = (order.order_stages || []).find(s => s.stage === currentStage);
+        const workerName = activeStageObj ? (activeStageObj.employee_name_snapshot || 'Unassigned') : 'Unassigned';
+
+        // Stepper dots
+        const stagesList = ['measurement', 'washing', 'cutting', 'stitching', 'finishing', 'ready'];
+        const currentIdx = stagesList.indexOf(currentStage);
+        const stepperHtml = stagesList.map((stg, i) => {
+          let dotState = '';
+          if (isDelivered || i < currentIdx) dotState = 'completed';
+          else if (i === currentIdx) dotState = 'active';
+
+          return `
+            <div class="stepper-dot">
+              <div class="dot-node ${dotState}"></div>
+              <span class="dot-label">${escapeHtml(getStageName(stg))}</span>
+            </div>
+          `;
+        }).join('');
+
+        // Direct 1-Click Stage Options
+        const stageOptions = [
+          { key: 'measurement', name: t('stage_measurement') },
+          { key: 'washing', name: t('stage_washing') },
+          { key: 'cutting', name: t('stage_cutting') },
+          { key: 'stitching', name: t('stage_stitching') },
+          { key: 'finishing', name: t('stage_finishing') },
+          { key: 'ready', name: t('stage_ready') },
+          { key: 'delivered', name: t('stage_delivered') }
+        ];
+
+        const optionsHtml = stageOptions.map(opt => `
+          <option value="${opt.key}" ${currentStage === opt.key ? 'selected' : ''}>
+            ${opt.name}
+          </option>
+        `).join('');
+
+        // WhatsApp message link
+        const cleanPhone = phone.replace(/[^0-9]/g, '');
+        const waMsg = encodeURIComponent(`Namaste ${custName}, your order ${order.order_no} (${order.garment_type}) is currently in ${getStageName(currentStage)} at Iqbal Fashion.`);
+        const waUrl = cleanPhone ? `https://wa.me/${cleanPhone}?text=${waMsg}` : '#';
+
+        return `
+          <div class="order-card-tile" id="card-${order.id}">
+            <!-- TOP LINE -->
+            <div class="card-top">
+              <span class="order-id-badge">${escapeHtml(order.order_no)}</span>
+              <span class="garment-tag">${escapeHtml(order.garment_type)} (${order.quantity || 1} ${t('quantity')})</span>
+              <span class="${dateClass}">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+                ${dateLabel}
+              </span>
+            </div>
+
+            <!-- CUSTOMER DETAILS (Clicking opens details) -->
+            <div class="customer-block" onclick="window.location.href='/order-detail.html?id=${order.id}'">
+              <div class="cust-name">${escapeHtml(custName)}</div>
+              <div class="cloth-desc">${escapeHtml(order.cloth_material || 'Cloth provided by client')}</div>
+              ${order.notes ? `<div class="notes-box">${escapeHtml(order.notes)}</div>` : ''}
+            </div>
+
+            <!-- QUICK CONTACT CALL / WHATSAPP -->
+            ${phone ? `
+              <div class="quick-contact-row">
+                <a href="tel:${escapeHtml(phone)}" class="btn-contact-pill btn-call">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                  <span>${t('call_customer')}: ${escapeHtml(phone)}</span>
+                </a>
+                <a href="${waUrl}" target="_blank" class="btn-contact-pill btn-whatsapp">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                  <span>${t('whatsapp_receipt')}</span>
+                </a>
+              </div>
+            ` : ''}
+
+            <!-- 6-STEP VISUAL PROGRESS TRACKER -->
+            <div class="visual-stepper-track">
+              ${stepperHtml}
+            </div>
+
+            <!-- 1-CLICK STAGE ADVANCEMENT CONTROL (NO POPUP) -->
+            <div class="stage-action-box">
+              <div class="stage-selector-row">
+                <span style="font-size:11px; font-weight:700; color:#475569;">${t('current_step')}:</span>
+                <select class="stage-select-direct" onchange="handleDirectStageChange('${order.id}', this.value)">
+                  ${optionsHtml}
+                </select>
+              </div>
+
+              ${nextStage && !isDelivered ? `
+                <button class="btn-advance-1click" onclick="handleQuickAdvance('${order.id}', '${nextStage}')">
+                  <span>${t('move_to_next')} ${getStageName(nextStage)}</span>
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // DIRECT 1-CLICK STAGE CHANGER (NO POPUP)
+    async function handleDirectStageChange(orderId, newStage) {
+      try {
+        const isDelivered = newStage === 'delivered';
+        const newStatus = isDelivered ? 'delivered' : 'in_progress';
+
+        const { error: orderErr } = await supabase
+          .from('orders')
+          .update({
+            current_stage: newStage,
+            status: newStatus,
+            delivered_at: isDelivered ? new Date().toISOString() : null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', orderId);
+
+        if (orderErr) throw orderErr;
+
+        // Mark stage done in order_stages
+        await supabase
+          .from('order_stages')
+          .update({
+            status: 'done',
+            completed_at: new Date().toISOString()
+          })
+          .eq('order_id', orderId)
+          .eq('stage', newStage);
+
+        // Record in history
+        await supabase
+          .from('order_history')
+          .insert({
+            order_id: orderId,
+            stage: newStage,
+            action: isDelivered ? 'delivered' : 'completed',
+            actor_name: 'Admin',
+            details: { notes: `Stage changed directly to ${newStage}` }
+          });
+
+        showToast(`${t('stage_updated_success')} ${getStageName(newStage)}`, 'success');
+        fetchLiveOrders();
+      } catch (err) {
+        console.error('Stage change error:', err);
+        showToast('Error changing stage: ' + err.message, 'error');
+      }
+    }
+
+    // Quick 1-click advance to next stage
+    async function handleQuickAdvance(orderId, nextStage) {
+      await handleDirectStageChange(orderId, nextStage);
+    }
+
+    // Realtime Postgres listener
+    function setupRealtime() {
+      supabase.channel('main-realtime')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+          fetchLiveOrders();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'order_stages' }, () => {
+          fetchLiveOrders();
+        })
+        .subscribe(status => {
+          const dot = document.getElementById('connectionDot');
+          const text = document.getElementById('connectionText');
+          if (status === 'SUBSCRIBED') {
+            dot.className = 'status-dot';
+            text.textContent = t('connected');
+          } else {
+            dot.className = 'status-dot offline';
+            text.textContent = t('offline');
+          }
+        });
+    }
+
+    // Escaping helper
     function escapeHtml(str) {
       if (!str) return '';
       return String(str)
@@ -1170,385 +835,19 @@
         .replace(/'/g, '&#39;');
     }
 
-    // Web Audio Chime on Realtime Notifications
-    function playNotificationChime() {
-      try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
-        osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.1); // A5
-        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.35);
-      } catch (e) {
-        // AudioContext might be restricted until user gesture
-      }
-    }
+    // Language change callback
+    window.onLanguageChange = function() {
+      renderStageTabs();
+      renderFilteredOrders();
+    };
 
-    // Sidebar Toggle for Mobile Drawer
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('drawerOverlay');
-      sidebar.classList.toggle('open');
-      overlay.classList.toggle('open');
-    }
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      window.location.replace('/login.html');
+    });
 
-    // Session Verification Guard
-    async function initAuth() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        window.location.replace('/login.html?redirect=' + encodeURIComponent(window.location.pathname));
-        return;
-      }
-      currentUser = session.user;
-
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', currentUser.id)
-        .single();
-
-      if (profile && !profile.is_active) {
-        await supabase.auth.signOut();
-        window.location.replace('/login.html');
-        return;
-      }
-
-      currentProfile = profile;
-      const userName = (profile && profile.full_name) || currentUser.email.split('@')[0];
-      const userRole = (profile && profile.role) || 'manager';
-
-      document.getElementById('userNameLabel').textContent = userName;
-      document.getElementById('userRoleBadge').textContent = 'ADMIN';
-      document.getElementById('greetingHeader').textContent = `Welcome back, ${userName}`;
-
-      document.getElementById('logoutBtn').addEventListener('click', async () => {
-        await supabase.auth.signOut();
-        window.location.replace('/login.html');
-      });
-
-      // Load initial dashboard data
-      fetchDashboardData();
-      fetchUnreadNotificationsCount();
-      setupRealtimeSubscriptions();
-    }
-
-    // Fetch Unread Notification Count
-    async function fetchUnreadNotificationsCount() {
-      const { count } = await supabase
-        .from('notifications')
-        .select('*', { count: 'exact', head: true })
-        .eq('is_read', false);
-
-      const badge = document.getElementById('unreadBadge');
-      if (count && count > 0) {
-        badge.textContent = count > 99 ? '99+' : count;
-        badge.style.display = 'block';
-      } else {
-        badge.style.display = 'none';
-      }
-    }
-
-    // Fetch Main Dashboard Data
-    async function fetchDashboardData(manualRefresh = false) {
-      const refreshBtn = document.getElementById('refreshBtn');
-      if (manualRefresh && refreshBtn) {
-        refreshBtn.classList.add('spinning');
-      }
-
-      try {
-        const todayStr = new Date().toISOString().split('T')[0];
-
-        // 1. Fetch Orders for pipeline & metric calculations
-        const { data: orders, error: ordersErr } = await supabase
-          .from('orders')
-          .select(`
-            id, order_no, garment_type, quantity, current_stage, status, expected_delivery_date, delivered_at,
-            customers (id, name, phone),
-            order_stages (stage, status, estimated_date, employee_name_snapshot)
-          `)
-          .order('created_at', { ascending: false });
-
-        if (ordersErr) throw ordersErr;
-
-        // 2. Fetch Recent Activities from order_history
-        const { data: history, error: historyErr } = await supabase
-          .from('order_history')
-          .select(`
-            id, stage, action, employee_name, actor_name, details, created_at,
-            orders (order_no, garment_type, customers(name))
-          `)
-          .order('created_at', { ascending: false })
-          .limit(10);
-
-        if (historyErr) throw historyErr;
-
-        renderMetrics(orders || [], todayStr);
-        renderPipelineCounts(orders || []);
-        renderAttentionList(orders || [], todayStr);
-        renderActivityFeed(history || []);
-
-        document.getElementById('lastUpdatedLabel').textContent = 'Updated ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        if (manualRefresh) showToast('Dashboard updated with live data', 'success');
-
-      } catch (err) {
-        console.error('Error fetching dashboard:', err);
-        showToast('Error refreshing data: ' + err.message, 'error');
-      } finally {
-        if (refreshBtn) refreshBtn.classList.remove('spinning');
-      }
-    }
-
-    // Render Metrics
-    function renderMetrics(orders, todayStr) {
-      let inPipelineCount = 0;
-      let readyCount = 0;
-      let deliveredTodayCount = 0;
-      let attentionCount = 0;
-
-      for (const order of orders) {
-        if (order.status === 'in_progress') inPipelineCount++;
-        if (order.status === 'ready' || order.current_stage === 'ready') readyCount++;
-
-        // Delivered Today
-        if (order.status === 'delivered' && order.delivered_at) {
-          const delDate = new Date(order.delivered_at).toISOString().split('T')[0];
-          if (delDate === todayStr) deliveredTodayCount++;
-        }
-
-        // Needs Attention: Overdue delivery date OR active stage overdue OR ready but unpicked > 2 days
-        const isOverdue = order.status !== 'delivered' && order.expected_delivery_date && order.expected_delivery_date < todayStr;
-        const isReadyAttention = order.status === 'ready';
-        if (isOverdue || isReadyAttention) {
-          attentionCount++;
-        }
-      }
-
-      document.getElementById('valInPipeline').textContent = inPipelineCount;
-      document.getElementById('valReady').textContent = readyCount;
-      document.getElementById('valDeliveredToday').textContent = deliveredTodayCount;
-      document.getElementById('valAttention').textContent = attentionCount;
-      document.getElementById('attentionPill').textContent = `${attentionCount} orders`;
-    }
-
-    // Render Pipeline Stage Stepper Counts
-    function renderPipelineCounts(orders) {
-      const counts = {
-        measurement: 0,
-        washing: 0,
-        cutting: 0,
-        stitching: 0,
-        finishing: 0,
-        ready: 0,
-        delivered: 0
-      };
-
-      for (const order of orders) {
-        if (order.status === 'delivered') {
-          counts.delivered++;
-        } else if (order.current_stage && counts[order.current_stage] !== undefined) {
-          counts[order.current_stage]++;
-        }
-      }
-
-      document.getElementById('countMeasurement').textContent = counts.measurement;
-      document.getElementById('countWashing').textContent = counts.washing;
-      document.getElementById('countCutting').textContent = counts.cutting;
-      document.getElementById('countStitching').textContent = counts.stitching;
-      document.getElementById('countFinishing').textContent = counts.finishing;
-      document.getElementById('countReady').textContent = counts.ready;
-      document.getElementById('countDelivered').textContent = counts.delivered;
-    }
-
-    // Render Needs Attention List
-    function renderAttentionList(orders, todayStr) {
-      const listEl = document.getElementById('attentionList');
-      const attentionOrders = [];
-
-      for (const order of orders) {
-        if (order.status === 'delivered') continue;
-
-        let reason = null;
-        let isDanger = false;
-
-        // Check if delivery date overdue
-        if (order.expected_delivery_date && order.expected_delivery_date < todayStr) {
-          reason = `Delivery overdue since ${order.expected_delivery_date}`;
-          isDanger = true;
-        } else if (order.status === 'ready' || order.current_stage === 'ready') {
-          reason = `Finished & ready for customer pickup`;
-          isDanger = false;
-        } else {
-          // Check if active stage is past estimated date
-          const activeStage = (order.order_stages || []).find(s => s.stage === order.current_stage && s.status === 'in_progress');
-          if (activeStage && activeStage.estimated_date && activeStage.estimated_date < todayStr) {
-            reason = `${activeStage.stage.toUpperCase()} overdue (Est: ${activeStage.estimated_date})`;
-            isDanger = true;
-          }
-        }
-
-        if (reason) {
-          attentionOrders.push({ order, reason, isDanger });
-        }
-      }
-
-      if (attentionOrders.length === 0) {
-        listEl.innerHTML = `
-          <div class="empty-state">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-            <p>Everything is on schedule! No orders need immediate attention.</p>
-          </div>
-        `;
-        return;
-      }
-
-      listEl.innerHTML = attentionOrders.map(({ order, reason, isDanger }) => {
-        const custName = (order.customers && order.customers.name) ? order.customers.name : 'Unknown Customer';
-        const cardClass = isDanger ? 'attention-item' : 'attention-item ready-item';
-        const chipClass = isDanger ? 'attention-chip chip-overdue' : 'attention-chip chip-ready';
-
-        return `
-          <div class="${cardClass}">
-            <div class="attention-info">
-              <span class="attention-title">${escapeHtml(order.order_no)} &bull; ${escapeHtml(custName)}</span>
-              <span class="attention-meta">${escapeHtml(order.garment_type)} &bull; Current Step: <strong>${escapeHtml(order.current_stage)}</strong></span>
-              <div><span class="${chipClass}">${escapeHtml(reason)}</span></div>
-            </div>
-            <a href="/order-detail.html?id=${order.id}" class="btn-view-order">
-              <span>View</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            </a>
-          </div>
-        `;
-      }).join('');
-    }
-
-    // Render Activity Feed
-    function renderActivityFeed(historyList) {
-      const feedEl = document.getElementById('activityFeed');
-
-      if (!historyList || historyList.length === 0) {
-        feedEl.innerHTML = `
-          <div class="empty-state">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
-            <p>No activity recorded yet.</p>
-          </div>
-        `;
-        return;
-      }
-
-      feedEl.innerHTML = historyList.map(item => {
-        const orderNo = item.orders ? item.orders.order_no : 'Order';
-        const custName = (item.orders && item.orders.customers) ? item.orders.customers.name : '';
-        const actor = item.actor_name || 'Staff';
-        const employee = item.employee_name;
-        const timeAgo = formatTimeAgo(new Date(item.created_at));
-
-        let actionDesc = '';
-        if (item.action === 'created') {
-          actionDesc = `created new order <strong>${escapeHtml(orderNo)}</strong> for ${escapeHtml(custName)}.`;
-        } else if (item.action === 'started') {
-          actionDesc = `started <strong>${escapeHtml(item.stage)}</strong> on ${escapeHtml(orderNo)} assigned to ${escapeHtml(employee || 'staff')}.`;
-        } else if (item.action === 'completed') {
-          actionDesc = `completed <strong>${escapeHtml(item.stage)}</strong> on ${escapeHtml(orderNo)}.`;
-        } else if (item.action === 'skipped') {
-          actionDesc = `skipped <strong>${escapeHtml(item.stage)}</strong> on ${escapeHtml(orderNo)}.`;
-        } else if (item.action === 'reassigned') {
-          actionDesc = `reassigned <strong>${escapeHtml(item.stage)}</strong> on ${escapeHtml(orderNo)} to ${escapeHtml(employee || 'staff')}.`;
-        } else {
-          actionDesc = `updated ${escapeHtml(orderNo)} (${escapeHtml(item.action)}).`;
-        }
-
-        return `
-          <div class="activity-item">
-            <div class="activity-icon-bullet">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
-            </div>
-            <div class="activity-body">
-              <div class="activity-text"><strong>${escapeHtml(actor)}</strong> ${actionDesc}</div>
-              <div class="activity-time">${timeAgo}</div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function formatTimeAgo(date) {
-      const seconds = Math.floor((new Date() - date) / 1000);
-      if (seconds < 60) return 'Just now';
-      const minutes = Math.floor(seconds / 60);
-      if (minutes < 60) return `${minutes}m ago`;
-      const hours = Math.floor(minutes / 60);
-      if (hours < 24) return `${hours}h ago`;
-      const days = Math.floor(hours / 24);
-      return `${days}d ago`;
-    }
-
-    // Realtime Postgres Changes Subscription
-    function setupRealtimeSubscriptions() {
-      const channel = supabase.channel('dashboard-realtime')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, (payload) => {
-          fetchDashboardData();
-        })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'order_stages' }, (payload) => {
-          fetchDashboardData();
-        })
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'order_history' }, (payload) => {
-          fetchDashboardData();
-        })
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications' }, (payload) => {
-          fetchUnreadNotificationsCount();
-          playNotificationChime();
-          showToast(payload.new.title + ': ' + payload.new.body, 'info');
-        })
-        .subscribe((status) => {
-          const dot = document.getElementById('connectionDot');
-          const text = document.getElementById('connectionText');
-          if (status === 'SUBSCRIBED') {
-            dot.className = 'status-dot';
-            text.textContent = 'Connected';
-          } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
-            dot.className = 'status-dot reconnecting';
-            text.textContent = 'Reconnecting...';
-          }
-        });
-
-      // Auto re-fetch on window focus / visibility change
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') {
-          fetchDashboardData();
-          fetchUnreadNotificationsCount();
-        }
-      });
-
-      // Auto re-fetch on online event
-      window.addEventListener('online', () => {
-        document.getElementById('connectionDot').className = 'status-dot';
-        document.getElementById('connectionText').textContent = 'Connected';
-        fetchDashboardData();
-      });
-
-      window.addEventListener('offline', () => {
-        document.getElementById('connectionDot').className = 'status-dot reconnecting';
-        document.getElementById('connectionText').textContent = 'Offline';
-      });
-    }
-
-    // Register Service Worker
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch((err) => {
-          console.warn('SW registration:', err);
-        });
-      });
-    }
-
-    // Initialize Page
+    // Init
     window.addEventListener('DOMContentLoaded', initAuth);
   </script>
 </body>
