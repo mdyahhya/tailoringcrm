@@ -499,90 +499,9 @@
       .btn-workflow-help { padding: 6px; border-radius: var(--radius-sm); }
     }
 
-    /* PWA Startup Splash Glimpse */
-    .pwa-splash-glimpse {
-      position: fixed;
-      inset: 0;
-      background: #FFFFFF;
-      z-index: 99999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: opacity 0.35s ease, visibility 0.35s ease;
-    }
-    .pwa-splash-glimpse.fade-out {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-    .pwa-splash-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      padding: 24px;
-      animation: splashPop 0.4s ease-out;
-    }
-    @keyframes splashPop {
-      0% { transform: scale(0.92); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    .pwa-splash-logo-card {
-      width: 120px;
-      height: 120px;
-      background: #FFFFFF;
-      border-radius: 20px;
-      padding: 8px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-      border: 1px solid #E2E8F0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 16px;
-    }
-    .pwa-splash-img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-    .pwa-splash-title {
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      color: #0F172A;
-    }
-    .pwa-splash-subtitle {
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      color: #12306B;
-      text-transform: uppercase;
-      margin-top: 4px;
-    }
-    .pwa-splash-spinner {
-      margin-top: 24px;
-      width: 28px;
-      height: 28px;
-      border: 3px solid #E2E8F0;
-      border-top-color: #12306B;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-    }
   </style>
 </head>
 <body>
-
-  <!-- PWA APP OPENING GLIMPSE SPLASH -->
-  <div id="pwaSplashGlimpse" class="pwa-splash-glimpse">
-    <div class="pwa-splash-content">
-      <div class="pwa-splash-logo-card">
-        <img src="/icons/iqbal_logo.jpg" alt="Iqbal Fashion" class="pwa-splash-img">
-      </div>
-      <div class="pwa-splash-title">IQBAL FASHION</div>
-      <div class="pwa-splash-subtitle">Tailoring Order ERP</div>
-      <div class="pwa-splash-spinner"></div>
-    </div>
-  </div>
 
   <!-- DRAWER BACKDROP OVERLAY -->
   <div id="drawerOverlay" class="drawer-overlay" onclick="toggleSidebar(false)"></div>
@@ -622,7 +541,7 @@
       </a>
       <a href="/history.html" class="nav-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
-        <span data-i18n="nav_history">Activity Log</span>
+        <span data-i18n="nav_history">History</span>
       </a>
       <a href="/notifications.html" class="nav-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
@@ -636,7 +555,7 @@
       <!-- WORKFLOW GUIDE SIDEBAR LINK -->
       <a href="javascript:void(0)" onclick="openWorkflowGuide()" class="nav-item" style="color:#92400E; background:#FEF3C7; margin-top:8px; border:1px solid #FCD34D;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
-        <span data-i18n="workflow_demo_btn">दुकान कार्यप्रणाली (Demo)</span>
+        <span data-i18n="workflow_demo_btn">Workflow Guide (Demo)</span>
       </a>
     </nav>
 
@@ -792,15 +711,7 @@
     let searchQuery = '';
     let currentUser = null;
 
-    // Hide PWA startup splash glimpse smoothly
-    function hideSplashGlimpse() {
-      const splash = document.getElementById('pwaSplashGlimpse');
-      if (splash && !splash.classList.contains('fade-out')) {
-        splash.classList.add('fade-out');
-        setTimeout(() => { if (splash) splash.remove(); }, 400);
-      }
-    }
-    setTimeout(hideSplashGlimpse, 700);
+
 
     // Toast helper
     function showToast(message, type = 'info') {
@@ -843,51 +754,7 @@
       }
     });
 
-    // Audio Chime synthesizer for instant notifications
-    function playChime() {
-      try {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (!AudioCtx) return;
-        const ctx = new AudioCtx();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15); // A5
-        gain.gain.setValueAtTime(0.25, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.6);
-      } catch (e) {}
-    }
 
-    // Live Notification Alert Banner
-    function showNotificationBanner(title, body, orderId) {
-      const existing = document.querySelector('.live-alert-banner');
-      if (existing) existing.remove();
-
-      const banner = document.createElement('div');
-      banner.className = 'live-alert-banner';
-      banner.innerHTML = `
-        <div class="live-alert-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-        </div>
-        <div style="flex:1; overflow:hidden;">
-          <div style="font-weight:700; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(title)}</div>
-          <div style="font-size:12px; color:#E2E8F0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(body)}</div>
-        </div>
-        ${orderId ? `<a href="/order-detail.html?id=${orderId}" class="live-alert-link">View</a>` : ''}
-        <button onclick="this.parentElement.remove()" style="background:none; border:none; color:#94A3B8; cursor:pointer; font-size:18px; line-height:1; padding:0 4px;">&times;</button>
-      `;
-      document.body.appendChild(banner);
-      setTimeout(() => {
-        banner.style.opacity = '0';
-        banner.style.transition = 'opacity 0.3s ease';
-        setTimeout(() => banner.remove(), 300);
-      }, 6000);
-    }
 
     // Render 6 Skeleton Cards with Animated Shimmer during initial load
     function renderSkeletonCards() {
@@ -970,6 +837,10 @@
       updateUnreadCount();
       setupRealtime();
       setupPushNotifications();
+
+      if (new URLSearchParams(window.location.search).get('tour') === 'open') {
+        setTimeout(() => openWorkflowGuide(), 400);
+      }
     }
 
     // Fetch live orders from Supabase
@@ -1000,7 +871,6 @@
         showToast('Error loading orders: ' + err.message, 'error');
       } finally {
         if (refreshBtn) refreshBtn.classList.remove('spinning');
-        hideSplashGlimpse();
       }
     }
 
@@ -1321,7 +1191,6 @@
         }).catch(e => console.warn('Push dispatch error:', e));
 
         showToast(`${t('stage_updated_success')} ${getStageName(newStage)}`, 'success');
-        playChime();
         fetchLiveOrders();
       } catch (err) {
         console.error('Stage change error:', err);
@@ -1334,7 +1203,7 @@
       await handleDirectStageChange(orderId, nextStage);
     }
 
-    // Realtime Postgres listener for Orders, Stages, and Instant In-App Notifications
+    // Realtime Postgres listener for Orders, Stages, and Notifications count
     function setupRealtime() {
       supabase.channel('main-realtime')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
@@ -1343,13 +1212,8 @@
         .on('postgres_changes', { event: '*', schema: 'public', table: 'order_stages' }, () => {
           fetchLiveOrders();
         })
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications' }, (payload) => {
-          playChime();
-          const n = payload.new;
-          if (n) {
-            showNotificationBanner(n.title, n.body, n.order_id);
-            updateUnreadCount();
-          }
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications' }, () => {
+          updateUnreadCount();
         })
         .subscribe(status => {
           const dot = document.getElementById('connectionDot');
