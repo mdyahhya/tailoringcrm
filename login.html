@@ -58,19 +58,22 @@
       margin-bottom: 32px;
     }
     .brand-logo {
-      width: 56px;
-      height: 56px;
-      background-color: var(--navy-primary);
-      border-radius: 12px;
+      width: 72px;
+      height: 72px;
+      background-color: #FFFFFF;
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
       margin: 0 auto 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #FFFFFF;
+      padding: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
-    .brand-logo svg {
-      width: 32px;
-      height: 32px;
+    .brand-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
     .brand-title {
       font-size: 22px;
@@ -225,10 +228,7 @@
   <div class="auth-container">
     <div class="brand-header">
       <div class="brand-logo">
-        <!-- Needle & Monogram SVG Icon -->
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-        </svg>
+        <img src="/icons/logo.svg" alt="Iqbal Fashion Logo">
       </div>
       <h1 class="brand-title">Iqbal Fashion</h1>
       <div class="brand-subtitle">Tailoring Order Tracking CRM</div>

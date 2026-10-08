@@ -600,7 +600,9 @@
   <!-- Sidebar -->
   <aside id="sidebar" class="sidebar">
     <div class="sidebar-brand">
-      <div class="brand-badge">IF</div>
+      <div class="brand-badge" style="background:#FFFFFF; border:1px solid var(--border-light); padding:2px; overflow:hidden;">
+        <img src="/icons/logo.svg" alt="Iqbal Fashion" style="width:100%; height:100%; object-fit:contain;">
+      </div>
       <div class="brand-meta">
         <span class="brand-name">Iqbal Fashion</span>
         <span class="brand-sub">Tailoring CRM</span>
@@ -1006,9 +1008,23 @@
         .replace(/'/g, '&#39;');
     }
 
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('open');
-      document.getElementById('drawerOverlay').classList.toggle('open');
+    function toggleSidebar(forceState) {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('drawerOverlay');
+      if (!sidebar) return;
+      const isOpen = sidebar.classList.contains('open');
+      const shouldOpen = typeof forceState === 'boolean' ? forceState : !isOpen;
+
+      if (shouldOpen) {
+        sidebar.classList.add('open');
+        if (overlay) overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        try { history.pushState({ drawerOpen: true }, ''); } catch (e) {}
+      } else {
+        sidebar.classList.remove('open');
+        if (overlay) overlay.classList.remove('open');
+        document.body.style.overflow = '';
+      }
     }
 
     async function initAuth() {
@@ -1154,8 +1170,8 @@
 
         const employee = s.employee_name_snapshot;
         const estDate = s.estimated_date;
-        const timeStarted = s.started_at ? new Date(s.started_at).toLocaleDateString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : null;
-        const timeDone = s.completed_at ? new Date(s.completed_at).toLocaleDateString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : null;
+        const timeStarted = s.started_at ? format12HourDateTime(s.started_at) : null;
+        const timeDone = s.completed_at ? format12HourDateTime(s.completed_at) : null;
 
         return `
           <div class="step-node ${nodeClass}">
@@ -1948,6 +1964,10 @@
 
     window.addEventListener('popstate', (e) => {
       document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
+      const sidebar = document.getElementById('sidebar');
+      if (sidebar && sidebar.classList.contains('open')) {
+        toggleSidebar(false);
+      }
     });
 
     document.addEventListener('keydown', (e) => {
@@ -1989,9 +2009,7 @@
       }
 
       timeline.innerHTML = orderHistory.map(item => {
-        const timeStr = new Date(item.created_at).toLocaleDateString([], {
-          month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-        });
+        const timeStr = format12HourDateTime(item.created_at);
         const actor = item.actor_name || 'Admin';
         return `
           <div class="history-entry">

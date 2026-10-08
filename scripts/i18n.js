@@ -74,7 +74,9 @@ const I18N_DICTIONARY = {
     notes: "Notes / Special Instructions",
     refresh: "Refresh",
     online: "Online",
-    shop_dashboard: "Shop Dashboard"
+    shop_dashboard: "Shop Dashboard",
+    workflow_demo_btn: "Workflow Guide (Demo)",
+    workflow_guide_title: "Iqbal Fashion - Shop Workflow Guide"
   },
   mr: {
     app_title: "इक्बाल फॅशन",
@@ -100,7 +102,7 @@ const I18N_DICTIONARY = {
     stage_delivered: "डिलिव्हरी झाली",
 
     // Headers & Labels
-    page_current_orders: "चालू ऑर्डर्स (Orders in Progress)",
+    page_current_orders: "चालू ऑर्डर्स",
     page_current_orders_sub: "कोणता कपडा सध्या कोणत्या कारागिराकडे आणि कोणत्या पायरीवर आहे ते पहा",
     btn_book_order: "+ नवीन ऑर्डर नोंदवा",
     search_placeholder: "ग्राहकाचे नाव, मोबाईल, ऑर्डर क्र., कापड शोधा...",
@@ -149,7 +151,9 @@ const I18N_DICTIONARY = {
     notes: "विशेष सूचना / टीप",
     refresh: "रीफ्रेश",
     online: "ऑनलाईन",
-    shop_dashboard: "दुकान अहवाल"
+    shop_dashboard: "दुकान अहवाल",
+    workflow_demo_btn: "दुकान कार्यप्रणाली (Demo)",
+    workflow_guide_title: "इक्बाल फॅशन - दुकान कार्यप्रणाली मार्गदर्शक"
   },
   hi: {
     app_title: "इकबाल फैशन",
@@ -175,7 +179,7 @@ const I18N_DICTIONARY = {
     stage_delivered: "डिलीवर हो गया",
 
     // Headers & Labels
-    page_current_orders: "चालू ऑर्डर्स (Orders in Progress)",
+    page_current_orders: "चालू ऑर्डर्स",
     page_current_orders_sub: "देखें कि कौन सा कपड़ा किस कारीगर के पास और किस काम में है",
     btn_book_order: "+ नया ऑर्डर जोड़ें",
     search_placeholder: "ग्राहक का नाम, मोबाइल, ऑर्डर नंबर, कपड़ा खोजें...",
@@ -224,7 +228,9 @@ const I18N_DICTIONARY = {
     notes: "विशेष निर्देश / नोट",
     refresh: "रिफ्रेश",
     online: "ऑनलाइन",
-    shop_dashboard: "दुकान रिपोर्ट"
+    shop_dashboard: "दुकान रिपोर्ट",
+    workflow_demo_btn: "दुकान कार्यप्रणाली (Demo)",
+    workflow_guide_title: "इकबाल फैशन - दुकान कार्यप्रणाली गाइड"
   }
 };
 
@@ -358,7 +364,36 @@ function renderLanguageSwitcher() {
   `;
 }
 
+// Global 12-Hour AM/PM Time Formatters
+function format12HourTime(dateInput) {
+  if (!dateInput) return '';
+  const d = new Date(dateInput);
+  if (isNaN(d.getTime())) return '';
+  let hours = d.getHours();
+  const minutes = d.getMinutes().toString().padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+  return `${hours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
+}
+
+function format12HourDateTime(dateInput) {
+  if (!dateInput) return '';
+  const d = new Date(dateInput);
+  if (isNaN(d.getTime())) return '';
+  const day = d.getDate().toString().padStart(2, '0');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const month = months[d.getMonth()];
+  const year = d.getFullYear();
+  const time = format12HourTime(d);
+  return `${day} ${month} ${year}, ${time}`;
+}
+
+window.format12HourTime = format12HourTime;
+window.format12HourDateTime = format12HourDateTime;
+
 document.addEventListener('DOMContentLoaded', () => {
   renderLanguageSwitcher();
   applyTranslations();
 });
+

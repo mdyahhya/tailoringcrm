@@ -393,6 +393,74 @@
     .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
     .toast-card { pointer-events: auto; background-color: #0A0A0A; color: #FFFFFF; padding: 12px 18px; border-radius: var(--radius-sm); font-size: 13px; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
 
+    /* Workflow Interactive Modal */
+    .wf-modal-backdrop {
+      display: none; position: fixed; inset: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 10000; align-items: center; justify-content: center;
+      padding: 16px;
+    }
+    .wf-modal-backdrop.open { display: flex; }
+    .wf-modal-container {
+      background: #FFFFFF; border-radius: 16px;
+      max-width: 760px; width: 100%; max-height: 90vh;
+      overflow-y: auto; display: flex; flex-direction: column;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+    }
+    .wf-header {
+      padding: 18px 24px; border-bottom: 1px solid var(--border-light);
+      display: flex; align-items: center; justify-content: space-between;
+      background: #F8FAFC; border-radius: 16px 16px 0 0;
+    }
+    .wf-track-pills {
+      display: flex; align-items: center; gap: 6px;
+      padding: 12px 24px; background: #F1F5F9; overflow-x: auto;
+    }
+    .wf-pill-step {
+      padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;
+      background: #FFFFFF; color: #64748B; border: 1px solid #CBD5E1;
+      cursor: pointer; white-space: nowrap; transition: all 0.15s ease;
+    }
+    .wf-pill-step.active {
+      background: var(--navy-primary); color: #FFFFFF; border-color: var(--navy-primary);
+      box-shadow: 0 2px 6px rgba(18, 48, 107, 0.25);
+    }
+    .wf-body { padding: 28px 24px; text-align: center; }
+    .wf-icon-circle {
+      width: 76px; height: 76px; border-radius: 50%;
+      background: var(--navy-light); color: var(--navy-primary);
+      margin: 0 auto 16px; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 6px 16px rgba(18, 48, 107, 0.12);
+    }
+    .wf-step-num { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--navy-primary); }
+    .wf-title { font-size: 24px; font-weight: 800; color: var(--text-black); margin: 6px 0 12px; }
+    .wf-desc { font-size: 15px; color: #475569; max-width: 580px; margin: 0 auto 20px; line-height: 1.6; }
+    .wf-hindi-box {
+      background: #FFFBEB; border: 1px solid #FDE68A;
+      border-radius: 10px; padding: 14px 18px; margin: 0 auto 24px;
+      max-width: 580px; text-align: left;
+    }
+    .wf-controls {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap; padding: 16px 24px;
+      background: #F8FAFC; border-top: 1px solid var(--border-light);
+      border-radius: 0 0 16px 16px;
+    }
+    .btn-audio-speak {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #059669; color: #FFFFFF; border: none;
+      padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: background 0.15s ease;
+    }
+    .btn-audio-speak:hover { background: #047857; }
+    .btn-wf-nav {
+      padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 700;
+      border: 1px solid var(--border-light); background: #FFFFFF; color: var(--text-black);
+      cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-wf-nav.primary { background: var(--navy-primary); color: #FFFFFF; border-color: var(--navy-primary); }
+
     @media (max-width: 768px) {
       .sidebar { transform: translateX(-100%); }
       .sidebar.open { transform: translateX(0); }
@@ -411,7 +479,9 @@
   <!-- Sidebar -->
   <aside id="sidebar" class="sidebar">
     <div class="sidebar-brand">
-      <div class="brand-badge">IF</div>
+      <div class="brand-badge" style="background:#FFFFFF; border:1px solid var(--border-light); padding:2px; overflow:hidden;">
+        <img src="/icons/logo.svg" alt="Iqbal Fashion" style="width:100%; height:100%; object-fit:contain;">
+      </div>
       <div class="brand-meta">
         <span class="brand-name">Iqbal Fashion</span>
         <span class="brand-sub">Tailoring CRM</span>
@@ -498,6 +568,29 @@
     </header>
 
     <main class="content-body">
+      <!-- 0. SHOP WORKFLOW DEMO & AUDIO GUIDE CARD -->
+      <section class="settings-section-card" style="border: 1px solid #FCD34D; background: linear-gradient(180deg, #FFFDF5 0%, #FFFFFF 100%);">
+        <div class="section-title-wrap" style="border-bottom-color: #FDE68A;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+          <span class="section-title" style="color: #92400E;" data-i18n="workflow_guide_title">दुकान कार्यप्रणाली मार्गदर्शक (Shop Workflow Demo)</span>
+        </div>
+
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+          <div>
+            <h3 style="font-size:16px; font-weight:700; color:#1E293B; margin-bottom:4px;">
+              7-Step Interactive Shop Pipeline with Hindi Audio Narration
+            </h3>
+            <p style="font-size:13px; color:#64748B; max-width:640px; line-height:1.5;">
+              Experience the entire Iqbal Fashion tailoring process from customer measurement to final delivery. Features animated step-by-step visuals and spoken Hindi audio narration for seamless client presentations and staff training.
+            </p>
+          </div>
+          <button class="btn-install-app" style="background:#059669;" onclick="openWorkflowGuide()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+            <span>Launch Workflow Demo & Audio</span>
+          </button>
+        </div>
+      </section>
+
       <!-- 1. PWA INSTALL APP CARD -->
       <section class="settings-section-card">
         <div class="section-title-wrap">
@@ -730,6 +823,64 @@
     </div>
   </div>
 
+  <!-- INTERACTIVE WORKFLOW GUIDE MODAL WITH HINDI NARRATION -->
+  <div class="wf-modal-backdrop" id="workflowModal" onclick="handleWfBackdropClick(event)">
+    <div class="wf-modal-container">
+      <div class="wf-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:34px; height:34px; border-radius:6px; background:#fff; border:1px solid #E2E8F0; padding:2px; display:flex; align-items:center; justify-content:center;">
+            <img src="/icons/logo.svg" alt="Iqbal Fashion" style="width:100%; height:100%; object-fit:contain;">
+          </div>
+          <div>
+            <h3 style="font-size:16px; font-weight:800; color:#0F172A;" data-i18n="workflow_guide_title">दुकान कार्यप्रणाली मार्गदर्शक</h3>
+            <span style="font-size:11px; color:#64748B;">Interactive Shop Pipeline & Audio Demo</span>
+          </div>
+        </div>
+        <button onclick="closeWorkflowGuide()" style="background:none; border:none; font-size:24px; cursor:pointer; color:#64748B; padding:4px 8px;" aria-label="Close">&times;</button>
+      </div>
+
+      <!-- STEP SELECTOR PILLS TRACK -->
+      <div class="wf-track-pills" id="wfTrackPills"></div>
+
+      <!-- CURRENT STEP DISPLAY BODY -->
+      <div class="wf-body">
+        <div class="wf-icon-circle" id="wfIconContainer"></div>
+        <div class="wf-step-num" id="wfStepNum">Step 1 of 7</div>
+        <h2 class="wf-title" id="wfStepTitle">1. नाप (Measurement)</h2>
+        <p class="wf-desc" id="wfStepDesc">ग्राहक का नाप लिया जाता है और सिस्टम में ऑर्डर बुक किया जाता है।</p>
+
+        <!-- HINDI NARRATION HIGHLIGHT BOX -->
+        <div class="wf-hindi-box">
+          <div style="font-size:11px; font-weight:800; color:#B45309; text-transform:uppercase; margin-bottom:4px;">
+            📢 हिंदी विवरण (Hindi Audio Narration):
+          </div>
+          <div style="font-size:14px; color:#78350F; line-height:1.5; font-weight:500;" id="wfHindiText">
+            "पहला चरण है नाप लेना। ग्राहक की पसंद और सटीक शारीरिक माप दर्ज करके सिस्टम में ऑर्डर बुक किया जाता है।"
+          </div>
+        </div>
+      </div>
+
+      <!-- FOOTER CONTROLS -->
+      <div class="wf-controls">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="btn-audio-speak" id="btnAudioSpeak" onclick="speakCurrentStepAudio()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+            <span id="btnAudioText">🔊 ऑडियो सुनें (Play Hindi)</span>
+          </button>
+          <button class="btn-wf-nav" id="btnAutoTour" onclick="toggleAutoTour()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+            <span id="autoTourText">Auto Tour</span>
+          </button>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="btn-wf-nav" id="btnPrevStep" onclick="navigateWorkflow(-1)">← मागे / Prev</button>
+          <button class="btn-wf-nav primary" id="btnNextStep" onclick="navigateWorkflow(1)">पुढे / Next →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Mobile Bottom Nav -->
   <nav class="bottom-bar">
     <a href="/index.html" class="bottom-nav-item">
@@ -800,9 +951,23 @@
         .replace(/'/g, '&#39;');
     }
 
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('open');
-      document.getElementById('drawerOverlay').classList.toggle('open');
+    function toggleSidebar(forceState) {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('drawerOverlay');
+      if (!sidebar) return;
+      const isOpen = sidebar.classList.contains('open');
+      const shouldOpen = typeof forceState === 'boolean' ? forceState : !isOpen;
+
+      if (shouldOpen) {
+        sidebar.classList.add('open');
+        if (overlay) overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        try { history.pushState({ drawerOpen: true }, ''); } catch (e) {}
+      } else {
+        sidebar.classList.remove('open');
+        if (overlay) overlay.classList.remove('open');
+        document.body.style.overflow = '';
+      }
     }
 
     // Helper to convert base64 to Uint8Array for VAPID key
@@ -1250,13 +1415,210 @@
 
     window.addEventListener('popstate', (e) => {
       document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
+      const sidebar = document.getElementById('sidebar');
+      if (sidebar && sidebar.classList.contains('open')) {
+        toggleSidebar(false);
+      }
+      const wfModal = document.getElementById('workflowModal');
+      if (wfModal && wfModal.classList.contains('open')) {
+        closeWorkflowGuide();
+      }
     });
+
+    // =========================================================================
+    // INTERACTIVE ANIMATED WORKFLOW GUIDE & HINDI AUDIO NARRATION
+    // =========================================================================
+    const WORKFLOW_STEPS = [
+      {
+        num: 1,
+        title: "1. मोजमाप / नाप (Measurement)",
+        desc: "Customer preferences, body measurements, and styling choices are carefully logged into the CRM. A unique order slip is generated.",
+        hindi: "पहला चरण है नाप लेना। ग्राहक की पसंद और सटीक शारीरिक माप दर्ज करके सिस्टम में ऑर्डर बुक किया जाता है।",
+        icon: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>`
+      },
+      {
+        num: 2,
+        title: "2. धुलाई (Washing - Optional)",
+        desc: "Optional cloth pre-wash for cotton, linen, or raw fabric to ensure garments do not shrink after tailoring.",
+        hindi: "दूसरा चरण है धुलाई। यदि कपड़ा कॉटन या लिनेन का है और सिकुड़ने की संभावना है, तो कटिंग से पहले धुलाई की जाती है।",
+        icon: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>`
+      },
+      {
+        num: 3,
+        title: "3. कटिंग (Cutting)",
+        desc: "Master tailor cuts the fabric precisely according to the recorded body measurements and selected design pattern.",
+        hindi: "तीसरा चरण है कटिंग। मास्टर कटर नाप के अनुसार कपड़े की सटीकता से कटिंग करते हैं ताकि सही फिटिंग मिले।",
+        icon: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>`
+      },
+      {
+        num: 4,
+        title: "4. शिलाई (Stitching)",
+        desc: "Experienced artisan tailors assemble and stitch the garment with fine thread reinforcement, collars, cuffs, and pockets.",
+        hindi: "चौथा चरण है शिलाई। कुशल कारीगर परिधान को मजबूत और सुरुचिपूर्ण सिलाई देते हैं।",
+        icon: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>`
+      },
+      {
+        num: 5,
+        title: "5. फिनिशिंग / प्रेस (Finishing & Ironing)",
+        desc: "Loose thread trimming, button attachments, hook adjustments, thorough quality audit, and premium steam iron press.",
+        hindi: "पाँचवाँ चरण है फिनिशिंग और प्रेस। धागों की सफाई, बटन लगाना और स्टीम प्रेस से कपड़े को आकर्षक बनाया जाता है।",
+        icon: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>`
+      },
+      {
+        num: 6,
+        title: "6. पिकअप हेतु तैयार (Ready for Pickup)",
+        desc: "Garment is bagged and tagged on the ready rack. Real-time push notifications and WhatsApp alerts are dispatched to the customer.",
+        hindi: "छठा चरण है पिकअप हेतु तैयार। कपड़ा पूरी तरह तैयार है! ग्राहक और दुकान को तुरंत रियल-टाइम नोटिफिकेशन भेजा जाता है।",
+        icon: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>`
+      },
+      {
+        num: 7,
+        title: "7. डिलिव्हरी (Delivered)",
+        desc: "Customer tries on the garment, happily verifies the fit, any pending balance is cleared, and completion is archived.",
+        hindi: "सातवाँ चरण है डिलीवरी। ग्राहक परिधान की जांच करके अपनी पूर्ण संतुष्टि के साथ डिलीवरी लेते हैं।",
+        icon: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`
+      }
+    ];
+
+    let currentWfIdx = 0;
+    let autoTourTimer = null;
+
+    function openWorkflowGuide() {
+      const modal = document.getElementById('workflowModal');
+      if (!modal) return;
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      renderWorkflowPills();
+      updateWorkflowStepView(0);
+      try { history.pushState({ modalOpen: 'workflowModal' }, ''); } catch (e) {}
+    }
+
+    function closeWorkflowGuide() {
+      const modal = document.getElementById('workflowModal');
+      if (!modal) return;
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+      stopSpeech();
+      if (autoTourTimer) {
+        clearInterval(autoTourTimer);
+        autoTourTimer = null;
+        document.getElementById('autoTourText').textContent = 'Auto Tour';
+      }
+    }
+
+    function handleWfBackdropClick(e) {
+      if (e.target.id === 'workflowModal') {
+        closeWorkflowGuide();
+      }
+    }
+
+    function renderWorkflowPills() {
+      const container = document.getElementById('wfTrackPills');
+      if (!container) return;
+      container.innerHTML = WORKFLOW_STEPS.map((s, idx) => `
+        <button class="wf-pill-step ${idx === currentWfIdx ? 'active' : ''}" onclick="updateWorkflowStepView(${idx})">
+          ${idx + 1}. ${s.title.split('(')[0].replace(/^[0-9.]+\s*/, '').trim()}
+        </button>
+      `).join('');
+    }
+
+    function updateWorkflowStepView(idx) {
+      currentWfIdx = idx;
+      const step = WORKFLOW_STEPS[idx];
+      if (!step) return;
+
+      document.getElementById('wfIconContainer').innerHTML = step.icon;
+      document.getElementById('wfStepNum').textContent = `Step ${step.num} of ${WORKFLOW_STEPS.length}`;
+      document.getElementById('wfStepTitle').textContent = step.title;
+      document.getElementById('wfStepDesc').textContent = step.desc;
+      document.getElementById('wfHindiText').textContent = `"${step.hindi}"`;
+
+      document.getElementById('btnPrevStep').style.visibility = idx === 0 ? 'hidden' : 'visible';
+      document.getElementById('btnNextStep').textContent = idx === WORKFLOW_STEPS.length - 1 ? 'पूर्ण / Done' : 'पुढे / Next →';
+
+      renderWorkflowPills();
+    }
+
+    function navigateWorkflow(dir) {
+      const nextIdx = currentWfIdx + dir;
+      if (nextIdx >= 0 && nextIdx < WORKFLOW_STEPS.length) {
+        updateWorkflowStepView(nextIdx);
+        if (autoTourTimer) speakCurrentStepAudio();
+      } else if (nextIdx >= WORKFLOW_STEPS.length) {
+        closeWorkflowGuide();
+      }
+    }
+
+    function stopSpeech() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      const btn = document.getElementById('btnAudioText');
+      if (btn) btn.textContent = '🔊 ऑडियो सुनें (Play Hindi)';
+    }
+
+    function speakCurrentStepAudio() {
+      if (!('speechSynthesis' in window)) {
+        showToast('Speech synthesis not supported on this browser', 'error');
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+      const step = WORKFLOW_STEPS[currentWfIdx];
+      if (!step) return;
+
+      const utterance = new SpeechSynthesisUtterance(step.hindi);
+      utterance.lang = 'hi-IN';
+      utterance.rate = 0.95;
+
+      const voices = window.speechSynthesis.getVoices();
+      const hiVoice = voices.find(v => v.lang === 'hi-IN' || v.lang.startsWith('hi'));
+      if (hiVoice) utterance.voice = hiVoice;
+
+      const btnText = document.getElementById('btnAudioText');
+      if (btnText) btnText.textContent = 'Playing Audio...';
+
+      utterance.onend = () => {
+        if (btnText) btnText.textContent = '🔊 ऑडियो सुनें (Play Hindi)';
+      };
+      utterance.onerror = () => {
+        if (btnText) btnText.textContent = '🔊 ऑडियो सुनें (Play Hindi)';
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function toggleAutoTour() {
+      const btnText = document.getElementById('autoTourText');
+      if (autoTourTimer) {
+        clearInterval(autoTourTimer);
+        autoTourTimer = null;
+        stopSpeech();
+        if (btnText) btnText.textContent = 'Auto Tour';
+      } else {
+        if (btnText) btnText.textContent = 'Pause Tour';
+        speakCurrentStepAudio();
+        autoTourTimer = setInterval(() => {
+          if (currentWfIdx < WORKFLOW_STEPS.length - 1) {
+            navigateWorkflow(1);
+          } else {
+            clearInterval(autoTourTimer);
+            autoTourTimer = null;
+            if (btnText) btnText.textContent = 'Auto Tour';
+          }
+        }, 7000);
+      }
+    }
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         const openModal = document.querySelector('.modal-backdrop.open');
         if (openModal) {
           closeModalWithHistory(openModal.id);
+        }
+        const wfModal = document.getElementById('workflowModal');
+        if (wfModal && wfModal.classList.contains('open')) {
+          closeWorkflowGuide();
         }
       }
     });

@@ -311,7 +311,9 @@
   <!-- Sidebar -->
   <aside id="sidebar" class="sidebar">
     <div class="sidebar-brand">
-      <div class="brand-badge">IF</div>
+      <div class="brand-badge" style="background:#FFFFFF; border:1px solid var(--border-light); padding:2px; overflow:hidden;">
+        <img src="/icons/logo.svg" alt="Iqbal Fashion" style="width:100%; height:100%; object-fit:contain;">
+      </div>
       <div class="brand-meta">
         <span class="brand-name">Iqbal Fashion</span>
         <span class="brand-sub">Tailoring CRM</span>
@@ -546,10 +548,31 @@
         .replace(/'/g, '&#39;');
     }
 
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('open');
-      document.getElementById('drawerOverlay').classList.toggle('open');
+    function toggleSidebar(forceState) {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('drawerOverlay');
+      if (!sidebar) return;
+      const isOpen = sidebar.classList.contains('open');
+      const shouldOpen = typeof forceState === 'boolean' ? forceState : !isOpen;
+
+      if (shouldOpen) {
+        sidebar.classList.add('open');
+        if (overlay) overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        try { history.pushState({ drawerOpen: true }, ''); } catch (e) {}
+      } else {
+        sidebar.classList.remove('open');
+        if (overlay) overlay.classList.remove('open');
+        document.body.style.overflow = '';
+      }
     }
+
+    window.addEventListener('popstate', () => {
+      const sidebar = document.getElementById('sidebar');
+      if (sidebar && sidebar.classList.contains('open')) {
+        toggleSidebar(false);
+      }
+    });
 
     async function initAuth() {
       const { data: { session } } = await supabase.auth.getSession();
@@ -664,9 +687,7 @@
       }
 
       tbody.innerHTML = list.map(item => {
-        const timeStr = new Date(item.created_at).toLocaleDateString([], {
-          year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-        });
+        const timeStr = window.format12HourDateTime ? window.format12HourDateTime(item.created_at) : new Date(item.created_at).toLocaleString([], { hour12: true });
         const orderNo = item.orders ? item.orders.order_no : 'Order';
         const custName = (item.orders && item.orders.customers) ? item.orders.customers.name : '-';
         const detailsStr = item.details ? JSON.stringify(item.details) : '';

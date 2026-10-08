@@ -842,7 +842,9 @@
   <!-- Left Sidebar (Desktop & Mobile Drawer) -->
   <aside id="sidebar" class="sidebar">
     <div class="sidebar-brand">
-      <div class="brand-badge">IF</div>
+      <div class="brand-badge" style="background:#FFFFFF; border:1px solid var(--border-light); padding:2px; overflow:hidden;">
+        <img src="/icons/logo.svg" alt="Iqbal Fashion" style="width:100%; height:100%; object-fit:contain;">
+      </div>
       <div class="brand-meta">
         <span class="brand-name">Iqbal Fashion</span>
         <span class="brand-sub">Tailoring CRM</span>
@@ -1193,13 +1195,31 @@
       }
     }
 
-    // Sidebar Toggle for Mobile Drawer
-    function toggleSidebar() {
+    function toggleSidebar(forceState) {
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('drawerOverlay');
-      sidebar.classList.toggle('open');
-      overlay.classList.toggle('open');
+      if (!sidebar) return;
+      const isOpen = sidebar.classList.contains('open');
+      const shouldOpen = typeof forceState === 'boolean' ? forceState : !isOpen;
+
+      if (shouldOpen) {
+        sidebar.classList.add('open');
+        if (overlay) overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        try { history.pushState({ drawerOpen: true }, ''); } catch (e) {}
+      } else {
+        sidebar.classList.remove('open');
+        if (overlay) overlay.classList.remove('open');
+        document.body.style.overflow = '';
+      }
     }
+
+    window.addEventListener('popstate', () => {
+      const sidebar = document.getElementById('sidebar');
+      if (sidebar && sidebar.classList.contains('open')) {
+        toggleSidebar(false);
+      }
+    });
 
     // Session Verification Guard
     async function initAuth() {

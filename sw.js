@@ -3,7 +3,7 @@
    Production PWA Offline Caching & Web Push Notifications
    ============================================================================== */
 
-const CACHE_NAME = 'iqbal-crm-v1.0.0';
+const CACHE_NAME = 'iqbal-crm-v1.0.1';
 
 // Core static app shell assets to precache
 const PRECACHE_ASSETS = [
@@ -20,6 +20,8 @@ const PRECACHE_ASSETS = [
   '/settings.html',
   '/offline.html',
   '/manifest.json',
+  '/scripts/i18n.js',
+  '/icons/logo.svg',
   '/icons/favicon.svg',
   '/icons/icon-192.png',
   '/icons/icon-512.png',

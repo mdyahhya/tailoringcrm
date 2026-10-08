@@ -29,6 +29,9 @@ module.exports = async function handler(req, res) {
 
   try {
     const todayStr = new Date().toISOString().split('T')[0];
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
 
     // 1. Fetch in-progress orders past their expected delivery date
     const { data: overdueOrders, error: orderErr } = await supabase
@@ -51,6 +54,13 @@ module.exports = async function handler(req, res) {
     if (stageErr) {
       return res.status(500).json({ error: stageErr.message });
     }
+
+    // 3. Fetch orders due tomorrow (1 day before expected delivery date reminder)
+    const { data: dueTomorrowOrders } = await supabase
+      .from('orders')
+      .select('id, order_no, garment_type, expected_delivery_date, current_stage, customers(name)')
+      .not('status', 'in', '("delivered","cancelled")')
+      .eq('expected_delivery_date', tomorrowStr);
 
     let notifiedCount = 0;
 
@@ -92,6 +102,21 @@ module.exports = async function handler(req, res) {
           stage: `${stg.stage}_overdue`,
           title: `Stage Overdue: ${orderInfo.order_no || 'Order'}`,
           body: `${stg.stage.toUpperCase()} for ${orderInfo.order_no} (${custName}) with ${emp} passed estimate date (${stg.estimated_date}).`
+        });
+        recentOrderSet.add(key);
+      }
+    }
+
+    // Process 1-day before delivery reminders (due tomorrow)
+    for (const order of (dueTomorrowOrders || [])) {
+      const key = `${order.id}:delivery_tomorrow`;
+      if (!recentOrderSet.has(key)) {
+        const custName = (order.customers && order.customers.name) ? order.customers.name : 'Customer';
+        notificationsToInsert.push({
+          order_id: order.id,
+          stage: 'delivery_tomorrow',
+          title: `Delivery Due Tomorrow: ${order.order_no}`,
+          body: `Order ${order.order_no} for ${custName} (${order.garment_type}) is scheduled for delivery tomorrow (${order.expected_delivery_date}). Current stage: ${(order.current_stage || 'processing').toUpperCase()}.`
         });
         recentOrderSet.add(key);
       }
