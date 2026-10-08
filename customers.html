@@ -398,6 +398,15 @@
       .menu-toggle { display: flex; }
       .bottom-bar { display: flex; }
       .content-body { padding: 16px; }
+      .topbar { padding: 0 10px; gap: 6px; }
+      .topbar-left { gap: 6px; min-width: 0; flex: 1; overflow: hidden; }
+      .topbar-actions { gap: 6px; flex-shrink: 0; }
+      .page-heading h1 { font-size: 14px; max-width: 110px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .page-heading p { display: none; }
+      .btn-topbar span, .btn-add-customer span { display: none; }
+      .btn-topbar, .btn-add-customer { padding: 6px 8px; min-width: auto; }
+      .status-indicator span { display: none; }
+      .status-indicator { gap: 0; }
     }
   </style>
 </head>
@@ -964,21 +973,19 @@
       const confirmBtn = document.getElementById('btnConfirmDeleteCust');
 
       // Check order count in database
-      const { data: orders, error } = await supabase
+      const { data: orders } = await supabase
         .from('orders')
         .select('id')
         .eq('customer_id', activeCustomer.id);
 
       const orderCount = orders ? orders.length : 0;
+      title.textContent = 'Delete Customer Permanently';
       if (orderCount > 0) {
-        title.textContent = 'Cannot Delete Customer';
-        msg.innerHTML = `Customer <strong>${escapeHtml(activeCustomer.name)}</strong> has <strong>${orderCount}</strong> order(s) on record. Customers with historical orders cannot be deleted to preserve tailoring audit history.<br><br>Please cancel or delete their orders first if needed.`;
-        confirmBtn.style.display = 'none';
+        msg.innerHTML = `Customer <strong>${escapeHtml(activeCustomer.name)}</strong> has <strong>${orderCount}</strong> order(s) on record.<br><br>Deleting this customer will permanently delete all ${orderCount} associated order(s), stage tracking, and notifications. Are you sure you want to proceed?`;
       } else {
-        title.textContent = 'Delete Customer';
-        msg.innerHTML = `Are you sure you want to permanently delete <strong>${escapeHtml(activeCustomer.name)}</strong>? This customer has 0 orders. This action cannot be undone.`;
-        confirmBtn.style.display = 'inline-flex';
+        msg.innerHTML = `Are you sure you want to permanently delete customer <strong>${escapeHtml(activeCustomer.name)}</strong>? This customer has 0 orders. This action cannot be undone.`;
       }
+      confirmBtn.style.display = 'inline-flex';
 
       openModalWithHistory('deleteCustomerModal');
     }
@@ -995,6 +1002,25 @@
       closeDeleteCustomerModal();
 
       try {
+        // 1. Get all order IDs for this customer
+        const { data: custOrders } = await supabase
+          .from('orders')
+          .select('id')
+          .eq('customer_id', custId);
+
+        if (custOrders && custOrders.length > 0) {
+          const orderIds = custOrders.map(o => o.id);
+          // Delete child records for all these orders
+          for (const oid of orderIds) {
+            await supabase.from('order_stages').delete().eq('order_id', oid);
+            await supabase.from('order_history').delete().eq('order_id', oid);
+            await supabase.from('notifications').delete().eq('order_id', oid);
+          }
+          // Delete the orders
+          await supabase.from('orders').delete().in('id', orderIds);
+        }
+
+        // 2. Delete customer
         const { error } = await supabase
           .from('customers')
           .delete()

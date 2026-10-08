@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Activity History & Audit | Iqbal Fashion ERP</title>
+  <title>Orders Management & Activity History | Iqbal Fashion ERP</title>
   <link rel="icon" type="image/jpeg" href="/icons/iqbal_logo.jpg">
   <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
   <link rel="icon" type="image/svg+xml" href="/icons/logo.svg">
@@ -173,15 +173,79 @@
       gap: 20px;
     }
 
+    /* ===== SECTION TABS ===== */
+    .section-tabs-bar {
+      display: flex;
+      gap: 8px;
+      border-bottom: 2px solid var(--border-light);
+      padding-bottom: 4px;
+      overflow-x: auto;
+    }
+    .section-tab-btn {
+      background: none;
+      border: none;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+    .section-tab-btn:hover {
+      color: var(--navy-primary);
+      background-color: #F1F5F9;
+    }
+    .section-tab-btn.active {
+      color: var(--navy-primary);
+      background-color: #FFFFFF;
+      box-shadow: 0 -2px 0 var(--navy-primary) inset;
+    }
+    .section-tab-btn .badge-pill {
+      background-color: #E2E8F0;
+      color: #334155;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+    .section-tab-btn.active .badge-pill {
+      background-color: var(--navy-primary);
+      color: #FFFFFF;
+    }
+
+    /* Stats Quick Row */
+    .stats-summary-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+    }
+    .stat-mini-card {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .stat-mini-label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); }
+    .stat-mini-val { font-size: 20px; font-weight: 700; color: var(--navy-primary); }
+
     /* Filters Card */
     .filters-card {
       background-color: var(--bg-white);
       border: 1px solid var(--border-light);
       border-radius: var(--radius-md);
-      padding: 20px;
+      padding: 18px 20px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     }
     .filters-grid {
@@ -219,7 +283,7 @@
       border-top: 1px solid #F1F5F9;
       padding-top: 12px;
     }
-    .btn-export-csv {
+    .btn-export-csv, .btn-action-light {
       background-color: #F1F5F9;
       color: var(--navy-primary);
       border: 1px solid var(--border-light);
@@ -234,12 +298,12 @@
       min-height: 38px;
       transition: all 0.15s ease;
     }
-    .btn-export-csv:hover {
+    .btn-export-csv:hover, .btn-action-light:hover {
       background-color: var(--navy-primary);
       color: #FFFFFF;
     }
 
-    /* History Table */
+    /* Tables */
     .table-card {
       background-color: var(--bg-white);
       border: 1px solid var(--border-light);
@@ -247,13 +311,13 @@
       overflow-x: auto;
       box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     }
-    .history-table {
+    .data-table {
       width: 100%;
       border-collapse: collapse;
       font-size: 13px;
       text-align: left;
     }
-    .history-table th {
+    .data-table th {
       background-color: #F8FAFC;
       padding: 12px 16px;
       font-weight: 600;
@@ -261,27 +325,115 @@
       border-bottom: 1px solid var(--border-light);
       white-space: nowrap;
     }
-    .history-table td {
+    .data-table td {
       padding: 14px 16px;
       border-bottom: 1px solid var(--border-light);
       color: var(--text-black);
     }
-    .history-table tr:hover td { background-color: #F8FAFC; }
+    .data-table tr:hover td { background-color: #F8FAFC; }
 
     /* Action tag */
     .action-tag {
       font-size: 11px;
       font-weight: 700;
-      padding: 2px 8px;
+      padding: 3px 8px;
       border-radius: 4px;
       text-transform: capitalize;
+      display: inline-block;
     }
-    .action-tag.created { background: #EFF6FF; color: #1D4ED8; }
-    .action-tag.started { background: #FEF3C7; color: #B45309; }
-    .action-tag.completed { background: #F0FDF4; color: #15803D; }
-    .action-tag.skipped { background: #F1F5F9; color: #64748B; }
-    .action-tag.reassigned { background: #F3E8FF; color: #7E22CE; }
+    .action-tag.in_progress { background: #EFF6FF; color: #1D4ED8; }
+    .action-tag.ready { background: #FEF3C7; color: #B45309; }
     .action-tag.delivered { background: #DCFCE7; color: #16A34A; }
+    .action-tag.cancelled { background: #FEE2E2; color: #DC2626; }
+
+    .stage-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background-color: #F1F5F9;
+      color: #334155;
+      text-transform: capitalize;
+    }
+
+    /* Small Action Buttons */
+    .btn-table-action {
+      background: #FFFFFF;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #334155;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+    .btn-table-action:hover {
+      background-color: var(--navy-light);
+      color: var(--navy-primary);
+      border-color: var(--navy-primary);
+    }
+    .btn-table-action.delete:hover {
+      background-color: #FEF2F2;
+      color: var(--danger);
+      border-color: #FCA5A5;
+    }
+
+    /* Modal System */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: #FFFFFF;
+      border-radius: var(--radius-md);
+      max-width: 520px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-title { font-size: 17px; font-weight: 700; color: var(--text-black); }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+
+    .modal-form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .modal-form-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #334155;
+    }
+    .modal-form-group input, .modal-form-group select, .modal-form-group textarea {
+      padding: 9px 12px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      background: #FFFFFF;
+      outline: none;
+      font-family: inherit;
+    }
+    .modal-form-group input:focus, .modal-form-group select:focus, .modal-form-group textarea:focus {
+      border-color: var(--navy-primary);
+    }
 
     /* Mobile bottom bar & toast */
     .drawer-overlay { display: none; position: fixed; inset: 0; background-color: rgba(0,0,0,0.4); z-index: 99; }
@@ -303,6 +455,15 @@
       .menu-toggle { display: flex; }
       .bottom-bar { display: flex; }
       .content-body { padding: 16px; }
+      .topbar { padding: 0 10px; gap: 6px; }
+      .topbar-left { gap: 6px; min-width: 0; flex: 1; overflow: hidden; }
+      .topbar-actions { gap: 6px; flex-shrink: 0; }
+      .page-heading h1 { font-size: 14px; max-width: 110px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .page-heading p { display: none; }
+      .btn-topbar span, .btn-export-csv span, .btn-action-light span { display: none; }
+      .btn-topbar, .btn-export-csv, .btn-action-light { padding: 6px 8px; min-width: auto; }
+      .status-indicator span { display: none; }
+      .status-indicator { gap: 0; }
     }
   </style>
 </head>
@@ -348,7 +509,7 @@
       </a>
       <a href="/history.html" class="nav-item active">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-        <span>Activity Log</span>
+        <span>Orders & Activity Log</span>
       </a>
       <a href="/notifications.html" class="nav-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
@@ -381,8 +542,8 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
         </button>
         <div class="page-heading">
-          <h1 data-i18n="nav_history">Global Activity Log</h1>
-          <p id="historySummaryLabel">Complete tailoring pipeline audit trail</p>
+          <h1>Orders & History</h1>
+          <p id="topbarSummaryLabel">All orders management, edit, delete & audit trail</p>
         </div>
       </div>
       <div class="topbar-actions">
@@ -393,7 +554,7 @@
           <span class="status-dot" id="connectionDot"></span>
           <span id="connectionText" data-i18n="online">Online</span>
         </div>
-        <button class="btn-topbar" id="refreshBtn" onclick="fetchHistory(true)" aria-label="Refresh activity log">
+        <button class="btn-topbar" id="refreshBtn" onclick="refreshCurrentTab(true)" aria-label="Refresh view">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
           <span data-i18n="refresh">Refresh</span>
         </button>
@@ -401,85 +562,283 @@
     </header>
 
     <main class="content-body">
-      <!-- Filters -->
-      <section class="filters-card">
-        <div class="filters-grid">
-          <div class="filter-group">
-            <label>Search Order or Customer</label>
-            <input type="text" id="filterSearch" placeholder="Type name or IF-000..." oninput="applyFilters()">
-          </div>
+      <!-- Section Tab Switcher -->
+      <div class="section-tabs-bar">
+        <button class="section-tab-btn active" id="tabBtnOrders" onclick="switchTab('orders')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          <span>All Orders Box</span>
+          <span class="badge-pill" id="badgeAllOrdersCount">0</span>
+        </button>
+        <button class="section-tab-btn" id="tabBtnAudit" onclick="switchTab('audit')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <span>Activity Audit Trail</span>
+          <span class="badge-pill" id="badgeAuditCount">0</span>
+        </button>
+      </div>
 
-          <div class="filter-group">
-            <label>Pipeline Stage</label>
-            <select id="filterStage" onchange="applyFilters()">
-              <option value="">All Stages</option>
-              <option value="measurement">Measurement</option>
-              <option value="washing">Washing</option>
-              <option value="cutting">Cutting</option>
-              <option value="stitching">Stitching</option>
-              <option value="finishing">Finishing</option>
-              <option value="ready">Ready</option>
-              <option value="delivered">Delivered</option>
-            </select>
+      <!-- =====================================================================
+           TAB 1: ALL ORDERS MANAGEMENT BOX (EDIT & DELETE CAPABILITY)
+           ===================================================================== -->
+      <div id="sectionOrdersBox" style="display:flex; flex-direction:column; gap:20px;">
+        <!-- Stats Summary Row -->
+        <div class="stats-summary-row">
+          <div class="stat-mini-card">
+            <span class="stat-mini-label">Total Orders</span>
+            <span class="stat-mini-val" id="statTotalOrders">0</span>
           </div>
-
-          <div class="filter-group">
-            <label>Action</label>
-            <select id="filterAction" onchange="applyFilters()">
-              <option value="">All Actions</option>
-              <option value="created">Created</option>
-              <option value="started">Started</option>
-              <option value="completed">Completed</option>
-              <option value="skipped">Skipped</option>
-              <option value="reassigned">Reassigned</option>
-              <option value="delivered">Delivered</option>
-            </select>
+          <div class="stat-mini-card">
+            <span class="stat-mini-label" style="color:#2563EB;">In Progress</span>
+            <span class="stat-mini-val" style="color:#2563EB;" id="statInProgress">0</span>
           </div>
-
-          <div class="filter-group">
-            <label>From Date</label>
-            <input type="date" id="filterFromDate" onchange="applyFilters()">
+          <div class="stat-mini-card">
+            <span class="stat-mini-label" style="color:#D97706;">Ready for Pickup</span>
+            <span class="stat-mini-val" style="color:#D97706;" id="statReady">0</span>
           </div>
-
-          <div class="filter-group">
-            <label>To Date</label>
-            <input type="date" id="filterToDate" onchange="applyFilters()">
+          <div class="stat-mini-card">
+            <span class="stat-mini-label" style="color:#16A34A;">Delivered</span>
+            <span class="stat-mini-val" style="color:#16A34A;" id="statDelivered">0</span>
+          </div>
+          <div class="stat-mini-card">
+            <span class="stat-mini-label" style="color:#DC2626;">Cancelled</span>
+            <span class="stat-mini-val" style="color:#DC2626;" id="statCancelled">0</span>
           </div>
         </div>
 
-        <div class="filters-actions-bar">
-          <span style="font-size:13px; color:var(--text-muted);" id="filteredCountLabel">Showing 0 events</span>
-          <div style="display:flex; gap:10px;">
-            <button class="role-tab-btn" onclick="resetFilters()">Reset</button>
-            <button class="btn-export-csv" onclick="exportToCsv()">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-              <span>Export CSV</span>
-            </button>
+        <!-- Orders Filters -->
+        <section class="filters-card">
+          <div class="filters-grid">
+            <div class="filter-group">
+              <label>Search Order, Customer, or Phone</label>
+              <input type="text" id="orderSearchInput" placeholder="Order #, Name or Phone..." oninput="applyOrderFilters()">
+            </div>
+            <div class="filter-group">
+              <label>Status Filter</label>
+              <select id="orderStatusFilter" onchange="applyOrderFilters()">
+                <option value="">All Statuses</option>
+                <option value="in_progress">In Progress</option>
+                <option value="ready">Ready for Pickup</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Current Stage</label>
+              <select id="orderStageFilter" onchange="applyOrderFilters()">
+                <option value="">All Stages</option>
+                <option value="measurement">Measurement</option>
+                <option value="washing">Washing</option>
+                <option value="cutting">Cutting</option>
+                <option value="stitching">Stitching</option>
+                <option value="finishing">Finishing</option>
+                <option value="ready">Ready</option>
+                <option value="delivered">Delivered</option>
+              </select>
+            </div>
           </div>
-        </div>
-      </section>
+          <div class="filters-actions-bar">
+            <span style="font-size:13px; color:var(--text-muted);" id="filteredOrdersCountLabel">Showing 0 orders</span>
+            <div style="display:flex; gap:10px;">
+              <button class="btn-action-light" onclick="resetOrderFilters()">Reset</button>
+              <a href="/new-order.html" class="btn-export-csv" style="text-decoration:none;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>+ Book New Order</span>
+              </a>
+            </div>
+          </div>
+        </section>
 
-      <!-- History Table -->
-      <section class="table-card">
-        <table class="history-table">
-          <thead>
-            <tr>
-              <th>Timestamp</th>
-              <th>Order #</th>
-              <th>Customer</th>
-              <th>Stage</th>
-              <th>Action</th>
-              <th>Assigned Staff</th>
-              <th>Recorded By</th>
-              <th>Details</th>
-            </tr>
-          </thead>
-          <tbody id="historyTableBody">
-            <tr><td colspan="8" style="text-align:center; padding:32px; color:var(--text-muted);">Loading audit log...</td></tr>
-          </tbody>
-        </table>
-      </section>
+        <!-- Orders Table Box -->
+        <section class="table-card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Order #</th>
+                <th>Customer Name</th>
+                <th>Phone</th>
+                <th>Garment & Material</th>
+                <th>Stage</th>
+                <th>Delivery Date</th>
+                <th>Status</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+              <tr><td colspan="8" style="text-align:center; padding:32px; color:var(--text-muted);">Loading orders list...</td></tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+
+      <!-- =====================================================================
+           TAB 2: ACTIVITY AUDIT LOG
+           ===================================================================== -->
+      <div id="sectionAuditTrail" style="display:none; flex-direction:column; gap:20px;">
+        <!-- Filters -->
+        <section class="filters-card">
+          <div class="filters-grid">
+            <div class="filter-group">
+              <label>Search Order or Customer</label>
+              <input type="text" id="filterSearch" placeholder="Type name or IF-000..." oninput="applyAuditFilters()">
+            </div>
+            <div class="filter-group">
+              <label>Pipeline Stage</label>
+              <select id="filterStage" onchange="applyAuditFilters()">
+                <option value="">All Stages</option>
+                <option value="measurement">Measurement</option>
+                <option value="washing">Washing</option>
+                <option value="cutting">Cutting</option>
+                <option value="stitching">Stitching</option>
+                <option value="finishing">Finishing</option>
+                <option value="ready">Ready</option>
+                <option value="delivered">Delivered</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Action</label>
+              <select id="filterAction" onchange="applyAuditFilters()">
+                <option value="">All Actions</option>
+                <option value="created">Created</option>
+                <option value="started">Started</option>
+                <option value="completed">Completed</option>
+                <option value="skipped">Skipped</option>
+                <option value="reassigned">Reassigned</option>
+                <option value="delivered">Delivered</option>
+                <option value="updated">Updated</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>From Date</label>
+              <input type="date" id="filterFromDate" onchange="applyAuditFilters()">
+            </div>
+            <div class="filter-group">
+              <label>To Date</label>
+              <input type="date" id="filterToDate" onchange="applyAuditFilters()">
+            </div>
+          </div>
+
+          <div class="filters-actions-bar">
+            <span style="font-size:13px; color:var(--text-muted);" id="filteredCountLabel">Showing 0 events</span>
+            <div style="display:flex; gap:10px;">
+              <button class="btn-action-light" onclick="resetAuditFilters()">Reset</button>
+              <button class="btn-export-csv" onclick="exportToCsv()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span>Export CSV</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Audit Table -->
+        <section class="table-card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Order #</th>
+                <th>Customer</th>
+                <th>Stage</th>
+                <th>Action</th>
+                <th>Assigned Staff</th>
+                <th>Actor</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <tr><td colspan="8" style="text-align:center; padding:32px; color:var(--text-muted);">Loading audit log...</td></tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
     </main>
+  </div>
+
+  <!-- EDIT ORDER MODAL -->
+  <div class="modal-backdrop" id="editOrderModal">
+    <div class="modal-box">
+      <h3 class="modal-title">Edit Order Details</h3>
+      <div class="modal-form-group">
+        <label>Customer Full Name *</label>
+        <input type="text" id="editCustName" required>
+      </div>
+      <div class="modal-form-group">
+        <label>Customer Phone Number</label>
+        <input type="tel" id="editCustPhone">
+      </div>
+      <div class="modal-form-group">
+        <label>Garment Type *</label>
+        <input type="text" id="editGarmentType" required>
+      </div>
+      <div class="modal-form-group">
+        <label>Fabric / Cloth Material</label>
+        <input type="text" id="editClothMaterial">
+      </div>
+      <div class="modal-form-group">
+        <label>Quantity *</label>
+        <input type="number" id="editQuantity" min="1" required>
+      </div>
+      <div class="modal-form-group">
+        <label>Expected Delivery Date</label>
+        <input type="date" id="editExpectedDate">
+      </div>
+      <div class="modal-form-group">
+        <label>Current Pipeline Stage</label>
+        <select id="editCurrentStage">
+          <option value="measurement">Measurement</option>
+          <option value="washing">Washing</option>
+          <option value="cutting">Cutting</option>
+          <option value="stitching">Stitching</option>
+          <option value="finishing">Finishing</option>
+          <option value="ready">Ready for Pickup</option>
+          <option value="delivered">Delivered</option>
+        </select>
+      </div>
+      <div class="modal-form-group">
+        <label>Order Status</label>
+        <select id="editStatus">
+          <option value="in_progress">In Progress</option>
+          <option value="ready">Ready</option>
+          <option value="delivered">Delivered</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div class="modal-form-group">
+        <label>Fitting / Order Notes</label>
+        <textarea id="editNotes" rows="3"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-action-light" onclick="closeEditOrderModal()">Cancel</button>
+        <button class="btn-topbar" style="background:var(--navy-primary); color:#FFFFFF; border:none;" onclick="saveOrderChanges()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELETE ORDER CONFIRMATION MODAL -->
+  <div class="modal-backdrop" id="deleteOrderModal">
+    <div class="modal-box">
+      <h3 class="modal-title" style="color:var(--danger);">Delete Order Permanently</h3>
+      <p style="font-size:13px; color:var(--text-muted);" id="deleteOrderModalMsg">
+        Are you sure you want to delete this order? All stage tracking, employee assignments, and notifications will be removed permanently.
+      </p>
+      <div class="modal-actions">
+        <button class="btn-action-light" onclick="closeDeleteOrderModal()">Cancel</button>
+        <button class="btn-topbar" style="background:var(--danger); color:#FFFFFF; border:none;" onclick="executeDeleteOrder()">Delete Permanently</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELETE HISTORY ENTRY CONFIRMATION MODAL -->
+  <div class="modal-backdrop" id="deleteHistoryModal">
+    <div class="modal-box">
+      <h3 class="modal-title" style="color:var(--danger);">Delete Audit Log Entry</h3>
+      <p style="font-size:13px; color:var(--text-muted);">
+        Are you sure you want to remove this log record from the audit history?
+      </p>
+      <div class="modal-actions">
+        <button class="btn-action-light" onclick="closeDeleteHistoryModal()">Cancel</button>
+        <button class="btn-topbar" style="background:var(--danger); color:#FFFFFF; border:none;" onclick="executeDeleteHistory()">Delete Record</button>
+      </div>
+    </div>
   </div>
 
   <!-- Mobile Bottom Nav -->
@@ -521,8 +880,55 @@
       auth: { persistSession: true, autoRefreshToken: true }
     });
 
+    const VAPID_PUBLIC_KEY = 'BIHD9xC9bGzRyYITKivlmj0ePMBYgihxBp2n6r6alspYH-Y1hsvkGncwE3p_luJTOGew2zDNwzlGykR_jLO4CbA';
+
+    function urlBase64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - base64String.length % 4) % 4);
+      const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+      }
+      return outputArray;
+    }
+
+    async function setupPushNotifications() {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+      try {
+        const reg = await navigator.serviceWorker.ready;
+        let sub = await reg.pushManager.getSubscription();
+        if (!sub && Notification.permission === 'granted') {
+          sub = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+          });
+        }
+        if (sub) {
+          const subJson = sub.toJSON();
+          await supabase.from('push_subscriptions').upsert({
+            endpoint: sub.endpoint,
+            p256dh: subJson.keys?.p256dh || '',
+            auth: subJson.keys?.auth || '',
+            platform: navigator.platform || 'web',
+            user_agent: navigator.userAgent,
+            last_used_at: new Date().toISOString()
+          }, { onConflict: 'endpoint' });
+        }
+      } catch (err) {
+        console.warn('[Push setup]:', err);
+      }
+    }
+
+    let activeTab = 'orders'; // 'orders' or 'audit'
+    let rawOrders = [];
+    let filteredOrders = [];
     let rawHistory = [];
-    let currentFiltered = [];
+    let currentFilteredAudit = [];
+    let editingOrderId = null;
+    let deletingOrderId = null;
+    let deletingHistoryId = null;
+    let currentProfile = null;
 
     function showToast(message, type = 'info') {
       const container = document.getElementById('toastContainer');
@@ -570,11 +976,72 @@
     }
 
     window.addEventListener('popstate', () => {
+      document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
       const sidebar = document.getElementById('sidebar');
       if (sidebar && sidebar.classList.contains('open')) {
         toggleSidebar(false);
       }
     });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const openModal = document.querySelector('.modal-backdrop.open');
+        if (openModal) closeModalWithHistory(openModal.id);
+      }
+    });
+
+    document.querySelectorAll('.modal-backdrop').forEach(bd => {
+      bd.addEventListener('click', (e) => {
+        if (e.target === bd) closeModalWithHistory(bd.id);
+      });
+    });
+
+    function openModalWithHistory(id) {
+      const modal = document.getElementById(id);
+      if (!modal) return;
+      modal.classList.add('open');
+      history.pushState({ modalOpen: id }, '');
+    }
+
+    function closeModalWithHistory(id) {
+      const modal = document.getElementById(id);
+      if (!modal) return;
+      modal.classList.remove('open');
+      if (history.state && history.state.modalOpen === id) {
+        history.back();
+      }
+    }
+
+    function switchTab(tab) {
+      activeTab = tab;
+      const btnOrders = document.getElementById('tabBtnOrders');
+      const btnAudit = document.getElementById('tabBtnAudit');
+      const secOrders = document.getElementById('sectionOrdersBox');
+      const secAudit = document.getElementById('sectionAuditTrail');
+
+      if (tab === 'orders') {
+        btnOrders.classList.add('active');
+        btnAudit.classList.remove('active');
+        secOrders.style.display = 'flex';
+        secAudit.style.display = 'none';
+        document.getElementById('topbarSummaryLabel').textContent = 'All orders management: edit & delete orders';
+      } else {
+        btnAudit.classList.add('active');
+        btnOrders.classList.remove('active');
+        secAudit.style.display = 'flex';
+        secOrders.style.display = 'none';
+        document.getElementById('topbarSummaryLabel').textContent = 'Complete tailoring pipeline audit trail & logs';
+        if (rawHistory.length === 0) fetchHistory();
+      }
+    }
+
+    function refreshCurrentTab(manual = false) {
+      if (activeTab === 'orders') {
+        fetchAllOrders(manual);
+      } else {
+        fetchHistory(manual);
+      }
+    }
 
     async function initAuth() {
       const { data: { session } } = await supabase.auth.getSession();
@@ -595,6 +1062,7 @@
         return;
       }
 
+      currentProfile = profile;
       document.getElementById('userNameLabel').textContent = (profile && profile.full_name) || session.user.email.split('@')[0];
       document.getElementById('userRoleBadge').textContent = 'ADMIN';
 
@@ -603,10 +1071,265 @@
         window.location.replace('/login.html');
       });
 
+      await fetchAllOrders();
       await fetchHistory();
+      setupPushNotifications();
       updateOnlineStatus();
     }
 
+    // =========================================================================
+    // ORDERS FETCH, FILTER & RENDER
+    // =========================================================================
+    async function fetchAllOrders(manual = false) {
+      const refreshBtn = document.getElementById('refreshBtn');
+      if (manual && refreshBtn) refreshBtn.classList.add('spinning');
+      try {
+        const { data, error } = await supabase
+          .from('orders')
+          .select(`
+            id, order_no, customer_id, garment_type, cloth_material, quantity, notes,
+            current_stage, status, expected_delivery_date, created_at,
+            customers (id, name, phone)
+          `)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        rawOrders = data || [];
+        updateOrderStats();
+        applyOrderFilters();
+        if (manual) showToast('Orders list refreshed', 'success');
+      } catch (err) {
+        showToast('Error loading orders: ' + err.message, 'error');
+      } finally {
+        if (refreshBtn) refreshBtn.classList.remove('spinning');
+      }
+    }
+
+    function updateOrderStats() {
+      const total = rawOrders.length;
+      const inProg = rawOrders.filter(o => o.status === 'in_progress').length;
+      const ready = rawOrders.filter(o => o.status === 'ready').length;
+      const deliv = rawOrders.filter(o => o.status === 'delivered').length;
+      const canc = rawOrders.filter(o => o.status === 'cancelled').length;
+
+      document.getElementById('statTotalOrders').textContent = total;
+      document.getElementById('statInProgress').textContent = inProg;
+      document.getElementById('statReady').textContent = ready;
+      document.getElementById('statDelivered').textContent = deliv;
+      document.getElementById('statCancelled').textContent = canc;
+      document.getElementById('badgeAllOrdersCount').textContent = total;
+    }
+
+    function applyOrderFilters() {
+      const q = document.getElementById('orderSearchInput').value.trim().toLowerCase();
+      const status = document.getElementById('orderStatusFilter').value;
+      const stage = document.getElementById('orderStageFilter').value;
+
+      filteredOrders = rawOrders.filter(o => {
+        const orderNo = (o.order_no || '').toLowerCase();
+        const custName = (o.customers && o.customers.name) ? o.customers.name.toLowerCase() : '';
+        const phone = (o.customers && o.customers.phone) ? o.customers.phone.toLowerCase() : '';
+
+        if (q && !orderNo.includes(q) && !custName.includes(q) && !phone.includes(q)) return false;
+        if (status && o.status !== status) return false;
+        if (stage && o.current_stage !== stage) return false;
+
+        return true;
+      });
+
+      document.getElementById('filteredOrdersCountLabel').textContent = `Showing ${filteredOrders.length} of ${rawOrders.length} orders`;
+      renderOrdersTable(filteredOrders);
+    }
+
+    function resetOrderFilters() {
+      document.getElementById('orderSearchInput').value = '';
+      document.getElementById('orderStatusFilter').value = '';
+      document.getElementById('orderStageFilter').value = '';
+      applyOrderFilters();
+    }
+
+    function renderOrdersTable(list) {
+      const tbody = document.getElementById('ordersTableBody');
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:32px; color:var(--text-muted);">No orders match current filters.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map(o => {
+        const custName = o.customers ? o.customers.name : '-';
+        const phone = o.customers ? (o.customers.phone || '-') : '-';
+        const garment = `${escapeHtml(o.garment_type)} ${o.quantity > 1 ? `(×${o.quantity})` : ''}`;
+        const cloth = o.cloth_material ? `<span style="font-size:11px; color:#64748B; display:block;">${escapeHtml(o.cloth_material)}</span>` : '';
+        const dateStr = o.expected_delivery_date || '-';
+
+        return `
+          <tr>
+            <td>
+              <a href="/order-detail.html?id=${o.id}" style="font-weight:700; color:var(--navy-primary); text-decoration:none;">
+                ${escapeHtml(o.order_no)}
+              </a>
+            </td>
+            <td><strong>${escapeHtml(custName)}</strong></td>
+            <td style="color:#475569;">${escapeHtml(phone)}</td>
+            <td>
+              <div>${garment}</div>
+              ${cloth}
+            </td>
+            <td><span class="stage-badge">${escapeHtml(o.current_stage || '-')}</span></td>
+            <td style="white-space:nowrap; font-weight:500;">${dateStr}</td>
+            <td><span class="action-tag ${escapeHtml(o.status)}">${escapeHtml(o.status)}</span></td>
+            <td style="text-align:right; white-space:nowrap;">
+              <a href="/order-detail.html?id=${o.id}" class="btn-table-action" title="View details">
+                👁️ View
+              </a>
+              <button class="btn-table-action" onclick="openEditOrderModal('${o.id}')" title="Edit order">
+                ✏️ Edit
+              </button>
+              <button class="btn-table-action delete" onclick="openDeleteOrderModal('${o.id}')" title="Delete order">
+                🗑️ Delete
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // =========================================================================
+    // EDIT & DELETE ORDER IMPLEMENTATION
+    // =========================================================================
+    function openEditOrderModal(orderId) {
+      editingOrderId = orderId;
+      const o = rawOrders.find(x => x.id === orderId);
+      if (!o) return;
+
+      document.getElementById('editCustName').value = (o.customers && o.customers.name) || '';
+      document.getElementById('editCustPhone').value = (o.customers && o.customers.phone) || '';
+      document.getElementById('editGarmentType').value = o.garment_type || '';
+      document.getElementById('editClothMaterial').value = o.cloth_material || '';
+      document.getElementById('editQuantity').value = o.quantity || 1;
+      document.getElementById('editExpectedDate').value = o.expected_delivery_date || '';
+      document.getElementById('editCurrentStage').value = o.current_stage || 'measurement';
+      document.getElementById('editStatus').value = o.status || 'in_progress';
+      document.getElementById('editNotes').value = o.notes || '';
+
+      openModalWithHistory('editOrderModal');
+    }
+
+    function closeEditOrderModal() {
+      closeModalWithHistory('editOrderModal');
+      editingOrderId = null;
+    }
+
+    async function saveOrderChanges() {
+      if (!editingOrderId) return;
+      const o = rawOrders.find(x => x.id === editingOrderId);
+      if (!o) return;
+
+      const custName = document.getElementById('editCustName').value.trim();
+      const custPhone = document.getElementById('editCustPhone').value.trim();
+      const garmentType = document.getElementById('editGarmentType').value.trim();
+      const cloth = document.getElementById('editClothMaterial').value.trim();
+      const qty = parseInt(document.getElementById('editQuantity').value, 10) || 1;
+      const expDate = document.getElementById('editExpectedDate').value || null;
+      const stage = document.getElementById('editCurrentStage').value;
+      const status = document.getElementById('editStatus').value;
+      const notes = document.getElementById('editNotes').value.trim();
+
+      if (!custName || !garmentType) {
+        showToast('Customer Name and Garment Type are required', 'error');
+        return;
+      }
+
+      closeEditOrderModal();
+
+      try {
+        // 1. Update customer record if exists
+        if (o.customer_id) {
+          await supabase.from('customers').update({
+            name: custName,
+            phone: custPhone || null,
+            updated_at: new Date().toISOString()
+          }).eq('id', o.customer_id);
+        }
+
+        // 2. Update order record
+        const { error } = await supabase.from('orders').update({
+          garment_type: garmentType,
+          cloth_material: cloth || null,
+          quantity: qty,
+          expected_delivery_date: expDate,
+          current_stage: stage,
+          status: status,
+          notes: notes || null,
+          updated_at: new Date().toISOString()
+        }).eq('id', editingOrderId);
+
+        if (error) throw error;
+
+        // 3. Log history entry
+        await supabase.from('order_history').insert({
+          order_id: editingOrderId,
+          stage: stage,
+          action: 'updated',
+          actor_name: (currentProfile && currentProfile.full_name) || 'Admin',
+          details: { garment_type: garmentType, status: status, notes: notes }
+        });
+
+        showToast(`Order ${o.order_no} updated successfully!`, 'success');
+        await fetchAllOrders();
+        if (rawHistory.length > 0) await fetchHistory();
+      } catch (err) {
+        showToast('Error saving order changes: ' + err.message, 'error');
+      }
+    }
+
+    function openDeleteOrderModal(orderId) {
+      deletingOrderId = orderId;
+      const o = rawOrders.find(x => x.id === orderId);
+      if (!o) return;
+
+      const custName = (o.customers && o.customers.name) || 'Customer';
+      document.getElementById('deleteOrderModalMsg').innerHTML = `
+        Are you sure you want to permanently delete order <strong>${escapeHtml(o.order_no)}</strong> for <strong>${escapeHtml(custName)}</strong>?<br><br>
+        All pipeline stages, staff logs, and notification records for this order will be permanently erased.
+      `;
+      openModalWithHistory('deleteOrderModal');
+    }
+
+    function closeDeleteOrderModal() {
+      closeModalWithHistory('deleteOrderModal');
+      deletingOrderId = null;
+    }
+
+    async function executeDeleteOrder() {
+      if (!deletingOrderId) return;
+      const orderId = deletingOrderId;
+      const o = rawOrders.find(x => x.id === orderId);
+      const orderNo = o ? o.order_no : 'Order';
+
+      closeDeleteOrderModal();
+
+      try {
+        // Cascade delete child entities explicitly
+        await supabase.from('order_stages').delete().eq('order_id', orderId);
+        await supabase.from('order_history').delete().eq('order_id', orderId);
+        await supabase.from('notifications').delete().eq('order_id', orderId);
+
+        // Delete parent order
+        const { error } = await supabase.from('orders').delete().eq('id', orderId);
+        if (error) throw error;
+
+        showToast(`Order ${orderNo} deleted successfully!`, 'success');
+        await fetchAllOrders();
+        if (rawHistory.length > 0) await fetchHistory();
+      } catch (err) {
+        showToast('Error deleting order: ' + err.message, 'error');
+      }
+    }
+
+    // =========================================================================
+    // AUDIT LOG IMPLEMENTATION
+    // =========================================================================
     async function fetchHistory(manual = false) {
       const refreshBtn = document.getElementById('refreshBtn');
       if (manual && refreshBtn) refreshBtn.classList.add('spinning');
@@ -618,17 +1341,138 @@
             orders (order_no, garment_type, customers (name))
           `)
           .order('created_at', { ascending: false })
-          .limit(200);
+          .limit(300);
 
         if (error) throw error;
         rawHistory = data || [];
-        applyFilters();
-        if (manual) showToast('Activity log refreshed', 'success');
+        document.getElementById('badgeAuditCount').textContent = rawHistory.length;
+        applyAuditFilters();
+        if (manual) showToast('Audit log refreshed', 'success');
       } catch (err) {
         showToast('Error loading history: ' + err.message, 'error');
       } finally {
         if (refreshBtn) refreshBtn.classList.remove('spinning');
       }
+    }
+
+    function applyAuditFilters() {
+      const q = document.getElementById('filterSearch').value.trim().toLowerCase();
+      const stage = document.getElementById('filterStage').value;
+      const action = document.getElementById('filterAction').value;
+      const fromDate = document.getElementById('filterFromDate').value;
+      const toDate = document.getElementById('filterToDate').value;
+
+      currentFilteredAudit = rawHistory.filter(h => {
+        const orderNo = (h.orders && h.orders.order_no) ? h.orders.order_no.toLowerCase() : '';
+        const custName = (h.orders && h.orders.customers && h.orders.customers.name) ? h.orders.customers.name.toLowerCase() : '';
+
+        if (q && !orderNo.includes(q) && !custName.includes(q)) return false;
+        if (stage && h.stage !== stage) return false;
+        if (action && h.action !== action) return false;
+
+        const dateStr = h.created_at.split('T')[0];
+        if (fromDate && dateStr < fromDate) return false;
+        if (toDate && dateStr > toDate) return false;
+
+        return true;
+      });
+
+      document.getElementById('filteredCountLabel').textContent = `Showing ${currentFilteredAudit.length} of ${rawHistory.length} audit records`;
+      renderAuditTable(currentFilteredAudit);
+    }
+
+    function resetAuditFilters() {
+      document.getElementById('filterSearch').value = '';
+      document.getElementById('filterStage').value = '';
+      document.getElementById('filterAction').value = '';
+      document.getElementById('filterFromDate').value = '';
+      document.getElementById('filterToDate').value = '';
+      applyAuditFilters();
+    }
+
+    function renderAuditTable(list) {
+      const tbody = document.getElementById('historyTableBody');
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:32px; color:var(--text-muted);">No activity matches the current filters.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map(item => {
+        const timeStr = window.format12HourDateTime ? window.format12HourDateTime(item.created_at) : new Date(item.created_at).toLocaleString([], { hour12: true });
+        const orderNo = item.orders ? item.orders.order_no : 'Order';
+        const custName = (item.orders && item.orders.customers) ? item.orders.customers.name : '-';
+
+        return `
+          <tr>
+            <td style="color:var(--text-muted); white-space:nowrap;">${timeStr}</td>
+            <td><a href="/order-detail.html?id=${item.order_id}" style="font-weight:700; color:var(--navy-primary); text-decoration:none;">${escapeHtml(orderNo)}</a></td>
+            <td>${escapeHtml(custName)}</td>
+            <td style="text-transform:capitalize;">${escapeHtml(item.stage || '-')}</td>
+            <td><span class="action-tag ${escapeHtml(item.action)}">${escapeHtml(item.action)}</span></td>
+            <td>${escapeHtml(item.employee_name || '-')}</td>
+            <td><strong>${escapeHtml(item.actor_name || 'Staff')}</strong></td>
+            <td style="text-align:right;">
+              <button class="btn-table-action delete" onclick="openDeleteHistoryModal('${item.id}')" title="Delete log entry">
+                🗑️ Delete
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openDeleteHistoryModal(id) {
+      deletingHistoryId = id;
+      openModalWithHistory('deleteHistoryModal');
+    }
+
+    function closeDeleteHistoryModal() {
+      closeModalWithHistory('deleteHistoryModal');
+      deletingHistoryId = null;
+    }
+
+    async function executeDeleteHistory() {
+      if (!deletingHistoryId) return;
+      const targetId = deletingHistoryId;
+      closeDeleteHistoryModal();
+
+      try {
+        const { error } = await supabase.from('order_history').delete().eq('id', targetId);
+        if (error) throw error;
+        showToast('Audit record deleted', 'success');
+        await fetchHistory();
+      } catch (err) {
+        showToast('Error deleting log: ' + err.message, 'error');
+      }
+    }
+
+    function exportToCsv() {
+      if (currentFilteredAudit.length === 0) {
+        showToast('No records to export', 'error');
+        return;
+      }
+
+      const headers = ['Timestamp', 'Order No', 'Customer Name', 'Stage', 'Action', 'Assigned Staff', 'Actor'];
+      const rows = currentFilteredAudit.map(item => [
+        `"${item.created_at}"`,
+        `"${item.orders ? item.orders.order_no : ''}"`,
+        `"${(item.orders && item.orders.customers) ? item.orders.customers.name : ''}"`,
+        `"${item.stage || ''}"`,
+        `"${item.action || ''}"`,
+        `"${item.employee_name || ''}"`,
+        `"${item.actor_name || ''}"`
+      ]);
+
+      const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `iqbal-audit-history-${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Exported audit history to CSV', 'success');
     }
 
     function updateOnlineStatus() {
@@ -645,102 +1489,6 @@
     }
     window.addEventListener('online', updateOnlineStatus);
     window.addEventListener('offline', updateOnlineStatus);
-
-    function applyFilters() {
-      const q = document.getElementById('filterSearch').value.trim().toLowerCase();
-      const stage = document.getElementById('filterStage').value;
-      const action = document.getElementById('filterAction').value;
-      const fromDate = document.getElementById('filterFromDate').value;
-      const toDate = document.getElementById('filterToDate').value;
-
-      currentFiltered = rawHistory.filter(h => {
-        const orderNo = (h.orders && h.orders.order_no) ? h.orders.order_no.toLowerCase() : '';
-        const custName = (h.orders && h.orders.customers && h.orders.customers.name) ? h.orders.customers.name.toLowerCase() : '';
-
-        if (q && !orderNo.includes(q) && !custName.includes(q)) return false;
-        if (stage && h.stage !== stage) return false;
-        if (action && h.action !== action) return false;
-
-        const dateStr = h.created_at.split('T')[0];
-        if (fromDate && dateStr < fromDate) return false;
-        if (toDate && dateStr > toDate) return false;
-
-        return true;
-      });
-
-      document.getElementById('filteredCountLabel').textContent = `Showing ${currentFiltered.length} of ${rawHistory.length} audit records`;
-      renderTable(currentFiltered);
-    }
-
-    function resetFilters() {
-      document.getElementById('filterSearch').value = '';
-      document.getElementById('filterStage').value = '';
-      document.getElementById('filterAction').value = '';
-      document.getElementById('filterFromDate').value = '';
-      document.getElementById('filterToDate').value = '';
-      applyFilters();
-    }
-
-    function renderTable(list) {
-      const tbody = document.getElementById('historyTableBody');
-      if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:32px; color:var(--text-muted);">No activity matches the current filters.</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = list.map(item => {
-        const timeStr = window.format12HourDateTime ? window.format12HourDateTime(item.created_at) : new Date(item.created_at).toLocaleString([], { hour12: true });
-        const orderNo = item.orders ? item.orders.order_no : 'Order';
-        const custName = (item.orders && item.orders.customers) ? item.orders.customers.name : '-';
-        const detailsStr = item.details ? JSON.stringify(item.details) : '';
-
-        return `
-          <tr>
-            <td style="color:var(--text-muted); white-space:nowrap;">${timeStr}</td>
-            <td><a href="/order-detail.html?id=${item.order_id}" style="font-weight:700; color:var(--navy-primary); text-decoration:none;">${escapeHtml(orderNo)}</a></td>
-            <td>${escapeHtml(custName)}</td>
-            <td style="text-transform:capitalize;">${escapeHtml(item.stage || '-')}</td>
-            <td><span class="action-tag ${escapeHtml(item.action)}">${escapeHtml(item.action)}</span></td>
-            <td>${escapeHtml(item.employee_name || '-')}</td>
-            <td><strong>${escapeHtml(item.actor_name || 'Staff')}</strong></td>
-            <td style="font-size:11px; color:#475569; max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHtml(detailsStr)}">
-              ${escapeHtml(detailsStr)}
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    // CSV Export
-    function exportToCsv() {
-      if (currentFiltered.length === 0) {
-        showToast('No records to export', 'error');
-        return;
-      }
-
-      const headers = ['Timestamp', 'Order No', 'Customer Name', 'Stage', 'Action', 'Assigned Staff', 'Actor', 'Details'];
-      const rows = currentFiltered.map(item => [
-        `"${item.created_at}"`,
-        `"${item.orders ? item.orders.order_no : ''}"`,
-        `"${(item.orders && item.orders.customers) ? item.orders.customers.name : ''}"`,
-        `"${item.stage || ''}"`,
-        `"${item.action || ''}"`,
-        `"${item.employee_name || ''}"`,
-        `"${item.actor_name || ''}"`,
-        `"${JSON.stringify(item.details || {}).replace(/"/g, '""')}"`
-      ]);
-
-      const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.setAttribute('href', url);
-      link.setAttribute('download', `iqbal-fashion-history-${new Date().toISOString().split('T')[0]}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      showToast('Exported audit history to CSV', 'success');
-    }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {

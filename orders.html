@@ -744,9 +744,18 @@
       .app-main { margin-left: 0; padding-bottom: var(--bottom-bar-height); }
       .menu-toggle { display: flex; }
       .bottom-bar { display: flex; }
-      .content-body { padding: 16px; }
-      .topbar { padding: 0 16px; }
-      .status-text { display: none; }
+      .content-body { padding: 12px; }
+      .topbar { padding: 0 10px; gap: 6px; }
+      .topbar-left { gap: 6px; min-width: 0; flex: 1; overflow: hidden; }
+      .page-heading h1 { font-size: 14px; max-width: 110px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .page-heading p { display: none; }
+      .topbar-actions { gap: 4px; flex-shrink: 0; }
+      .status-indicator span, .status-text { display: none; }
+      .status-indicator { padding: 4px 6px; }
+      .lang-btn { padding: 2px 5px; font-size: 10px; }
+      .btn-topbar span { display: none; }
+      .btn-topbar { padding: 6px 8px; min-width: auto; }
+      .notification-bell-btn { width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; }
       .kanban-column { flex: 0 0 280px; }
     }
   </style>
@@ -1056,6 +1065,46 @@
     let allEmployees = [];
     let currentViewMode = 'kanban';
 
+    const VAPID_PUBLIC_KEY = 'BIHD9xC9bGzRyYITKivlmj0ePMBYgihxBp2n6r6alspYH-Y1hsvkGncwE3p_luJTOGew2zDNwzlGykR_jLO4CbA';
+
+    function urlBase64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - base64String.length % 4) % 4);
+      const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+      }
+      return outputArray;
+    }
+
+    async function setupPushNotifications() {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+      try {
+        const reg = await navigator.serviceWorker.ready;
+        let sub = await reg.pushManager.getSubscription();
+        if (!sub && Notification.permission === 'granted') {
+          sub = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+          });
+        }
+        if (sub) {
+          const subJson = sub.toJSON();
+          await supabase.from('push_subscriptions').upsert({
+            endpoint: sub.endpoint,
+            p256dh: subJson.keys?.p256dh || '',
+            auth: subJson.keys?.auth || '',
+            platform: navigator.platform || 'web',
+            user_agent: navigator.userAgent,
+            last_used_at: new Date().toISOString()
+          }, { onConflict: 'endpoint' });
+        }
+      } catch (err) {
+        console.warn('[Push setup]:', err);
+      }
+    }
+
     function showToast(message, type = 'info') {
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
@@ -1168,6 +1217,7 @@
       await loadStaffOptions();
       await fetchOrders();
       setupRealtime();
+      setupPushNotifications();
     }
 
     async function loadStaffOptions() {

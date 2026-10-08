@@ -132,8 +132,8 @@ module.exports = async function handler(req, res) {
 
         // Helper to sanitize keys from surrounding quotes, spaces, angle brackets, or padding '='
         const sanitizeKey = (key) => (key || '').trim().replace(/^["']|["']$/g, '').replace(/=+$/, '').trim();
-        const cleanPublicKey = sanitizeKey(VAPID_PUBLIC_KEY);
-        const cleanPrivateKey = sanitizeKey(VAPID_PRIVATE_KEY);
+        const cleanPublicKey = sanitizeKey(VAPID_PUBLIC_KEY || 'BIHD9xC9bGzRyYITKivlmj0ePMBYgihxBp2n6r6alspYH-Y1hsvkGncwE3p_luJTOGew2zDNwzlGykR_jLO4CbA');
+        const cleanPrivateKey = sanitizeKey(VAPID_PRIVATE_KEY || 'HDfNxvHz8XWQkJc5Pq68GxGsUo2wYR17lxH9Trv4B_Q');
         let cleanSubject = (VAPID_SUBJECT || 'mailto:ctgroupteam@gmail.com').trim().replace(/^["']|["']$/g, '').replace(/[<>]/g, '').trim();
         if (!cleanSubject.startsWith('mailto:')) {
           cleanSubject = 'mailto:' + cleanSubject;

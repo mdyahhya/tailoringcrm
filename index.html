@@ -660,12 +660,6 @@
       </div>
 
       <div class="topbar-right">
-        <!-- Interactive Workflow Guide Trigger -->
-        <button class="btn-workflow-help" onclick="openWorkflowGuide()" title="Shop Workflow Guide with Audio">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
-          <span data-i18n="workflow_demo_btn">Demo</span>
-        </button>
-
         <!-- Multilingual Switcher -->
         <div id="langSwitcherContainer"></div>
 
@@ -920,6 +914,49 @@
       `).join('');
     }
 
+    function urlB64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - base64String.length % 4) % 4);
+      const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+      }
+      return outputArray;
+    }
+
+    async function setupPushNotifications() {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+      try {
+        const reg = await navigator.serviceWorker.ready;
+        let sub = await reg.pushManager.getSubscription();
+        if (!sub && 'Notification' in window && Notification.permission !== 'denied') {
+          const perm = await Notification.requestPermission();
+          if (perm === 'granted') {
+            const vapidPublicKey = 'BIHD9xC9bGzRyYITKivlmj0ePMBYgihxBp2n6r6alspYH-Y1hsvkGncwE3p_luJTOGew2zDNwzlGykR_jLO4CbA';
+            sub = await reg.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: urlB64ToUint8Array(vapidPublicKey)
+            });
+          }
+        }
+        if (sub) {
+          const subJson = sub.toJSON();
+          const { data: { session } } = await supabase.auth.getSession();
+          const uid = session ? session.user.id : null;
+          await supabase.from('push_subscriptions').upsert({
+            user_id: uid,
+            endpoint: sub.endpoint,
+            p256dh: subJson.keys.p256dh,
+            auth: subJson.keys.auth,
+            last_used_at: new Date().toISOString()
+          }, { onConflict: 'endpoint' });
+        }
+      } catch (err) {
+        console.warn('Push setup error:', err);
+      }
+    }
+
     // Auth verification
     async function initAuth() {
       renderSkeletonCards();
@@ -932,6 +969,7 @@
       fetchLiveOrders();
       updateUnreadCount();
       setupRealtime();
+      setupPushNotifications();
     }
 
     // Fetch live orders from Supabase
@@ -1252,7 +1290,22 @@
             is_read: false
           });
 
-        // Trigger Web Push in background (asynchronous, non-blocking)
+        // Native system notification if app is active or in background
+        if ('serviceWorker' in navigator && 'Notification' in window && Notification.permission === 'granted') {
+          navigator.serviceWorker.ready.then(reg => {
+            reg.showNotification(notifTitle, {
+              body: notifBody,
+              icon: '/icons/icon-192.png',
+              badge: '/icons/favicon.svg',
+              vibrate: [200, 100, 200],
+              tag: `order-${orderId}`,
+              requireInteraction: isDelivered || newStage === 'ready',
+              data: { url: `/order-detail.html?id=${orderId}` }
+            });
+          }).catch(console.warn);
+        }
+
+        // Trigger Web Push in background for all devices & closed apps
         fetch('/api/send-push', {
           method: 'POST',
           headers: {
@@ -1313,57 +1366,57 @@
     }
 
     // =========================================================================
-    // INTERACTIVE ANIMATED WORKFLOW GUIDE & HINDI AUDIO NARRATION
+    // SIMPLE HINDI SOFTWARE TOUR: HOW TO USE THE ERP SYSTEM & DO ENTRIES
     // =========================================================================
     const WORKFLOW_STEPS = [
       {
         num: 1,
-        title: "1. मोजमाप / नाप (Measurement)",
-        desc: "Customer preferences, body measurements, and styling choices are carefully logged into the ERP. A unique order slip is generated.",
-        hindi: "पहला चरण है नाप लेना। ग्राहक की पसंद और सटीक शारीरिक माप दर्ज करके सिस्टम में ऑर्डर बुक किया जाता है।",
-        icon: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>`
+        title: "1. नया ऑर्डर बुक करना (Book New Order)",
+        desc: "ग्राहक का नाम, मोबाइल नंबर, कपड़े की नाप और डिलीवरी तारीख भरकर 'Save Order' पर क्लिक करें।",
+        hindi: "नमस्ते! नया ऑर्डर बनाने के लिए 'Book New Order' बटन दबाएं। यहां ग्राहक का नाम, मोबाइल नंबर, कपड़े की नाप और डिलीवरी तारीख डालकर सेव कर दें।",
+        icon: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>`
       },
       {
         num: 2,
-        title: "2. धुलाई (Washing - Optional)",
-        desc: "Optional cloth pre-wash for cotton, linen, or raw fabric to ensure garments do not shrink after tailoring.",
-        hindi: "दूसरा चरण है धुलाई। यदि कपड़ा कॉटन या लिनेन का है और सिकुड़ने की संभावना है, तो कटिंग से पहले धुलाई की जाती है।",
-        icon: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>`
+        title: "2. चालू ऑर्डर्स देखना (Active Orders Board)",
+        desc: "ऑर्डर सेव होते ही वो चालू ऑर्डर्स बोर्ड पर कार्ड बनकर दिखता है, जिसमें ग्राहक की पूरी डिटेल होती है।",
+        hindi: "ऑर्डर सेव होते ही ये चालू ऑर्डर्स बोर्ड पर आ जाता है। यहां आपको हर ग्राहक का नाम, कपड़ा और तारीख कार्ड के रूप में दिखती है।",
+        icon: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>`
       },
       {
         num: 3,
-        title: "3. कटिंग (Cutting)",
-        desc: "Master tailor cuts the fabric precisely according to the recorded body measurements and selected design pattern.",
-        hindi: "तीसरा चरण है कटिंग। मास्टर कटर नाप के अनुसार कपड़े की सटीकता से कटिंग करते हैं ताकि सही फिटिंग मिले।",
-        icon: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>`
+        title: "3. कारीगर को काम सौंपना (Assign Staff)",
+        desc: "कटिंग, सिलाई या फिनिशिंग के लिए अपने कारीगर (स्टाफ) का नाम सिलेक्ट करें।",
+        hindi: "अब कटिंग या सिलाई के लिए अपने कारीगर का नाम चुनें, ताकि पता रहे कि कौन सा काम किस कारीगर के पास चल रहा है।",
+        icon: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`
       },
       {
         num: 4,
-        title: "4. शिलाई (Stitching)",
-        desc: "Experienced artisan tailors assemble and stitch the garment with fine thread reinforcement, collars, cuffs, and pockets.",
-        hindi: "चौथा चरण है शिलाई। कुशल कारीगर परिधान को मजबूत और सुरुचिपूर्ण सिलाई देते हैं।",
-        icon: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>`
+        title: "4. काम आगे बढ़ाना (One-Click Next Step)",
+        desc: "काम पूरा होने पर 'पुढे पाठवा' (Next Step) दबाएं, ऑर्डर अगली स्टेज में चला जाएगा।",
+        hindi: "कारीगर का काम पूरा होते ही 'आगे भेजें' या 'पुढे पाठवा' दबाएं। ऑर्डर तुरंत अगली स्टेज में चला जाएगा।",
+        icon: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>`
       },
       {
         num: 5,
-        title: "5. फिनिशिंग / प्रेस (Finishing & Ironing)",
-        desc: "Loose thread trimming, button attachments, hook adjustments, thorough quality audit, and premium steam iron press.",
-        hindi: "पाँचवाँ चरण है फिनिशिंग और प्रेस। धागों की सफाई, बटन लगाना और स्टीम प्रेस से कपड़े को आकर्षक बनाया जाता है।",
-        icon: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>`
-      },
-      {
-        num: 6,
-        title: "6. पिकअप हेतु तैयार (Ready for Pickup)",
-        desc: "Garment is bagged and tagged on the ready rack. Real-time push notifications and WhatsApp alerts are dispatched to the customer.",
-        hindi: "छठा चरण है पिकअप हेतु तैयार। कपड़ा पूरी तरह तैयार है! ग्राहक और दुकान को तुरंत रियल-टाइम नोटिफिकेशन भेजा जाता है।",
+        title: "5. कपड़ा तैयार - रेडी मार्क करना (Mark Ready & Alert)",
+        desc: "सिलाई और फिनिशिंग पूरी होने पर 'Ready for Pickup' सिलेक्ट करें। सिस्टम तुरंत अलर्ट घंटी बजाएगा।",
+        hindi: "कपड़ा सिलकर तैयार होते ही 'Ready' सिलेक्ट करें। पूरे सिस्टम पर तुरंत घंटी बजेगी और पता चल जाएगा कि कपड़ा तैयार है।",
         icon: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>`
       },
       {
-        num: 7,
-        title: "7. डिलिव्हरी (Delivered)",
-        desc: "Customer tries on the garment, happily verifies the fit, any pending balance is cleared, and completion is archived.",
-        hindi: "सातवाँ चरण है डिलीवरी। ग्राहक परिधान की जांच करके अपनी पूर्ण संतुष्टि के साथ डिलीवरी लेते हैं।",
+        num: 6,
+        title: "6. डिलीवरी और व्हाट्सएप रसीद (Deliver & WhatsApp)",
+        desc: "ग्राहक के आने पर 'Delivered' मार्क करें और 'WhatsApp' बटन दबाकर सीधी डिजिटल रसीद भेजें।",
+        hindi: "जब ग्राहक कपड़ा लेने आए, तो 'Delivered' पर क्लिक करें और 'WhatsApp' बटन दबाकर ग्राहक के मोबाइल पर सीधी रसीद भेज दें।",
         icon: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`
+      },
+      {
+        num: 7,
+        title: "7. मोबाइल पर तुरंत नोटिफिकेशन (Off-App Push Alerts)",
+        desc: "अगर आपकी ऐप या वेबसाइट बंद भी है, तो भी फोन पर तुरंत नोटिफिकेशन और मैसेज आ जाएगा।",
+        hindi: "अगर आपकी ऐप या वेबसाइट बंद भी है, तब भी नया ऑर्डर आने पर या काम पूरा होने पर फोन की स्क्रीन पर सीधा नोटिफिकेशन आ जाएगा।",
+        icon: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>`
       }
     ];
 
