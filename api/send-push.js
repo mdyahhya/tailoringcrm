@@ -125,7 +125,7 @@ module.exports = async function handler(req, res) {
   }
 
   if (!title || !body) {
-    title = 'Iqbal Fashion Tailoring CRM';
+    title = 'Iqbal Fashion Tailoring ERP';
     body = 'An order in your tailoring pipeline has been updated.';
   }
 

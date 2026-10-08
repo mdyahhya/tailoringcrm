@@ -1,7 +1,7 @@
 {
-  "name": "Iqbal Fashion CRM",
-  "short_name": "Iqbal CRM",
-  "description": "Tailoring Order Tracking CRM for Iqbal Fashion",
+  "name": "Iqbal Fashion ERP",
+  "short_name": "Iqbal ERP",
+  "description": "Tailoring Order Tracking ERP for Iqbal Fashion",
   "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",

@@ -1,9 +1,9 @@
 /* ==============================================================================
-   IQBAL FASHION TAILORING CRM - SERVICE WORKER (sw.js)
+   IQBAL FASHION TAILORING ERP - SERVICE WORKER (sw.js)
    Production PWA Offline Caching & Web Push Notifications
    ============================================================================== */
 
-const CACHE_NAME = 'iqbal-crm-v1.0.1';
+const CACHE_NAME = 'iqbal-erp-v1.0.2';
 
 // Core static app shell assets to precache
 const PRECACHE_ASSETS = [
@@ -21,6 +21,7 @@ const PRECACHE_ASSETS = [
   '/offline.html',
   '/manifest.json',
   '/scripts/i18n.js',
+  '/icons/iqbal_logo.jpg',
   '/icons/logo.svg',
   '/icons/favicon.svg',
   '/icons/icon-192.png',
@@ -124,7 +125,7 @@ self.addEventListener('push', (event) => {
     try {
       data = event.data.json();
     } catch (e) {
-      data = { title: 'Iqbal Fashion CRM', body: event.data.text() };
+      data = { title: 'Iqbal Fashion ERP', body: event.data.text() };
     }
   }
 

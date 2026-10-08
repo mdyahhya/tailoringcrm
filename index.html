@@ -3,13 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>चालू ऑर्डर्स | Iqbal Fashion Tailoring CRM</title>
-  <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+  <title>चालू ऑर्डर्स | Iqbal Fashion Tailoring ERP</title>
+  <link rel="icon" type="image/jpeg" href="/icons/iqbal_logo.jpg">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+  <link rel="icon" type="image/svg+xml" href="/icons/logo.svg">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#12306B">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Iqbal CRM">
+  <meta name="apple-mobile-web-app-title" content="Iqbal ERP">
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -496,9 +498,91 @@
       .btn-workflow-help span { display: none; }
       .btn-workflow-help { padding: 6px; border-radius: var(--radius-sm); }
     }
+
+    /* PWA Startup Splash Glimpse */
+    .pwa-splash-glimpse {
+      position: fixed;
+      inset: 0;
+      background: #FFFFFF;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
+    }
+    .pwa-splash-glimpse.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .pwa-splash-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 24px;
+      animation: splashPop 0.4s ease-out;
+    }
+    @keyframes splashPop {
+      0% { transform: scale(0.92); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .pwa-splash-logo-card {
+      width: 120px;
+      height: 120px;
+      background: #FFFFFF;
+      border-radius: 20px;
+      padding: 8px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      border: 1px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .pwa-splash-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .pwa-splash-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: #0F172A;
+    }
+    .pwa-splash-subtitle {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: #12306B;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .pwa-splash-spinner {
+      margin-top: 24px;
+      width: 28px;
+      height: 28px;
+      border: 3px solid #E2E8F0;
+      border-top-color: #12306B;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
   </style>
 </head>
 <body>
+
+  <!-- PWA APP OPENING GLIMPSE SPLASH -->
+  <div id="pwaSplashGlimpse" class="pwa-splash-glimpse">
+    <div class="pwa-splash-content">
+      <div class="pwa-splash-logo-card">
+        <img src="/icons/iqbal_logo.jpg" alt="Iqbal Fashion" class="pwa-splash-img">
+      </div>
+      <div class="pwa-splash-title">IQBAL FASHION</div>
+      <div class="pwa-splash-subtitle">Tailoring Order ERP</div>
+      <div class="pwa-splash-spinner"></div>
+    </div>
+  </div>
 
   <!-- DRAWER BACKDROP OVERLAY -->
   <div id="drawerOverlay" class="drawer-overlay" onclick="toggleSidebar(false)"></div>
@@ -507,11 +591,11 @@
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
       <div class="brand-badge" style="background:#FFFFFF; border:1px solid var(--border-light); padding:2px; overflow:hidden;">
-        <img src="/icons/logo.svg" alt="Iqbal Fashion" style="width:100%; height:100%; object-fit:contain;">
+        <img src="/icons/iqbal_logo.jpg" alt="Iqbal Fashion" style="width:100%; height:100%; object-fit:contain;">
       </div>
       <div class="brand-meta">
         <span class="brand-name" data-i18n="app_title">Iqbal Fashion</span>
-        <span class="brand-sub" data-i18n="app_subtitle">Tailoring Order CRM</span>
+        <span class="brand-sub" data-i18n="app_subtitle">Tailoring Order ERP</span>
       </div>
     </div>
 
@@ -714,6 +798,16 @@
     let searchQuery = '';
     let currentUser = null;
 
+    // Hide PWA startup splash glimpse smoothly
+    function hideSplashGlimpse() {
+      const splash = document.getElementById('pwaSplashGlimpse');
+      if (splash && !splash.classList.contains('fade-out')) {
+        splash.classList.add('fade-out');
+        setTimeout(() => { if (splash) splash.remove(); }, 400);
+      }
+    }
+    setTimeout(hideSplashGlimpse, 700);
+
     // Toast helper
     function showToast(message, type = 'info') {
       const toast = document.getElementById('toastPopup');
@@ -868,6 +962,7 @@
         showToast('Error loading orders: ' + err.message, 'error');
       } finally {
         if (refreshBtn) refreshBtn.classList.remove('spinning');
+        hideSplashGlimpse();
       }
     }
 
@@ -1224,7 +1319,7 @@
       {
         num: 1,
         title: "1. मोजमाप / नाप (Measurement)",
-        desc: "Customer preferences, body measurements, and styling choices are carefully logged into the CRM. A unique order slip is generated.",
+        desc: "Customer preferences, body measurements, and styling choices are carefully logged into the ERP. A unique order slip is generated.",
         hindi: "पहला चरण है नाप लेना। ग्राहक की पसंद और सटीक शारीरिक माप दर्ज करके सिस्टम में ऑर्डर बुक किया जाता है।",
         icon: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>`
       },

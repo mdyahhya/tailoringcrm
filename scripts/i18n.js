@@ -1,11 +1,11 @@
 // scripts/i18n.js
-// Multilingual Support for Iqbal Fashion Tailoring CRM (English, Marathi, Hindi)
+// Multilingual Support for Iqbal Fashion Tailoring ERP (English, Marathi, Hindi)
 // Persistent in localStorage across all devices and sessions
 
 const I18N_DICTIONARY = {
   en: {
     app_title: "Iqbal Fashion",
-    app_subtitle: "Tailoring Order Tracking CRM",
+    app_subtitle: "Tailoring Order Tracking ERP",
     nav_orders: "Orders in Progress",
     nav_new_order: "+ Book New Order",
     nav_customers: "Customers",

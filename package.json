@@ -1,7 +1,7 @@
 {
   "name": "iqbal-fashion-tailoring-crm",
   "version": "1.0.0",
-  "description": "Production Tailoring Order Tracking CRM for Iqbal Fashion",
+  "description": "Production Tailoring Order Tracking ERP for Iqbal Fashion",
   "main": "api/send-push.js",
   "private": true,
   "scripts": {
